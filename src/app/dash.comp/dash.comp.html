@@ -1,0 +1,18 @@
+<mat-drawer-container fullsize>
+  <mat-drawer #drawer class="eft-sidenav" mode="side">
+    <app-drawer></app-drawer>
+  </mat-drawer>
+
+  <mat-drawer-content class="eft-sidenav-content" fxLayout='column' fxLayoutAlign="start stretch">
+    <app-toolbar #toolbar fxFlex="" [drawer]="drawer"></app-toolbar>
+    <!-- <app-hichart fxFlexAlign="center" fxFlex=""></app-hichart> -->
+    <!-- <app-chartjs fxFlexAlign="center" fxFlex="grow"></app-chartjs> -->
+    <app-chart-js fxFlexAlign="center" fxFlex="grow"></app-chart-js>
+  </mat-drawer-content>
+
+</mat-drawer-container>
+
+<!-- <a fxFlexAlign="center" fxFlex="grow" routerLink="/alert/3">Alerts</a>
+    <a fxFlexAlign="center" fxFlex="grow" routerLink="/aaaa">Home</a> -->
+<!-- <div fxFlexAlign="center" fxFlex="grow" >{{ toolbar.asyncProp | async}}</div>  -->
+<!-- <router-outlet (activate)='onActivate($event)' (deactivate)='onDeactivate($event)'></router-outlet> -->

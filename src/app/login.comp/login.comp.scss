@@ -1,0 +1,26 @@
+.form {
+  /* min-width: 150px; */
+  max-width: 100%;
+  width: 100%;
+  // background-color: red;
+  height: 100%;
+}
+
+
+::ng-deep .mat-card-header {
+  background-color: blueviolet !important;
+  padding-left: 25px;
+  padding-top: 15px;
+}
+
+
+::ng-deep .mat-card {
+  padding: 0 !important;
+  height: 100vh;
+}
+
+::ng-deep .mat-card-content {
+  padding: 5px !important;
+  margin: 20px;
+  background-color: purple;
+}
