@@ -31,6 +31,7 @@ import {
 } from '@angular/material/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { OAuthModule } from 'angular-oauth2-oidc';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 
 import { AppRoutingModule } from './app-route.module';
@@ -91,7 +92,13 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     MatExpansionModule,
     MatButtonToggleModule,
     MatSliderModule,
-    Ng4LoadingSpinnerModule.forRoot()
+    Ng4LoadingSpinnerModule.forRoot(),
+    OAuthModule.forRoot({
+      resourceServer: {
+        allowedUrls: ['http://www.angular.at/api'],
+        sendAccessToken: true
+      }
+    })
   ],
   // or @Injectable({ providedIn: 'root' })
   providers: [

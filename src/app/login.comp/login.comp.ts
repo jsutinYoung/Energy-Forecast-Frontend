@@ -1,10 +1,9 @@
 import {Component, EventEmitter, OnInit} from '@angular/core';
 import {FormControl, FormGroupDirective, NgForm, Validators} from '@angular/forms';
-import {MatDialog} from '@angular/material';
 import {MatSnackBar} from '@angular/material';
 import {ErrorStateMatcher} from '@angular/material/core';
-import {MatExpansionPanelHeader} from '@angular/material/expansion';
 import {Router} from '@angular/router';
+import {OAuthService} from 'angular-oauth2-oidc';
 import {Ng4LoadingSpinnerService} from 'ng4-loading-spinner';
 
 import {AuthService} from '../service/auth.service';
@@ -29,9 +28,11 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 
 // tslint:disable-next-line:component-class-suffix
 export class LoginComp implements OnInit {
-  username: string;
-  password: string;
+  // username: string;
+  // password: string;
   isSigUpOpen = false;
+  // oauth
+  userProfile: object;
 
   // showSpinner = true;
 
@@ -51,16 +52,43 @@ export class LoginComp implements OnInit {
   matcher = new MyErrorStateMatcher();
 
   constructor(
-      private authService: AuthService, private router: Router,
-      private snackBar: MatSnackBar,
+      private authService: AuthService, private oauthService: OAuthService,
+      private router: Router, private snackBar: MatSnackBar,
       private spinnerService: Ng4LoadingSpinnerService) {
     // this.passFormControl.valueChanges.subscribe(
     //   (v) => { console.log(v); console.log(this.passFormControl.errors);}
     // );
+
+    this.oauthService.configure({
+      // Url of the Identity Provider
+      // issuer: 'https://steyer-identity-server.azurewebsites.net/identity',
+      issuer: 'http://localhost',
+
+      // URL of the SPA to redirect the user to after login
+      redirectUri: window.location.origin + '/index.html/',
+
+      // URL of the SPA to redirect the user after silent refresh
+      silentRefreshRedirectUri: window.location.origin + '/silent-refresh.html',
+
+      // The SPA's id. The SPA is registerd with this id at the auth-server
+      clientId: 'demo-resource-owner',
+
+      dummyClientSecret: 'geheim',
+
+      // set the scope for the permissions the client should request
+      // The first three are defined by OIDC. The 4th is a usecase-specific one
+      scope: 'openid profile email voucher',
+
+      showDebugInformation: true,
+
+      oidc: false
+    });
+    this.oauthService.loadDiscoveryDocument();
   }
 
   ngOnInit() {}
 
+  // Google Firebase
   async signInUp(email: string, password: string, password2: string) {
     if (this.isSigUpOpen) {
       // sign-up
@@ -82,6 +110,9 @@ export class LoginComp implements OnInit {
       }
     } else {
       // sign-in
+      this.login(email, password);
+      return;
+
       try {
         this.spinnerService.show();
         const ok = await this.authService.signIn(email, password);
@@ -110,5 +141,53 @@ export class LoginComp implements OnInit {
   private openSnackBar(message: string, action: string) {
     this.spinnerService.hide();
     this.snackBar.open(message, action, {duration: 2000});
+  }
+
+  // Oauth version
+  loadUserProfile(): void {
+    this.oauthService.loadUserProfile().then(up => (this.userProfile = up));
+  }
+
+  get accessToken() {
+    return this.oauthService.getAccessToken();
+  }
+
+  get accessTokenExpiration() {
+    return new Date(this.oauthService.getAccessTokenExpiration())
+        .toLocaleDateString();
+  }
+
+  get givenName() {
+    const claims = this.oauthService.getIdentityClaims();
+    if (!claims) {
+      return null;
+    }
+    return claims['given_name'];
+  }
+
+  get familyName() {
+    const claims = this.oauthService.getIdentityClaims();
+    if (!claims) {
+      return null;
+    }
+    return claims['family_name'];
+  }
+
+  login(email: string, password: string) {
+    this.router.navigate(['/dash']);
+    return;
+
+    // dot use  OpenID here
+    this.oauthService
+        .fetchTokenUsingPasswordFlowAndLoadUserProfile('max', 'geheim')
+        .then(() => {
+          console.log('successfully logged in');
+          console.log(this.accessToken);
+          this.router.navigate(['/dash']);
+        })
+        .catch(err => {
+          console.error('error logging in', err);
+          this.openSnackBar('Signed in failed', 'Wrong user/password!');
+        });
   }
 }

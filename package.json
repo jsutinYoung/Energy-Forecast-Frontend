@@ -26,6 +26,7 @@
     "@angular/platform-browser-dynamic": "^6.1.0",
     "@angular/router": "^6.1.0",
     "@material/layout-grid": "^0.40.1",
+    "angular-oauth2-oidc": "^5.0.2",
     "chart.js": "^2.7.3",
     "core-js": "^2.5.4",
     "firebase": "^5.5.6",

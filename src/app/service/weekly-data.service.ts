@@ -10,6 +10,7 @@ export class WeeklyDataService {
   forecast: number[];
   baseline: number[];
   hours: Date[];
+  stderr: number[];
 
   constructor(private http: HttpClient) {
     //   this.weekData = WEEK_DATA.map(e => {
@@ -28,15 +29,10 @@ export class WeeklyDataService {
     this.forecast = WEEK_DATA.map(e => {
       return e[2];
     });
+    this.stderr = WEEK_DATA.map(e => {
+      return e[3];
+    });
   }
-
-  // get(): { hour: Date; baseline: number; forecast: number }[] {
-  //   return this.weekData;
-  // }
-
-  // get2() {
-  //   return WEEK_DATA;
-  // }
 
   getHours(): Date[] {
     return this.hours;
@@ -85,10 +81,6 @@ export class WeeklyDataService {
     return this.baseline;
   }
 
-  // setBaseline(data: number[]) {
-  //   this.baseline = data;
-  // }
-
   getDiff(): number[] {
     return this.forecast.map((e, i) => {
       return e - this.baseline[i];
@@ -98,6 +90,20 @@ export class WeeklyDataService {
   getZeros(): number[] {
     return this.forecast.map(e => {
       return 0.0;
+    });
+  }
+
+  getHighError(): number[] {
+    return this.forecast.map((e, i) => {
+      const f = this.forecast[i];
+      return f + (f * this.stderr[i]);
+    });
+  }
+
+  getLowError(): number[] {
+    return this.forecast.map((e, i) => {
+      const f = this.forecast[i];
+      return f - (f * this.stderr[i]);
     });
   }
 
@@ -112,6 +118,10 @@ export class WeeklyDataService {
 
     this.forecast = temp;
     this.baseline = temp2;
+
+    this.stderr = this.forecast.map(e => {
+      return (Math.random() / 10.0 + 0.01);
+    });
   }
 
   testHttpGet() {

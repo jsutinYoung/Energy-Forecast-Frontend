@@ -1,14 +1,14 @@
 <div class="chart-container" fxLayout='column' fxLayoutAlign="start">
   <div fxLayout='row' fxLayoutAlign="begin stretch" fxFlex="">
 
-    <mat-slider [(ngModel)]="zoom" [displayWith]="formatLabel" disabled='false' max='4' min='1' step='1' thumbLabel tickInterval='1'
-      matTooltip="Zoom"></mat-slider>
+    <mat-slider [(ngModel)]="zoom" [displayWith]="formatLabel" disabled='false' max='4' min='1' step='1' thumbLabel
+      tickInterval='1' matTooltip="Zoom"></mat-slider>
     <!-- [(ngModel)]="value" -->
     <input matInput [matDatepicker]="picker" placeholder="Choose a date" class='hidden'>
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
 
-    <button mat-icon-button matTooltip="previous 24hr" (click)="previousDay()">
+    <button mat-icon-button matTooltip="previous 24 hrs" (click)="previousDay()">
       <mat-icon>arrow_back</mat-icon>
     </button>
 
@@ -20,12 +20,16 @@
 
   <div fxLayout='row' fxLayoutAlign="end" fxFlex="10px">
 
-    <button mat-icon-button matTooltip="toggle compare" (click)="toggleUseDiffData()">
+    <button mat-icon-button matTooltip="toggle marker" (click)="toggleMarker()" [disabled]="disableToggleMarker()">
+      <mat-icon>location_searching</mat-icon>
+    </button>
+
+    <button mat-icon-button matTooltip="delta chart" (click)="displayDelta()">
       <mat-icon>compare_arrows</mat-icon>
     </button>
 
-    <button mat-icon-button matTooltip="toggle marker" (click)="toggleMarker()">
-      <mat-icon>location_searching</mat-icon>
+    <button mat-icon-button matTooltip="stderr chart" (click)="displayStdError()">
+      <mat-icon>graphic_eq</mat-icon>
     </button>
 
     <button mat-icon-button matTooltip="bar chart" (click)="displayBar()">

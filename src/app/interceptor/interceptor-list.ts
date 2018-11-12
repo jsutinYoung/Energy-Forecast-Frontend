@@ -12,7 +12,7 @@ import { UploadInterceptor } from './upload.interceptor';
 export const MyHttpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: NoopInterceptor, multi: true },
   // { provide: HTTP_INTERCEPTORS, useClass: TrimNameInterceptor, multi: true },
-  { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-  { provide: HTTP_INTERCEPTORS, useClass: LogInterceptor, multi: true },
+  // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  // { provide: HTTP_INTERCEPTORS, useClass: LogInterceptor, multi: true },
   // { provide: HTTP_INTERCEPTORS, useClass: UploadInterceptor, multi: true }
 ];

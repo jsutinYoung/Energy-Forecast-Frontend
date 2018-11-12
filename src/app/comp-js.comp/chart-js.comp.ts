@@ -5,6 +5,14 @@ import * as moment from 'moment';
 
 import { WeeklyDataService } from '../service/weekly-data.service';
 
+enum ChartType {
+  line = 'line',
+  area = 'area',
+  bar = 'bar',
+  stderr = 'stderr',
+  delta = 'delta'
+}
+
 @Component({
   selector: 'app-chart-js',
   templateUrl: './chart-js.comp.html',
@@ -27,22 +35,22 @@ export class ChartComp implements OnInit {
 
   private chart: Chart;
   private xMinMax: { min; max };
-  private isDiffMode = false;
+  // private isDiffMode = false;
   private hasRadius = true;
   private zoomValue = 1;
   private dayPointer: Date;
+  private isUpdate = true;
+  private title = 'NWP Energy Demand';
+  type: ChartType;
 
   constructor(private dataService: WeeklyDataService) {}
 
-  ngOnInit() {
-    // Chart.defaults.global.animation.duration = 100;
-    // Chart.defaults.global.animation.easing = 'linear';
-
+  initConfig(): {} {
     const myoptions = {
       responsive: true,
       title: {
         display: true,
-        text: 'NWP Energy Demand Forecast',
+        text: this.title,
         fontColor: 'white',
         fontSize: 16
       },
@@ -129,8 +137,16 @@ export class ChartComp implements OnInit {
       options: myoptions
     };
 
+    return config;
+  }
+
+  ngOnInit() {
+    // Chart.defaults.global.animation.duration = 100;
+    // Chart.defaults.global.animation.easing = 'linear';
+
     // this.chart = new Chart('canvas', config);
-    this.refresh(config);
+    this.type = ChartType.area;
+    this.refresh(this.initConfig());
 
     // this.chart.config.data = {
     //   labels: this.dataService.getHours(),
@@ -146,6 +162,19 @@ export class ChartComp implements OnInit {
   }
 
   displayLine() {
+    if (this.type === ChartType.line) {
+      return;
+    }
+    const ds = this.chart.config.data.datasets;
+    if (ds.length === 3 || this.type === ChartType.delta) {
+      this.refresh(this.initConfig());
+      this.setMarker(this.hasRadius);
+      this.isUpdate = false;
+      this.zoom = this.zoomValue;
+      this.isUpdate = true;
+    }
+
+    this.type = ChartType.line;
     this.chart.config.data.datasets[0].backgroundColor = '';
     this.chart.config.data.datasets[1].backgroundColor = '';
 
@@ -159,6 +188,19 @@ export class ChartComp implements OnInit {
   }
 
   displayArea() {
+    if (this.type === ChartType.area) {
+      return;
+    }
+
+    const ds = this.chart.config.data.datasets;
+    if (ds.length === 3 || this.type === ChartType.delta) {
+      this.refresh(this.initConfig());
+      this.setMarker(this.hasRadius);
+      this.isUpdate = false;
+      this.zoom = this.zoomValue;
+      this.isUpdate = true;
+    }
+    this.type = ChartType.area;
     this.chart.config.data.datasets[0].backgroundColor = this.fillColor0.backgroundColor;
     this.chart.config.data.datasets[1].backgroundColor = this.fillColor1.backgroundColor;
 
@@ -172,6 +214,19 @@ export class ChartComp implements OnInit {
   }
 
   displayBar() {
+    if (this.type === ChartType.bar) {
+      return;
+    }
+    const ds = this.chart.config.data.datasets;
+    if (ds.length === 3 || this.type === ChartType.delta) {
+      this.refresh(this.initConfig());
+      this.setMarker(this.hasRadius);
+      this.isUpdate = false;
+      this.zoom = this.zoomValue;
+      this.isUpdate = true;
+    }
+
+    this.type = ChartType.bar;
     this.chart.config.data.datasets[0].backgroundColor = this.fillColor0.backgroundColor;
     this.chart.config.data.datasets[1].backgroundColor = this.fillColor1.backgroundColor;
 
@@ -181,7 +236,100 @@ export class ChartComp implements OnInit {
     xAxes[0].gridLines = { color: 'rgba(255,255,255, 0.3)' };
 
     this.chart.config.type = 'bar';
+
+    this.chart.update();
+  }
+
+  displayStdError() {
+    if (this.type === ChartType.stderr) {
+      return;
+    }
+
+    this.chart.config.type = 'line';
+    this.type = ChartType.stderr;
+    const dsLow = this.chart.config.data.datasets[0];
+    this.chart.config.options.title.text =
+      this.title + ' -- Forecast & Std Errors';
+
+    const optionalLegend = {
+      display: true,
+      position: 'bottom',
+      labels: {
+        fontColor: 'white',
+        filter: function(legendItem, chartData) {
+          if (legendItem.datasetIndex === 0) {
+            legendItem.fillStyle = 'rgba(5, 206, 250,0.6)';
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+    };
+
+    this.chart.config.options.legend = optionalLegend;
+
+    dsLow.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    dsLow.borderColor = '';
+    dsLow.data = this.dataService.getLowError();
+    dsLow.label = 'Lower';
+    dsLow.pointRadius = '0';
+
+    const dsHigh = this.chart.config.data.datasets[1];
+    dsHigh.borderColor = '';
+    dsHigh.backgroundColor = 'rgba(175, 176, 180, 0.5)';
+    dsHigh.data = this.dataService.getHighError();
+    dsHigh.label = 'Higher';
+    dsHigh.pointRadius = '0';
+
+    const dsLine = {
+      type: 'line',
+      label: 'Forecast',
+      data: this.dataService.getForecast(),
+      pointRadius: '3',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(77,83,96,1)',
+      backgroundColor: '',
+      borderColor: 'rgba(5, 206, 250,0.8)'
+    };
+
+    const ds = this.chart.config.data.datasets;
+    ds.pop();
+    ds.pop();
+    ds.push(dsLine);
+    ds.push(dsLow);
+    ds.push(dsHigh);
+
     this.refresh();
+  }
+
+  displayDelta() {
+    if (this.type === ChartType.delta) {
+      return;
+    }
+
+    this.type = ChartType.delta;
+    const ds = this.chart.config.data.datasets;
+    if (ds.length === 3) {
+      this.refresh(this.initConfig());
+      // this.setMarker(this.hasRadius);
+      this.isUpdate = false;
+      this.zoom = this.zoomValue;
+      this.isUpdate = true;
+    }
+
+    this.chart.config.options.title.text = this.title + ' -- Delta';
+
+    this.chart.config.type = 'line';
+    const isOn = this.hasRadius ? 3 : 0;
+    this.chart.config.data.datasets[0].data = this.dataService.getZeros();
+    this.chart.config.data.datasets[0].label = 'Relative Baseline';
+    this.chart.config.data.datasets[0].pointRadius = 0;
+    this.chart.config.data.datasets[1].data = this.dataService.getDiff();
+    this.chart.config.data.datasets[1].label = 'Forecast-Baseline';
+    this.chart.config.data.datasets[1].pointRadius = isOn;
+    this.chart.update();
   }
 
   formatLabel(value: number | null) {
@@ -201,7 +349,7 @@ export class ChartComp implements OnInit {
     }
   }
 
-  setXminMax(d1: Date, d2: Date) {
+  setXminMax(d1: Date, d2: Date, isUpdate = true) {
     if (
       d2 > d1 &&
       d1 >= this.dataService.getMinHour() &&
@@ -219,7 +367,10 @@ export class ChartComp implements OnInit {
       this.chart.options.scales.xAxes[0].scaleLabel.labelString = `${m1.format(
         'MM-DD-YYYY h:mm a'
       )}  to  ${m2.format('MM-DD-YYYY h:mm a')}`;
-      this.chart.update();
+
+      if (isUpdate) {
+        this.chart.update();
+      }
     }
   }
 
@@ -271,47 +422,34 @@ export class ChartComp implements OnInit {
     this.setXminMax(d1, d2);
   }
 
-  toggleUseDiffData() {
-    const isOn = this.hasRadius ? 3 : 0;
-    if (this.isDiffMode) {
-      this.chart.config.data.datasets[0].data = this.dataService.getBaseline();
-      this.chart.config.data.datasets[0].label = 'Baseline';
-      this.chart.config.data.datasets[0].pointRadius = isOn;
-      this.chart.config.data.datasets[1].data = this.dataService.getForecast();
-      this.chart.config.data.datasets[1].label = 'Forecast';
-      this.chart.config.data.datasets[1].pointRadius = isOn;
-    } else {
-      this.chart.config.data.datasets[0].data = this.dataService.getZeros();
-      this.chart.config.data.datasets[0].label = 'Baseline at Zero';
-      this.chart.config.data.datasets[0].pointRadius = 0;
-      this.chart.config.data.datasets[1].data = this.dataService.getDiff();
-      this.chart.config.data.datasets[1].label = 'Forecast-Baseline';
-      this.chart.config.data.datasets[1].pointRadius = isOn;
-    }
-    this.isDiffMode = !this.isDiffMode;
-    this.chart.update();
+  toggleMarker() {
+    this.hasRadius = !this.hasRadius;
+    this.setMarker(this.hasRadius);
+    this.refresh();
   }
 
-  toggleMarker(achart?: any) {
-    if (this.hasRadius) {
+  private setMarker(hasRadius: boolean) {
+    if (!hasRadius) {
       this.chart.config.data.datasets[0].pointRadius = 0;
       this.chart.config.data.datasets[1].pointRadius = 0;
     } else {
       this.chart.config.data.datasets[1].pointRadius = 3;
-      if (this.isDiffMode) {
+      if (this.type === ChartType.delta) {
         this.chart.config.data.datasets[0].pointRadius = 0;
       } else {
         this.chart.config.data.datasets[0].pointRadius = 3;
       }
     }
-    this.hasRadius = !this.hasRadius;
-    this.refresh();
   }
 
   randomize() {
+    this.type = ChartType.line;
     this.dataService.randomize();
-    this.isDiffMode = !this.isDiffMode;
-    this.toggleUseDiffData();
+    // this.isDiffMode = !this.isDiffMode;
+    // this.toggleUseDiffData();
+    this.refresh(this.initConfig());
+    this.setMarker(this.hasRadius);
+    this.zoom = this.zoomValue;
   }
 
   private refresh(cfg?: any) {
@@ -376,7 +514,7 @@ export class ChartComp implements OnInit {
           const d1 = this.dayPointer;
           const d2 = new Date(d1);
           d2.setHours(d1.getHours() + 23);
-          this.setXminMax(d1, d2);
+          this.setXminMax(d1, d2, this.isUpdate);
         }
         break;
       case 2:
@@ -384,7 +522,7 @@ export class ChartComp implements OnInit {
           const d1 = this.dayPointer;
           const d2 = new Date(d1);
           d2.setHours(d1.getHours() + 23 + 24);
-          this.setXminMax(d1, d2);
+          this.setXminMax(d1, d2, this.isUpdate);
         }
         break;
       case 3:
@@ -392,17 +530,21 @@ export class ChartComp implements OnInit {
           const d1 = this.dayPointer;
           const d2 = new Date(d1);
           d2.setHours(d1.getHours() + 23 + 3 * 24);
-          this.setXminMax(d1, d2);
+          this.setXminMax(d1, d2, this.isUpdate);
         }
         break;
       case 4:
         {
           const d1 = this.dataService.getMinHour();
           const d2 = this.dataService.getMaxHour();
-          this.setXminMax(d1, d2);
+          this.setXminMax(d1, d2, this.isUpdate);
         }
         break;
     }
     // console.log(this.zoomValue);
+  }
+
+  disableToggleMarker() {
+    return this.type === ChartType.stderr;
   }
 }

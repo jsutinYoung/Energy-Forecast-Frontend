@@ -1,6 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {MatDrawer} from '@angular/material';
 import {Router} from '@angular/router';
+import {OAuthService} from 'angular-oauth2-oidc';
+
 import {AuthService} from '../service/auth.service';
 
 @Component({
@@ -20,7 +22,9 @@ export class Toolbar implements OnInit {
   isDrawerOpen = false;
 
   @Input() drawer: MatDrawer;
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+      private authService: AuthService, private oauthService: OAuthService,
+      private router: Router) {}
 
   ngOnInit() {}
 
@@ -30,7 +34,15 @@ export class Toolbar implements OnInit {
   }
 
   async signOut() {
+    this.logout(true);
+    return;
+    // google firebase version
     const result = this.authService.signOut();
+    this.router.navigate(['/']);
+  }
+
+  async logout(val: boolean) {
+    const result = this.oauthService.logOut(val);
     this.router.navigate(['/']);
   }
 }
