@@ -34,6 +34,8 @@ export class DrawerComp implements OnInit, OnDestroy {
     // this.logger.log('drawerComp OnDestroy');
   }
 
-  onAlert(event: MouseEvent) {}
+  onAlert(event: MouseEvent) {
+    console.log(event);
+  }
   onForecast(event: MouseEvent) {}
 }
