@@ -1,9 +1,10 @@
-import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
-import {WEEK_DATA} from '../data/week_data';
+import { ITabularRow } from '../comp-js.comp/chart-js.comp';
+import { WEEK_DATA } from '../data/week_data';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class WeeklyDataService {
   // weekData: { hour: Date; baseline: number; forecast: number }[] = [];
 
@@ -52,19 +53,28 @@ export class WeeklyDataService {
 
   getHoursText(): string[] {
     return this.hours.map(e => {
-      const month = e.getMonth() + 1;
-      const day = e.getDate();
-      const hour = e.getHours();
-
-      let hourText: string;
-      if (hour > 9) {
-        hourText = `${hour}:00`;
-      } else {
-        hourText = `0${hour}:00`;
-      }
-
-      return `${month}/${day} ${hourText}`;
+      return this.formatDate(e);
     });
+  }
+
+  private formatDate(d: Date, isYear = false) {
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    const hour = d.getHours();
+
+    let hourText: string;
+    if (hour > 9) {
+      hourText = `${hour}:00`;
+    } else {
+      hourText = `0${hour}:00`;
+    }
+
+    if (isYear) {
+      return `${month}/${day}/${year}--${hourText}`;
+    } else {
+      return `${month}/${day}--${hourText}`;
+    }
   }
 
   getForecast(): number[] {
@@ -96,14 +106,14 @@ export class WeeklyDataService {
   getHighError(): number[] {
     return this.forecast.map((e, i) => {
       const f = this.forecast[i];
-      return f + (f * this.stderr[i]);
+      return f + f * this.stderr[i];
     });
   }
 
   getLowError(): number[] {
     return this.forecast.map((e, i) => {
       const f = this.forecast[i];
-      return f - (f * this.stderr[i]);
+      return f - f * this.stderr[i];
     });
   }
 
@@ -120,13 +130,29 @@ export class WeeklyDataService {
     this.baseline = temp2;
 
     this.stderr = this.forecast.map(e => {
-      return (Math.random() / 10.0 + 0.01);
+      return Math.random() / 10.0 + 0.01;
     });
   }
 
   testHttpGet() {
-    this.http.get('http://localhost:4200/assets/dummy.json')
-        .subscribe(
-            response => console.log(response), error => console.log(error));
+    this.http
+      .get('http://localhost:4200/assets/dummy.json')
+      .subscribe(
+        response => console.log(response),
+        error => console.log(error)
+      );
+  }
+
+  getTabularData(startDate: Date): ITabularRow[] {
+    const result = this.forecast.map((e, i) => {
+      return {
+        date: this.formatDate(this.hours[i], true),
+        forecast: parseFloat(e.toFixed(3)),
+        baseline: parseFloat(this.baseline[i].toFixed(3)),
+        stderr: parseFloat((this.stderr[i] * 100).toFixed(2))
+      };
+    });
+
+    return result;
   }
 }

@@ -28,13 +28,10 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 
 // tslint:disable-next-line:component-class-suffix
 export class LoginComp implements OnInit {
-  // username: string;
-  // password: string;
+
   isSigUpOpen = false;
   // oauth
   userProfile: object;
-
-  // showSpinner = true;
 
   emailFormControl =
       new FormControl('', [Validators.required, Validators.email]);

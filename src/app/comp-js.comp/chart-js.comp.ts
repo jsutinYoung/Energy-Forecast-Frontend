@@ -1,4 +1,5 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { Chart } from 'chart.js';
 import _ from 'lodash';
 import * as moment from 'moment';
@@ -13,6 +14,13 @@ enum ChartType {
   delta = 'delta'
 }
 
+export interface ITabularRow {
+  date: string;
+  forecast: number;
+  baseline: number;
+  stderr: number;
+}
+
 @Component({
   selector: 'app-chart-js',
   templateUrl: './chart-js.comp.html',
@@ -21,6 +29,9 @@ enum ChartType {
 
 // tslint:disable-next-line:component-class-suffix
 export class ChartComp implements OnInit {
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   private fillColor0 = {
     backgroundColor: 'rgba(92, 240, 155, 0.6)',
     borderColor: 'rgba(92, 240, 155, 1)',
@@ -42,6 +53,10 @@ export class ChartComp implements OnInit {
   private isUpdate = true;
   private title = 'NWP Energy Demand';
   type: ChartType;
+
+  tabularDataSource: MatTableDataSource<ITabularRow>;
+  displayedColumns: string[] = ['date', 'forecast', 'baseline', 'stderr'];
+  isTableOpen: boolean;
 
   constructor(private dataService: WeeklyDataService) {}
 
@@ -159,6 +174,15 @@ export class ChartComp implements OnInit {
     const d2 = this.dataService.getFirstEndDayHour();
     this.dayPointer = new Date(d1);
     this.setXminMax(d1, d2);
+
+    this.tabularDataSource = new MatTableDataSource(
+      this.dataService.getTabularData(null)
+    );
+    this.tabularDataSource.sort = this.sort;
+    this.tabularDataSource.paginator = this.paginator;
+  }
+  applyFilter(filterValue: string) {
+    this.tabularDataSource.filter = filterValue.trim().toLowerCase();
   }
 
   displayLine() {
@@ -546,5 +570,14 @@ export class ChartComp implements OnInit {
 
   disableToggleMarker() {
     return this.type === ChartType.stderr;
+  }
+
+  reFetchTabularData(startDay: Date) {
+    // need more logic
+    if (this.tabularDataSource.data.length === 0) {
+      this.tabularDataSource = new MatTableDataSource(
+        this.dataService.getTabularData(startDay)
+      );
+    }
   }
 }

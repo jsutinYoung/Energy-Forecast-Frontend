@@ -23,7 +23,10 @@ import {
   MatSnackBarModule,
   MatTabsModule,
   MatToolbarModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatTableModule,
+  MatSortModule,
+  MatPaginatorModule,
 } from '@angular/material';
 import {
   ErrorStateMatcher,
@@ -92,6 +95,9 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     MatExpansionModule,
     MatButtonToggleModule,
     MatSliderModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
     Ng4LoadingSpinnerModule.forRoot(),
     OAuthModule.forRoot({
       resourceServer: {
