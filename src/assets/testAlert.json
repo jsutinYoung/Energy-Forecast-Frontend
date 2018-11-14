@@ -1,0 +1,142 @@
+[
+  {
+    "id": "1",
+    "type": "urgent",
+    "time": "1542161785356",
+    "title": "Extremely dangerous",
+    "message": "Hi, John please take a look at this. It is very important"
+  },
+  {
+    "id": "2",
+    "type": "warning",
+    "time": "1542161875739",
+    "title": "Abnormal weather",
+    "message": "Tomorrow is going to be nasty, it may snow"
+  },
+  {
+    "id": "3",
+    "type": "announcement",
+    "time": "1542161954549",
+    "title": "Friday celerbration",
+    "message": "Remember to bring your spouse, but leave your kids and pets at home"
+  },
+  {
+    "id": "4",
+    "type": "info",
+    "time": "1542162039618",
+    "title": "Info FYI",
+    "message": "Tomorrow is a public Holiday, the demand of electricity will go down"
+  },
+  {
+    "id": "1",
+    "type": "urgent",
+    "time": "1542161785356",
+    "title": "2 Extremely dangerous",
+    "message": "Hi, John please take a look at this. It is very important"
+  },
+  {
+    "id": "2",
+    "type": "warning",
+    "time": "1542161875739",
+    "title": "2 Abnormal weather",
+    "message": "Tomorrow is going to be nasty, it may snow"
+  },
+  {
+    "id": "3",
+    "type": "announcement",
+    "time": "1542161954549",
+    "title": "2 Friday celerbration",
+    "message": "Remember to bring your spouse, but leave your kids and pets at home"
+  },
+  {
+    "id": "4",
+    "type": "info",
+    "time": "1542162039618",
+    "title": "2 Info FYI",
+    "message": "Tomorrow is a public Holiday, the demand of electricity will go down"
+  },
+  {
+    "id": "1",
+    "type": "urgent",
+    "time": "1542161785356",
+    "title": "3 Extremely dangerous",
+    "message": "Hi, John please take a look at this. It is very important"
+  },
+  {
+    "id": "2",
+    "type": "warning",
+    "time": "1542161875739",
+    "title": "3 Abnormal weather",
+    "message": "Tomorrow is going to be nasty, it may snow"
+  },
+  {
+    "id": "3",
+    "type": "announcement",
+    "time": "1542161954549",
+    "title": "3 Friday celerbration",
+    "message": "Remember to bring your spouse, but leave your kids and pets at home"
+  },
+  {
+    "id": "4",
+    "type": "info",
+    "time": "1542162039618",
+    "title": "3 Info FYI",
+    "message": "Tomorrow is a public Holiday, the demand of electricity will go down"
+  },
+  {
+    "id": "1",
+    "type": "urgent",
+    "time": "1542161785356",
+    "title": "4 Extremely dangerous",
+    "message": "Hi, John please take a look at this. It is very important"
+  },
+  {
+    "id": "2",
+    "type": "warning",
+    "time": "1542161875739",
+    "title": "4 Abnormal weather",
+    "message": "Tomorrow is going to be nasty, it may snow"
+  },
+  {
+    "id": "3",
+    "type": "announcement",
+    "time": "1542161954549",
+    "title": "4 Friday celerbration",
+    "message": "Remember to bring your spouse, but leave your kids and pets at home"
+  },
+  {
+    "id": "4",
+    "type": "info",
+    "time": "1542162039618",
+    "title": "4 Info FYI",
+    "message": "Tomorrow is a public Holiday, the demand of electricity will go down"
+  },
+  {
+    "id": "1",
+    "type": "urgent",
+    "time": "1542161785356",
+    "title": "5 Extremely dangerous",
+    "message": "Hi, John please take a look at this. It is very important"
+  },
+  {
+    "id": "2",
+    "type": "warning",
+    "time": "1542161875739",
+    "title": "5 Abnormal weather",
+    "message": "Tomorrow is going to be nasty, it may snow"
+  },
+  {
+    "id": "3",
+    "type": "announcement",
+    "time": "1542161954549",
+    "title": "5 Friday celerbration",
+    "message": "Remember to bring your spouse, but leave your kids and pets at home"
+  },
+  {
+    "id": "4",
+    "type": "info",
+    "time": "1542162039618",
+    "title": "5 Info FYI",
+    "message": "Tomorrow is a public Holiday, the demand of electricity will go down"
+  }
+]

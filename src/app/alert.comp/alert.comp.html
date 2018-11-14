@@ -1,0 +1,37 @@
+<mat-toolbar class='fixed-header mat-elevation-z6'>
+  <span>Alerts</span>
+  <span class="eft-spacer"></span>
+
+  <button matTooltip="refresh" mat-icon-button (click)="refetch()">
+    <mat-icon>autorenew</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-paginator class="mat-elevation-z8 mytable" [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons></mat-paginator>
+<mat-table mat-table [dataSource]="tabularDataSource" class="mat-elevation-z8 mytable" matSort>
+  <!-- type Column -->
+  <ng-container matColumnDef="type">
+    <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+    <mat-cell class="my-mat-cell" *matCellDef="let element" [ngSwitch]="element.type">
+      <i style="color:red" *ngSwitchCase="'urgent'" class="fas fa-exclamation-triangle mat-icon"></i>
+      <i style="color:rgb(0, 195, 255)" *ngSwitchCase="'info'" class="fas fa-info-circle mat-icon"></i>
+      <i *ngSwitchCase="'announcement'" class="fas fa-bullhorn mat-icon"></i>
+      <i style="color:yellow" *ngSwitchCase="'warning'" class="fas fa-exclamation mat-icon"></i>
+    </mat-cell>
+  </ng-container>
+
+  <!-- title Column -->
+  <ng-container matColumnDef="title">
+    <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header>Title</mat-header-cell>
+    <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.title | eft_alert_shortener:'title' }}</mat-cell>
+  </ng-container>
+
+  <!-- message Column -->
+  <ng-container matColumnDef="message">
+    <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef>Message</mat-header-cell>
+    <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.message | eft_alert_shortener}}</mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+  <mat-row class="my-mat-row" *matRowDef="let row; columns: displayedColumns"></mat-row>
+</mat-table>

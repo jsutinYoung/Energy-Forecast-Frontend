@@ -1,0 +1,36 @@
+.mytable {
+  width: 100%;
+}
+
+.my-mat-header-cell {
+  font-size: 0.75em
+}
+
+.my-mat-row {
+  min-height: 100%;
+}
+
+.my-mat-cell {
+  font-size: 0.75em;
+  min-height: 100%;
+}
+
+.mat-column-type {
+  flex: 0 0 50px;
+}
+
+.mat-column-title {
+  flex: 0 0 12em;
+}
+
+.eft-spacer {
+  flex: 1 1 auto;
+}
+
+.mat-toolbar.mat-primary{
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 9;
+}
