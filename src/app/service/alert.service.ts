@@ -1,4 +1,7 @@
 import {EventEmitter, Injectable} from '@angular/core';
+// const fakeAlertsJson = require('../../assets/testAlert.json');
+import * as fakeAlertsJson from '../../assets/testAlert.json';
+
 
 // @Injectable({ providedIn: 'root' })
 
@@ -6,45 +9,30 @@ enum AlertType {
   urgent = 'urgent',
   warning = 'warning',
   announcement = 'announcement',
-  info = 'info',
+  info = 'info'
 }
 
-interface AlertData {
+export interface IAlertData {
   type: AlertType;
+  id: string;
+  time: string;
+  title: string;
   message: string;
 }
 
 export class AlertService {
-  notifier = new EventEmitter<AlertData>();
+  notifier = new EventEmitter<IAlertData>();
 
-  private list: AlertData[] = [
-    {type: AlertType.urgent, message: 'Extremely dangerous'},
-    {type: AlertType.warning, message: 'Abnormal weather'},
-    {type: AlertType.announcement, message: 'Friday celerbration'},
-    {type: AlertType.info, message: 'Info FYI'},
-  ];
+  private list: IAlertData[] = fakeAlertsJson.default;
 
-  constructor() {}
+  constructor() {
+  }
 
-  get(): AlertData[] {
+  get(): IAlertData[] {
     return this.list;
   }
 
-  add(alert: AlertData) {
+  add(alert: IAlertData) {
     this.notifier.emit(alert);
   }
-
-  // getColor(type: string) {
-  //   switch (type) {
-  //     case 'urgent':
-  //       return 'warn';
-  //     case 'warning':
-  //       return 'orange';
-  //     case 'annoucement':
-  //       return 'primary';
-  //     case 'info':
-  //       'accent';
-  //       return;
-  //   }
-  // }
 }

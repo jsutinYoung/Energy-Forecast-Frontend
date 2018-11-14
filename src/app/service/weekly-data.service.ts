@@ -47,8 +47,12 @@ export class WeeklyDataService {
     return this.hours[this.hours.length - 1];
   }
 
-  getFirstEndDayHour(): Date {
+  get24Hour(): Date {
     return this.hours[23];
+  }
+
+  ge48Hour(): Date {
+    return this.hours[47];
   }
 
   getHoursText(): string[] {

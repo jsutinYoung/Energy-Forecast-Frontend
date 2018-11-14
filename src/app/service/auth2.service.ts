@@ -1,6 +1,6 @@
-import {HttpClient} from '@angular/common/http';
-import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
@@ -8,10 +8,10 @@ import { catchError, retry } from 'rxjs/operators';
 export interface Credential {
   email: string;
   password: string;
+  token: string;
 }
 
-@Injectable({providedIn: 'root'})
-
+@Injectable({ providedIn: 'root' })
 export class Auth2Service {
   private token = '';
   private configUrl = 'assets/config.json';
@@ -31,13 +31,13 @@ export class Auth2Service {
     try {
       this.token = '';
 
-      const result = await this.http.get<Credential>(this.configUrl)
-                    .pipe(
-                        retry(3),  // retry a failed request up to 3 times
-                        catchError(this.handleError)  // then handle the error
-                    );
+      const result = await this.http.get<Credential>(this.configUrl).pipe(
+        retry(3), // retry a failed request up to 3 times
+        catchError(this.handleError) // then handle the error
+      );
 
-
+      await this.stall();
+      console.log('Fake login');
       // return result.toPromise(true);
       return true;
     } catch (error) {
@@ -57,13 +57,16 @@ export class Auth2Service {
     }
   }
 
-
-  isAuthenticated(): Promise<boolean>|boolean {
+  isAuthenticated(): Promise<boolean> | boolean {
     return this.token !== '';
   }
 
   getToken() {
     return this.token;
+  }
+
+  private async stall(stallTime = 3000) {
+    await new Promise(resolve => setTimeout(resolve, stallTime));
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -74,8 +77,8 @@ export class Auth2Service {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong,
       console.error(
-          `Backend returned code ${error.status}, ` +
-          `body was: ${error.error}`);
+        `Backend returned code ${error.status}, ` + `body was: ${error.error}`
+      );
     }
     // return an observable with a user-facing error message
     return throwError('Something bad happened; please try again later.');

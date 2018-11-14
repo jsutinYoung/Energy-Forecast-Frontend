@@ -17,16 +17,16 @@ import {
   MatListModule,
   MatMenuModule,
   MatNativeDateModule,
+  MatPaginatorModule,
   MatProgressSpinnerModule,
   MatSidenavModule,
   MatSliderModule,
   MatSnackBarModule,
+  MatSortModule,
+  MatTableModule,
   MatTabsModule,
   MatToolbarModule,
-  MatTooltipModule,
-  MatTableModule,
-  MatSortModule,
-  MatPaginatorModule,
+  MatTooltipModule
 } from '@angular/material';
 import {
   ErrorStateMatcher,
@@ -37,17 +37,17 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 
+import { AlertComp } from './alert.comp/alert.comp';
 import { AppRoutingModule } from './app-route.module';
 import { AppComponent } from './app.component';
 import { ChartComp } from './comp-js.comp/chart-js.comp';
 import { DashComp } from './dash.comp/dash.comp';
 import { DownloaderComp } from './downloder/downloader.comp';
-import { DrawerComp } from './drawer.comp/drawer.comp';
 import { DummyComp } from './dummy.comp/dummy.comp';
 import { ErrorPageComp } from './error-page.comp/error-page.comp';
 import { MyHttpInterceptorProviders } from './interceptor/interceptor-list';
 import { LoginComp } from './login.comp/login.comp';
-import { AlertNamePipe } from './pipe/alert-name.pipe';
+import { AlertShortenerPipe } from './pipe/alert-shortener.pipe';
 import { AlertService } from './service/alert.service';
 import { Toolbar } from './toolbar.comp/toolbar.comp';
 import { UploaderComp } from './uploader.comp/uploader.comp';
@@ -56,10 +56,10 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
   declarations: [
     AppComponent,
     Toolbar,
-    DrawerComp,
+    AlertComp,
     LoginComp,
     ChartComp,
-    AlertNamePipe,
+    AlertShortenerPipe,
     ErrorPageComp,
     DummyComp,
     LoginComp,

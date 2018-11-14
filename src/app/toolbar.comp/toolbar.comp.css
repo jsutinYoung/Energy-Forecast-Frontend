@@ -3,7 +3,7 @@
 }
 
 .eft-fixed-header {
-  /* top: 0;
+  top: 5;
   position: fixed;
-  z-index: 999; */
+  z-index: 999;
 }
