@@ -3,7 +3,7 @@
 }
 
 .my-mat-header-cell {
-  font-size: 0.75em
+  font-size: 0.75em;
 }
 
 .my-mat-row {
@@ -17,6 +17,7 @@
 
 .mat-column-type {
   flex: 0 0 50px;
+  text-align: center;
 }
 
 .mat-column-title {
@@ -27,7 +28,7 @@
   flex: 1 1 auto;
 }
 
-.mat-toolbar.mat-primary{
+.mat-toolbar.mat-primary {
   position: fixed;
   top: 0;
   right: 0;

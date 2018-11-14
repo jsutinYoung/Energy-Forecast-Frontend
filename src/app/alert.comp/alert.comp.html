@@ -2,6 +2,12 @@
   <span>Alerts</span>
   <span class="eft-spacer"></span>
 
+
+  <mat-form-field [style.fontSize]="'12px'">
+    <input matInput (keyup)="applyFilter($event.target.value)" (click)=$event.stopPropagation() placeholder="Search">
+  </mat-form-field>
+
+
   <button matTooltip="refresh" mat-icon-button (click)="refetch()">
     <mat-icon>autorenew</mat-icon>
   </button>
@@ -12,14 +18,16 @@
   <!-- type Column -->
   <ng-container matColumnDef="type">
     <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
-    <mat-cell class="my-mat-cell" *matCellDef="let element" [ngSwitch]="element.type">
-      <i style="color:red" *ngSwitchCase="'urgent'" class="fas fa-exclamation-triangle mat-icon"></i>
+    <mat-cell class="my-mat-cell" *matCellDef="let element" [ngSwitch]="element.type" >
+      <i style="color:red" *ngSwitchCase="'urgent'" class="fa fa-bell mat-icon"></i>
       <i style="color:rgb(0, 195, 255)" *ngSwitchCase="'info'" class="fas fa-info-circle mat-icon"></i>
       <i *ngSwitchCase="'announcement'" class="fas fa-bullhorn mat-icon"></i>
-      <i style="color:yellow" *ngSwitchCase="'warning'" class="fas fa-exclamation mat-icon"></i>
+      <i style="color:yellow" *ngSwitchCase="'warning'" class="fas fa-exclamation-triangle mat-icon"></i>
     </mat-cell>
   </ng-container>
 
+  <!-- fa-bolt -->
+  <!-- fas fa-exclamation-triangle -->
   <!-- title Column -->
   <ng-container matColumnDef="title">
     <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header>Title</mat-header-cell>
@@ -33,5 +41,5 @@
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-  <mat-row class="my-mat-row" *matRowDef="let row; columns: displayedColumns"></mat-row>
+  <mat-row class="my-mat-row" *matRowDef="let row; columns: displayedColumns" (click)="onSelectRow(row, $event)"></mat-row>
 </mat-table>

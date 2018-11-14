@@ -10,6 +10,7 @@ import {
   MatButtonToggleModule,
   MatCardModule,
   MatDatepickerModule,
+  MatDialogModule,
   MatExpansionModule,
   MatFormFieldModule,
   MatIconModule,
@@ -34,10 +35,10 @@ import {
 } from '@angular/material/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { OAuthModule } from 'angular-oauth2-oidc';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 
 import { AlertComp } from './alert.comp/alert.comp';
+import { AlertDialog } from './alert.dialog/alert.dialog';
 import { AppRoutingModule } from './app-route.module';
 import { AppComponent } from './app.component';
 import { ChartComp } from './comp-js.comp/chart-js.comp';
@@ -65,7 +66,8 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     LoginComp,
     DashComp,
     UploaderComp,
-    DownloaderComp
+    DownloaderComp,
+    AlertDialog
   ],
   imports: [
     BrowserModule,
@@ -98,13 +100,8 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    Ng4LoadingSpinnerModule.forRoot(),
-    OAuthModule.forRoot({
-      resourceServer: {
-        allowedUrls: ['http://www.angular.at/api'],
-        sendAccessToken: true
-      }
-    })
+    MatDialogModule,
+    Ng4LoadingSpinnerModule.forRoot()
   ],
   // or @Injectable({ providedIn: 'root' })
   providers: [
@@ -112,7 +109,7 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
     MyHttpInterceptorProviders
   ],
-
+  entryComponents: [AlertDialog],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

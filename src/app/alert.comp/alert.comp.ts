@@ -1,7 +1,9 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import {Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
 
-import { AlertService, IAlertData } from '../service/alert.service';
+import {AlertDialog} from '../alert.dialog/alert.dialog';
+import {AlertService, IAlertData} from '../service/alert.service';
 
 @Component({
   selector: 'app-alert',
@@ -17,14 +19,13 @@ export class AlertComp implements OnInit, OnDestroy {
   tabularDataSource: MatTableDataSource<IAlertData>;
   displayedColumns: string[] = ['type', 'title', 'message'];
 
-  constructor(public alertService: AlertService) {
+  currentAlert: IAlertData;
 
-  }
+  constructor(public alertService: AlertService, public dialog: MatDialog) {}
 
   ngOnInit() {
-    this.tabularDataSource = new MatTableDataSource<IAlertData>(
-      this.alertService.get()
-    );
+    this.tabularDataSource =
+        new MatTableDataSource<IAlertData>(this.alertService.get());
 
     this.tabularDataSource.sort = this.sort;
     this.tabularDataSource.paginator = this.paginator;
@@ -32,9 +33,27 @@ export class AlertComp implements OnInit, OnDestroy {
 
   ngOnDestroy() {}
 
-  onAlert(event: MouseEvent) {
-    console.log(event);
+  refetch() {}
+
+  applyFilter(filterValue: string) {
+    this.tabularDataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  refetch() {}
+  onSelectRow(row, event) {
+    if (row) {
+      this.openDialog(row, event.clientX, event.clientY);
+    }
+  }
+
+  openDialog(row: IAlertData, x, y): void {
+    const dialogRef =
+        this.dialog.open(AlertDialog, {maxWidth: '300px', data: row});
+
+    dialogRef.updatePosition({top: y + 'px', left: x + 'px'});
+    dialogRef.afterClosed().subscribe(result => {
+      // console.log('The dialog was closed');
+      console.log(result);
+      // this.id = result;
+    });
+  }
 }

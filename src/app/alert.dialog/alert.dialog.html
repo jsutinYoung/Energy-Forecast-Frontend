@@ -1,0 +1,16 @@
+<div  mat-dialog-title [ngSwitch]="data.type">
+  <i style="color:red" *ngSwitchCase="'urgent'" class="fa fa-bell mat-icon"></i>
+  <i style="color:rgb(0, 195, 255)" *ngSwitchCase="'info'" class="fas fa-info-circle mat-icon"></i>
+  <i *ngSwitchCase="'announcement'" class="fas fa-bullhorn mat-icon"></i>
+  <i style="color:yellow" *ngSwitchCase="'warning'" class="fas fa-exclamation-triangle mat-icon"></i>
+  {{data.title}}
+</div>
+<mat-divider></mat-divider>
+<div mat-dialog-content>
+  <p>{{data.message}}</p>
+</div>
+<mat-divider></mat-divider>
+<div mat-dialog-actions>
+  <button mat-button (click)="onDismiss()">Dismiss</button>
+  <button mat-button [mat-dialog-close]="data.id" cdkFocusInitial>Delete</button>
+</div>
