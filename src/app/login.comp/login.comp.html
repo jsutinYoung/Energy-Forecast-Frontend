@@ -8,7 +8,7 @@
     <mat-card-subtitle>WSU Keystone Project</mat-card-subtitle>
   </mat-card-header>
 
-  <mat-card-content fxFlexAlign="center" fxFlex="400px">
+  <mat-card-content fxFlexAlign="center" fxFlex="380px">
 
     <div class="form" fxLayout='column' fxLayoutAlign="center stretch">
 
@@ -23,7 +23,7 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field fxFlex="40px" class="form-field">
+      <mat-form-field fxFlex="120px" class="form-field">
         <!-- <input matInput  placeholder="Password" [(ngModel)]="password" type="password" name="password" required> -->
         <input #pass matInput placeholder="Password" [formControl]="passFormControl" type="password" name="password"
           [maxLength]="'18'">
@@ -39,7 +39,7 @@
         </mat-error> -->
       </mat-form-field>
 
-      <mat-accordion fxFlex="" class="form-field3">
+      <!-- <mat-accordion fxFlex="" class="form-field3">
         <mat-expansion-panel #exp class="form-field3" (opened)="isSigUpOpen = true" (closed)="isSigUpOpen = false">
           <mat-expansion-panel-header>
             <mat-panel-description>
@@ -58,13 +58,12 @@
             </mat-error>
           </mat-form-field>
         </mat-expansion-panel>
-      </mat-accordion>
+      </mat-accordion> -->
 
     </div>
   </mat-card-content>
   <mat-card-actions fxFlexAlign="center">
-    <button mat-fab [disabled]="isOK()" color="primary" (click)="signInUp(userid.value,pass.value,pass2.value);exp.expanded=false">{{isSigUpOpen
-      ? 'Register' : 'Sign In'}}</button>
+    <button mat-fab [disabled]="isOK()" color="primary" (click)="signIn(userid.value,pass.value)">Sign In</button>
     <!-- <button mat-raised-button (click)="login()" color="primary">Sign In</button> -->
   </mat-card-actions>
 </mat-card>

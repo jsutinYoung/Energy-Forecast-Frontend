@@ -1,0 +1,86 @@
+<mat-card fxLayout="column" fxLayoutAlign="start stretch">
+  <mat-card-header> <mat-card-title>Register User</mat-card-title> </mat-card-header>
+
+  <mat-card-content
+    fxFlexAlign="center"
+    fxFlex="380px"
+    class="form"
+    fxLayout="column"
+    fxLayoutAlign="center stretch"
+  >
+    <mat-form-field class="form-field">
+      <mat-select #userType placeholder="User Type" [value]="userTypes[0]">
+        <mat-option *ngFor="let type of userTypes" [value]="type"> {{ type }} </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field fxFlex="" class="form-field">
+      <input #userid matInput mdc-text-field placeholder="Email" [formControl]="emailFormControl" />
+      <mat-hint>e.g. justin@wsu.edu</mat-hint>
+      <mat-error
+        *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')"
+      >
+        Please enter a valid email address
+      </mat-error>
+      <mat-error *ngIf="emailFormControl.hasError('required')">
+        Email is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field fxFlex="" class="form-field">
+      <input
+        #pass
+        matInput
+        placeholder="Password"
+        [formControl]="passFormControl"
+        type="password"
+        name="password"
+        [maxLength]="'18'"
+      />
+      <mat-hint>6 to 18 characters</mat-hint>
+      <mat-error *ngIf="passFormControl.hasError('required')">
+        Password is <strong>required</strong>
+      </mat-error>
+      <mat-error *ngIf="passFormControl.hasError('minlength')">
+        Minimum length must &gt;= <strong>6</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+      <input
+        #pass2
+        matInput
+        placeholder="Retype password"
+        [formControl]="passFormControl2"
+        type="password"
+        name="password2"
+        [maxLength]="'18'"
+      />
+      <mat-hint>6 to 18 characters</mat-hint>
+      <mat-error *ngIf="passFormControl2.hasError('required')">
+        Password is <strong>required</strong>
+      </mat-error>
+      <mat-error *ngIf="passFormControl2.hasError('minlength')">
+        Minimum length must &gt;= <strong>6</strong>
+      </mat-error>
+    </mat-form-field>
+  </mat-card-content>
+
+  <mat-card-actions fxFlexAlign="center" fxFlex="10px">
+    <button  mat-button (click)="onDismiss()">Cancel</button>
+    <button
+      mat-button
+      [disabled]="isOK()"
+      (click)="
+        onDone({
+          type: userType.value,
+          user: userid.value,
+          pass: pass.value,
+          pass2: pass2.value
+        })
+      "
+    >
+      Register
+    </button>
+  </mat-card-actions>
+</mat-card>

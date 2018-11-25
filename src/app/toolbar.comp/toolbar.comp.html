@@ -1,4 +1,4 @@
-<mat-toolbar color="primary" class='eft-fixed-header mat-elevation-z6' >
+<mat-toolbar color="primary" class="eft-fixed-header mat-elevation-z6">
   <button mat-icon-button matTooltip="toggle alert" (click)="toggleDrawer()">
     <mat-icon *ngIf="!isDrawerOpen">chevron_right</mat-icon>
     <mat-icon *ngIf="isDrawerOpen">chevron_left</mat-icon>
@@ -7,34 +7,34 @@
   <!-- <button mat-icon-button [matMenuTriggerFor]="menu"> -->
   <!-- (click)="drawer.toggle()" -->
   <mat-menu #menu="matMenu" [overlapTrigger]="false">
-        <button mat-menu-item>
-          <!-- <mat-icon>home</mat-icon> -->
-          <span>Edit Profile</span>
-        </button>
-        <button mat-menu-item>
-          <!-- <mat-icon>people_outline</mat-icon> -->
-          <span>Manage Setting</span>
-        </button>
-      </mat-menu>
+    <button mat-menu-item>
+      <!-- <mat-icon>home</mat-icon> -->
+      <span (click)="registerUserDialog()">Register User</span>
+    </button>
 
-  <span class="eft-spacer"></span>
-  <span class="eft-spacer">Energy Forecast Tool</span>
+    <button mat-menu-item>
+      <!-- <mat-icon>home</mat-icon> -->
+      <span>Edit Profile</span>
+    </button>
+    <button mat-menu-item>
+      <!-- <mat-icon>people_outline</mat-icon> -->
+      <span>Manage Setting</span>
+    </button>
+  </mat-menu>
 
-  <!-- <button mat-icon-button matTooltip="analyze forecast">
-    <mat-icon>insert_chart</mat-icon>
-  </button> -->
+  <span class="eft-spacer"></span> <span class="eft-spacer">Energy Forecast Tool</span>
 
-  <button mat-icon-button matTooltip="Upload data for ML">
-    <mat-icon>cloud_upload</mat-icon>
-  </button>
+  <!--
+    <button mat-icon-button matTooltip="analyze forecast">
+      <mat-icon>insert_chart</mat-icon>
+    </button>
+  -->
 
-  <button mat-icon-button matTooltip="Download CSV">
-    <mat-icon>cloud_download</mat-icon>
-  </button>
+  <button mat-icon-button matTooltip="Upload data for ML"><mat-icon>cloud_upload</mat-icon></button>
 
-  <button mat-icon-button matTooltip="Help topics">
-    <mat-icon>help</mat-icon>
-  </button>
+  <button mat-icon-button matTooltip="Download CSV"><mat-icon>cloud_download</mat-icon></button>
+
+  <button mat-icon-button matTooltip="Help topics"><mat-icon>help</mat-icon></button>
 
   <button mat-icon-button matTooltip="User" [matMenuTriggerFor]="menu">
     <mat-icon>account_circle</mat-icon>

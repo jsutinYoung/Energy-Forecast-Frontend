@@ -1,7 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {MatDrawer} from '@angular/material';
-import {Router} from '@angular/router';
-import {AuthService} from '../service/auth.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { MatDrawer } from '@angular/material';
+import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
+
+import { RegisterComp } from '../register.comp/register.comp';
+import { AuthService } from '../service/auth.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -20,7 +23,11 @@ export class Toolbar implements OnInit {
   isDrawerOpen = false;
 
   @Input() drawer: MatDrawer;
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {}
 
@@ -32,5 +39,20 @@ export class Toolbar implements OnInit {
   async signOut() {
     this.authService.signOut();
     this.router.navigate(['/']);
+  }
+
+  registerUserDialog(): void {
+    const dialogRef = this.dialog.open(RegisterComp, {
+      maxWidth: 520,
+      data: ''
+    });
+
+    // dialogRef.updatePosition({top: y + 'px', left: x + 'px'});
+    dialogRef.afterClosed().subscribe(result => {
+      // if (result) {
+      //   const { type, user, pass, pass2, ref } = result;
+      //   (<RegisterComp>ref).onDone({ type, user, pass, pass2 });
+      // }
+    });
   }
 }

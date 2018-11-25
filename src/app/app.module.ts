@@ -28,7 +28,8 @@ import {
   MatTableModule,
   MatTabsModule,
   MatToolbarModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatSelectModule
 } from '@angular/material';
 import {
   ErrorStateMatcher,
@@ -49,6 +50,7 @@ import { DummyComp } from './dummy.comp/dummy.comp';
 import { ErrorPageComp } from './error-page.comp/error-page.comp';
 import { MyHttpInterceptorProviders } from './interceptor/interceptor-list';
 import { LoginComp } from './login.comp/login.comp';
+import { RegisterComp } from './register.comp/register.comp';
 import { AlertShortenerPipe } from './pipe/alert-shortener.pipe';
 import { AlertService } from './service/alert.service';
 import { Toolbar } from './toolbar.comp/toolbar.comp';
@@ -65,6 +67,7 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     ErrorPageComp,
     DummyComp,
     LoginComp,
+    RegisterComp,
     DashComp,
     UploaderComp,
     DownloaderComp,
@@ -102,6 +105,7 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     MatSortModule,
     MatPaginatorModule,
     MatDialogModule,
+    MatSelectModule,
     StorageServiceModule,
     Ng4LoadingSpinnerModule.forRoot()
   ],
@@ -111,7 +115,7 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
     MyHttpInterceptorProviders
   ],
-  entryComponents: [AlertDialog],
+  entryComponents: [AlertDialog, RegisterComp],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
