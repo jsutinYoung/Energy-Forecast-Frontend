@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { StorageServiceModule } from 'angular-webstorage-service';
 import {
   MatAutocompleteModule,
   MatButtonModule,
@@ -101,6 +102,7 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     MatSortModule,
     MatPaginatorModule,
     MatDialogModule,
+    StorageServiceModule,
     Ng4LoadingSpinnerModule.forRoot()
   ],
   // or @Injectable({ providedIn: 'root' })

@@ -6,7 +6,7 @@ import {Router} from '@angular/router';
 // import {OAuthService} from 'angular-oauth2-oidc';
 import {Ng4LoadingSpinnerService} from 'ng4-loading-spinner';
 
-import {Auth2Service} from '../service/auth2.service';
+import {AuthService} from '../service/auth.service';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -48,7 +48,7 @@ export class LoginComp implements OnInit {
   matcher = new MyErrorStateMatcher();
 
   constructor(
-      private authService: Auth2Service, private router: Router,
+      private authService: AuthService, private router: Router,
       private snackBar: MatSnackBar,
       private spinnerService: Ng4LoadingSpinnerService) {
     // this.passFormControl.valueChanges.subscribe(
@@ -67,17 +67,18 @@ export class LoginComp implements OnInit {
           this.openSnackBar('Register failed', 'verify password!');
         } else {
           this.spinnerService.show();
-          const ok = await this.authService.signupUser(email, password);
-          if (ok) {
+          const {status, description} =
+              await this.authService.signupUser(email, password);
+          if (status === true) {
             this.openSnackBar('Register succeeded', 'Re-login.');
             this.spinnerService.hide();
           } else {
-            this.openSnackBar('Register failed User conflict.', 'Re-try!');
+            this.openSnackBar('Registration failed.', description);
           }
         }
       } catch (error) {
-        console.log('Register failed' + error);
-        this.openSnackBar('Register failed', 'Exception!');
+        // console.log('Register failed' + error);
+        this.openSnackBar('Registration failed', error);
       }
     } else {
       this.login(email, password);
@@ -102,16 +103,17 @@ export class LoginComp implements OnInit {
   async login(email: string, password: string) {
     try {
       this.spinnerService.show();
-      const ok = await this.authService.signIn(email, password);
-      if (ok) {
+      const {status, description} =
+          await this.authService.signIn(email, password);
+      if (status === true) {
         this.router.navigate(['/dash']);
         this.spinnerService.hide();
       } else {
-        this.openSnackBar('Signed in failed', 'Wrong user/password!');
+        this.openSnackBar('Signed in failed', description);
       }
     } catch (error) {
-      this.openSnackBar('Signed in failed', 'Exception!');
-      console.log('sign in user failed:' + error);
+      this.openSnackBar('Signed in failed', error);
+      // console.log('sign in user failed:' + error);
     }
   }
 }

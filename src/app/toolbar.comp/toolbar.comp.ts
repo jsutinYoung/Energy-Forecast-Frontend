@@ -20,9 +20,7 @@ export class Toolbar implements OnInit {
   isDrawerOpen = false;
 
   @Input() drawer: MatDrawer;
-  constructor(
-      private authService: AuthService,
-      private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {}
 
@@ -32,7 +30,7 @@ export class Toolbar implements OnInit {
   }
 
   async signOut() {
-    const result = this.authService.signOut();
+    this.authService.signOut();
     this.router.navigate(['/']);
   }
 }
