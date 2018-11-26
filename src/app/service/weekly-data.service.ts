@@ -22,8 +22,9 @@ export class WeeklyDataService {
   @Output() dataChange = new EventEmitter<{status, description}>();
 
   constructor(private http: HttpClient, private auth: AuthService) {
-
-    this.fetchWeeklyData(new Date());
+    // a hack to make the data works.
+    const d = moment(new Date()).subtract(1, 'day').toDate();
+    this.fetchWeeklyData(d);
   }
 
   fillDefaultData(date: Date) {
@@ -153,11 +154,9 @@ export class WeeklyDataService {
         Token: 'Bearer ' + this.auth.getToken()
       });
 
-      const begin =
-          moment(date).startOf('week').format('YYYY-MM-DD');
+      const begin = moment(date).startOf('week').format('YYYY-MM-DD');
 
-      const end =
-          moment(date).endOf('week').format('YYYY-MM-DD');
+      const end = moment(date).endOf('week').format('YYYY-MM-DD');
 
       const modifiedURL =
           this.URL + '?start=' + begin + 'T00:00:00&end=' + end + 'T23:00:00';

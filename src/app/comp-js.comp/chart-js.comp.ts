@@ -117,7 +117,7 @@ export class ChartComp implements OnInit {
     };
 
     let dataset0 = {
-      label: 'Baseline',
+      label: 'Actual',
       data: isLoadData ? this.dataService.getBaseline() : [],
       pointRadius: 3,
 
@@ -150,15 +150,15 @@ export class ChartComp implements OnInit {
   }
 
   ngOnInit() {
+    this.spinnerService.show();
     this.dataService.dataChange.subscribe(result => {
       if (result.status === true) {
         this.reDrawChart();
       } else {
         this.openSnackBar('Fetch weekly data failed', result.description);
       }
+      this.spinnerService.hide();
     });
-
-    // this.reDrawChart();
   }
 
   private reDrawChart() {
@@ -349,10 +349,10 @@ export class ChartComp implements OnInit {
     this.chart.config.type = 'line';
     const isOn = this.hasRadius ? 3 : 0;
     this.chart.config.data.datasets[0].data = this.dataService.getZeros();
-    this.chart.config.data.datasets[0].label = 'Relative Baseline';
+    this.chart.config.data.datasets[0].label = 'Relative Actual';
     this.chart.config.data.datasets[0].pointRadius = 0;
     this.chart.config.data.datasets[1].data = this.dataService.getDiff();
-    this.chart.config.data.datasets[1].label = 'Forecast-Baseline';
+    this.chart.config.data.datasets[1].label = 'Forecast-Actual';
     this.chart.config.data.datasets[1].pointRadius = isOn;
     this.chart.update();
   }
