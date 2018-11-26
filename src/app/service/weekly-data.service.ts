@@ -23,7 +23,7 @@ export class WeeklyDataService {
 
   constructor(private http: HttpClient, private auth: AuthService) {
     // a hack to make the data works.
-    const d = moment(new Date()).subtract(1, 'day').toDate();
+    const d = moment('2018-11-20').toDate();
     this.fetchWeeklyData(d);
   }
 
