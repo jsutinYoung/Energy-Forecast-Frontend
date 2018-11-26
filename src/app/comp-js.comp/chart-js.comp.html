@@ -1,73 +1,80 @@
 <div class="chart-container" fxLayout="column" fxLayoutAlign="start">
   <div>
-  <div fxLayout="row" fxLayoutAlign="begin stretch" fxFlex="">
-    <mat-slider
-      [(ngModel)]="zoom"
-      [displayWith]="formatLabel"
-      disabled="false"
-      max="4"
-      min="1"
-      step="1"
-      thumbLabel
-      tickInterval="1"
-      matTooltip="Zoom"
-    ></mat-slider>
-    <!-- [(ngModel)]="value" -->
-    <input matInput [matDatepicker]="picker" placeholder="Choose a date" class="hidden" />
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
+    <div fxLayout="row" fxLayoutAlign="begin stretch" fxFlex="">
+      <mat-slider
+        [(ngModel)]="zoom"
+        [displayWith]="formatLabel"
+        disabled="false"
+        max="4"
+        min="1"
+        step="1"
+        thumbLabel
+        tickInterval="1"
+        matTooltip="Zoom"
+      ></mat-slider>
+      <!-- [(ngModel)]="value" -->
+      <input
+        #date_input
+        matInput
+        [matDatepicker]="picker"
+        placeholder="Choose a date"
+        class="hidden"
+        (dateInput)="pickDate(date_input, $event)"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
 
-    <button mat-icon-button matTooltip="previous 24 hrs" (click)="previousDay()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
+      <button mat-icon-button matTooltip="previous 24 hrs" (click)="previousDay()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
 
-    <button mat-icon-button matTooltip="next 24 hrs" (click)="nextDay()">
-      <mat-icon>arrow_forward</mat-icon>
-    </button>
-    <!-- (click)="next24hour()" -->
+      <button mat-icon-button matTooltip="next 24 hrs" (click)="nextDay()">
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+      <!-- (click)="next24hour()" -->
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="end" fxFlex="10px">
+      <button
+        mat-icon-button
+        matTooltip="toggle marker"
+        (click)="toggleMarker()"
+        [disabled]="disableToggleMarker()"
+      >
+        <mat-icon>location_searching</mat-icon>
+        <!-- <i class="fas fa-crosshairs fa-lg mat-icon"></i> -->
+      </button>
+
+      <button mat-icon-button matTooltip="delta chart" (click)="displayDelta()">
+        <mat-icon>compare_arrows</mat-icon>
+      </button>
+
+      <button mat-icon-button matTooltip="bar chart" (click)="displayBar()">
+        <!-- <mat-icon> bar_chart</mat-icon> -->
+        <i class="fas fa-chart-bar fa-lg mat-icon"></i>
+      </button>
+
+      <button mat-icon-button matTooltip="line chart" (click)="displayLine()">
+        <!-- <mat-icon> show_chart</mat-icon> -->
+        <i class="fas fa-chart-line fa-lg mat-icon"></i>
+      </button>
+
+      <button mat-icon-button matTooltip="area chart" (click)="displayArea()">
+        <!-- <mat-icon>photo</mat-icon> -->
+        <i class="fa fa-chart-area fa-lg mat-icon"></i>
+      </button>
+
+      <button mat-icon-button matTooltip="stderr chart" (click)="displayStdError()">
+        <mat-icon>graphic_eq</mat-icon>
+        <!-- <i class="fab fa-creative-commons-sampling fa-2x mat-icon"></i> -->
+      </button>
+
+      <button mat-icon-button matTooltip="refresh" (click)="fetchDataOn()">
+        <mat-icon>autorenew</mat-icon>
+        <!-- <i class="fab fa-sync fa-2x mat-icon"></i> -->
+      </button>
+    </div>
   </div>
-
-  <div fxLayout="row" fxLayoutAlign="end" fxFlex="10px">
-    <button
-      mat-icon-button
-      matTooltip="toggle marker"
-      (click)="toggleMarker()"
-      [disabled]="disableToggleMarker()"
-    >
-      <mat-icon>location_searching</mat-icon>
-      <!-- <i class="fas fa-crosshairs fa-lg mat-icon"></i> -->
-    </button>
-
-    <button mat-icon-button matTooltip="delta chart" (click)="displayDelta()">
-      <mat-icon>compare_arrows</mat-icon>
-    </button>
-
-    <button mat-icon-button matTooltip="bar chart" (click)="displayBar()">
-      <!-- <mat-icon> bar_chart</mat-icon> -->
-      <i class="fas fa-chart-bar fa-lg mat-icon"></i>
-    </button>
-
-    <button mat-icon-button matTooltip="line chart" (click)="displayLine()">
-      <!-- <mat-icon> show_chart</mat-icon> -->
-      <i class="fas fa-chart-line fa-lg mat-icon"></i>
-    </button>
-
-    <button mat-icon-button matTooltip="area chart" (click)="displayArea()">
-      <!-- <mat-icon>photo</mat-icon> -->
-      <i class="fa fa-chart-area fa-lg mat-icon"></i>
-    </button>
-
-    <button mat-icon-button matTooltip="stderr chart" (click)="displayStdError()">
-      <mat-icon>graphic_eq</mat-icon>
-      <!-- <i class="fab fa-creative-commons-sampling fa-2x mat-icon"></i> -->
-    </button>
-
-    <button mat-icon-button matTooltip="refresh" (click)="randomize()">
-      <mat-icon>autorenew</mat-icon>
-      <!-- <i class="fab fa-sync fa-2x mat-icon"></i> -->
-    </button>
-  </div>
-</div>
   <canvas fxFlex="grow" id="canvas"> </canvas>
 
   <mat-accordion fxFlex="" class="my-form-field">
@@ -87,7 +94,12 @@
       </mat-expansion-panel-header>
 
       <mat-paginator [pageSizeOptions]="[24, 48, 72, 168]" showFirstLastButtons></mat-paginator>
-      <mat-table mat-table [dataSource]="tabularDataSource" class="mat-elevation-z8 mytable" matSort>
+      <mat-table
+        mat-table
+        [dataSource]="tabularDataSource"
+        class="mat-elevation-z8 mytable"
+        matSort
+      >
         <!-- date Column -->
         <ng-container matColumnDef="date">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef>Date</mat-header-cell>
@@ -96,23 +108,29 @@
 
         <!-- forecast Column -->
         <ng-container matColumnDef="forecast">
-          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header>Forecast (MWa)</mat-header-cell>
+          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
+            >Forecast (MWa)</mat-header-cell
+          >
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.forecast }}</mat-cell>
         </ng-container>
 
         <!-- baseline Column -->
         <ng-container matColumnDef="baseline">
-          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header>Baseline (MWa)</mat-header-cell>
+          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
+            >Baseline (MWa)</mat-header-cell
+          >
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.baseline }}</mat-cell>
         </ng-container>
 
         <!-- stderr Column -->
         <ng-container matColumnDef="stderr">
-          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header>StdErr %</mat-header-cell>
+          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
+            >StdErr %</mat-header-cell
+          >
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.stderr }}</mat-cell>
         </ng-container>
 
-        <mat-header-row  *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row class="my-mat-row" *matRowDef="let row; columns: displayedColumns"></mat-row>
       </mat-table>
     </mat-expansion-panel>

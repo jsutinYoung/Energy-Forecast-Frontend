@@ -37,7 +37,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 export class LoginComp implements OnInit {
   isSigUpOpen = false;
   // oauth
-  userProfile: object;
+  // userProfile: object;
 
   emailFormControl = new FormControl('', [
     Validators.required,

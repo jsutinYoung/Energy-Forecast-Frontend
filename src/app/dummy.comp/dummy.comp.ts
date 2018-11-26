@@ -48,7 +48,7 @@ export class DummyComp implements ICanCompDeactivate, OnInit, OnDestroy {
     this.snackBar.open(message, action, { duration: 2000 });
   }
 
-  public testHttpGet() {
-    this.dataService.testHttpGet();
-  }
+  // public testHttpGet() {
+  //   this.dataService.testHttpGet();
+  // }
 }
