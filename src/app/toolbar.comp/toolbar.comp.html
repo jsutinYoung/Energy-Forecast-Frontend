@@ -7,7 +7,7 @@
   <!-- <button mat-icon-button [matMenuTriggerFor]="menu"> -->
   <!-- (click)="drawer.toggle()" -->
   <mat-menu #menu="matMenu" [overlapTrigger]="false">
-    <button mat-menu-item>
+    <button mat-menu-item *ngIf="hasManagerRight()">
       <!-- <mat-icon>home</mat-icon> -->
       <span (click)="registerUserDialog()">Register User</span>
     </button>

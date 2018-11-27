@@ -1,15 +1,14 @@
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {EventEmitter, Injectable, Output} from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { EventEmitter, Injectable, Injector, Output } from '@angular/core';
 import * as moment from 'moment';
-import {Observable, of, throwError} from 'rxjs';
-import {catchError, retry} from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, retry } from 'rxjs/operators';
 
-import {ITabularRow} from '../comp-js.comp/chart-js.comp';
+import { ITabularRow } from '../comp-js.comp/chart-js.comp';
 // import {WEEK_DATA} from '../data/week_data';
+import { TokenService } from './token.service';
 
-import {AuthService} from './auth.service';
-
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class WeeklyDataService {
   private URL = 'http://localhost:8000/forecasts/comparisons';
   // ?start=2018-10-01T00:00:00&end=2018-10-07T23:00:00
@@ -19,13 +18,9 @@ export class WeeklyDataService {
   private hours: Date[] = [];
   private stderr: number[] = [];
 
-  @Output() dataChange = new EventEmitter<{status, description}>();
+  @Output() dataChange = new EventEmitter<{ status; description }>();
 
-  constructor(private http: HttpClient, private auth: AuthService) {
-    // a hack to make the data works.
-    const d = moment('2018-11-20').toDate();
-    this.fetchWeeklyData(d);
-  }
+  constructor(private http: HttpClient, private tokenService: TokenService) {}
 
   fillDefaultData(date: Date) {
     let m = moment(date).startOf('week');
@@ -134,42 +129,53 @@ export class WeeklyDataService {
           stderr: parseFloat((this.stderr[i] * 100).toFixed(2))
         };
       } else {
-        return {date: null, forecast: null, baseline: null, stderr: null};
+        return { date: null, forecast: null, baseline: null, stderr: null };
       }
     });
 
     return result;
   }
 
+  hasData(): boolean {
+    return this.hours.length > 0;
+  }
   async fetchWeeklyData(date: Date) {
     // give a date figure out the begin and end date
     try {
-      if (!this.auth.isAuthenticated()) {
-        this.dataChange.emit({status: false, description: 'Un-authenticated'});
-        return {status: false, description: 'Un-authenticated'};
+      if (!this.tokenService.isAuthenticated()) {
+        this.dataChange.emit({
+          status: false,
+          description: 'Un-authenticated'
+        });
+        return { status: false, description: 'Un-authenticated' };
       }
 
       const headers = new HttpHeaders({
         'content-type': 'application/json',
-        Token: 'Bearer ' + this.auth.getToken()
+        Token: 'Bearer ' + this.tokenService.getToken()
       });
 
-      const begin = moment(date).startOf('week').format('YYYY-MM-DD');
+      const begin = moment(date)
+        .startOf('week')
+        .format('YYYY-MM-DD');
 
-      const end = moment(date).endOf('week').format('YYYY-MM-DD');
+      const end = moment(date)
+        .endOf('week')
+        .format('YYYY-MM-DD');
 
       const modifiedURL =
-          this.URL + '?start=' + begin + 'T00:00:00&end=' + end + 'T23:00:00';
+        this.URL + '?start=' + begin + 'T00:00:00&end=' + end + 'T23:00:00';
 
       // console.log(modifiedURL);
 
-      const data = await this.http.get(modifiedURL, {headers: headers})
-                       .pipe(retry(3))
-                       .toPromise();
+      const data = await this.http
+        .get(modifiedURL, { headers: headers })
+        .pipe(retry(3))
+        .toPromise();
 
       if (data['status'] === 'fail') {
-        this.dataChange.emit({status: false, description: data['reason']});
-        return of({status: false, description: data['reason']}).toPromise();
+        this.dataChange.emit({ status: false, description: data['reason'] });
+        return of({ status: false, description: data['reason'] }).toPromise();
       }
 
       if (Array.isArray(data) && data.length > 0) {
@@ -193,16 +199,16 @@ export class WeeklyDataService {
           return e[3];
         });
 
-        this.dataChange.emit({status: true, description: ''});
+        this.dataChange.emit({ status: true, description: '' });
 
-        return of({status: true, description: ''}).toPromise();
+        return of({ status: true, description: '' }).toPromise();
       } else {
-        this.dataChange.emit({status: false, description: 'Data not found'});
-        return of({status: false, description: 'Data not found'}).toPromise();
+        this.dataChange.emit({ status: false, description: 'Data not found' });
+        return of({ status: false, description: 'Data not found' }).toPromise();
       }
     } catch (error) {
-      this.dataChange.emit({status: false, description: error.message});
-      return of({status: false, description: error.message}).toPromise();
+      this.dataChange.emit({ status: false, description: error.message });
+      return of({ status: false, description: error.message }).toPromise();
     }
   }
 }

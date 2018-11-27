@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 
 import { RegisterComp } from '../register.comp/register.comp';
-import { AuthService } from '../service/auth.service';
+import { AuthService, UserType } from '../service/auth.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -34,6 +34,14 @@ export class Toolbar implements OnInit {
   toggleDrawer() {
     this.isDrawerOpen = !this.isDrawerOpen;
     this.drawer.toggle();
+  }
+
+  hasManagerRight(): boolean {
+    if (this.authService.userType <= UserType.manager) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   async signOut() {

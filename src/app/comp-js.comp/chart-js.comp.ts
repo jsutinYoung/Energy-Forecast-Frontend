@@ -1,13 +1,19 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {FormControl} from '@angular/forms';
-import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
-import {MatSnackBar} from '@angular/material';
-import {Chart} from 'chart.js';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  OnDestroy,
+  AfterViewInit
+} from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatSnackBar } from '@angular/material';
+import { Chart } from 'chart.js';
 import _ from 'lodash';
 import * as moment from 'moment';
-import {Ng4LoadingSpinnerService} from 'ng4-loading-spinner';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
-import {WeeklyDataService} from '../service/weekly-data.service';
+import { WeeklyDataService } from '../service/weekly-data.service';
 
 enum ChartType {
   line = 'line',
@@ -31,7 +37,7 @@ export interface ITabularRow {
 })
 
 // tslint:disable-next-line:component-class-suffix
-export class ChartComp implements OnInit {
+export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -48,7 +54,7 @@ export class ChartComp implements OnInit {
   };
 
   private chart: Chart;
-  private xMinMax: {min; max};
+  private xMinMax: { min; max };
   private hasRadius = true;
   private zoomValue = 1;
   private dayPointer: Date;
@@ -61,59 +67,75 @@ export class ChartComp implements OnInit {
   isTableOpen: boolean;
 
   constructor(
-      private dataService: WeeklyDataService, private snackBar: MatSnackBar,
-      private spinnerService: Ng4LoadingSpinnerService) {}
+    private dataService: WeeklyDataService,
+    private snackBar: MatSnackBar,
+    private spinnerService: Ng4LoadingSpinnerService
+  ) {
+    // console.log('ctor');
+  }
 
   configCompare(isLoadData = true): {} {
     const myoptions = {
       animationEasing: 'easeInOutQuart',
-      animation: {duration: '200'},
+      animation: { duration: '200' },
       responsive: true,
-      title:
-          {display: true, text: this.title, fontColor: 'white', fontSize: 16},
-      scales: {
-        xAxes: [{
-          gridLines: {color: 'rgba(255,255,255, 0.3)'},
-          type: 'time',
-          distribution: 'series',
-          time: {displayFormats: {hour: 'MMM D - hA'}, unit: 'hour'},
-
-          ticks: {
-            fontColor: '#C0C0C0',
-            fontSize: 10
-            // minor: {
-            //   fontColor: 'red'
-            // }
-            // Include a dollar sign in the ticks
-            // callback:
-            //     function(value, index, values) {
-            //       return '$' + value;
-            //     }
-          },
-          scaleLabel: {
-            display: true,
-            labelString: 'Date & Hours',
-            fontSize: 12,
-            fontColor: '#C0C0C0'
-          }
-        }],
-        yAxes: [{
-          gridLines: {
-            color: 'rgba(255,255,255, 1)'
-            // tickMarkLength: 45
-          },
-          scaleLabel: {
-            display: true,
-            labelString: 'Electricity (MWa)',
-            fontSize: 12,
-            fontColor: '#C0C0C0'
-          },
-          ticks: {fontColor: '#C0C0C0', fontSize: 10}
-        }]
+      title: {
+        display: true,
+        text: this.title,
+        fontColor: 'white',
+        fontSize: 16
       },
-      layout: {padding: {left: 20, right: 0, top: 20, bottom: 20}},
-      legend: {display: true, position: 'bottom', labels: {fontColor: 'white'}},
-      tooltips: {displayColors: 'true'}
+      scales: {
+        xAxes: [
+          {
+            gridLines: { color: 'rgba(255,255,255, 0.3)' },
+            type: 'time',
+            distribution: 'series',
+            time: { displayFormats: { hour: 'MMM D - hA' }, unit: 'hour' },
+
+            ticks: {
+              fontColor: '#C0C0C0',
+              fontSize: 10
+              // minor: {
+              //   fontColor: 'red'
+              // }
+              // Include a dollar sign in the ticks
+              // callback:
+              //     function(value, index, values) {
+              //       return '$' + value;
+              //     }
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Date & Hours',
+              fontSize: 12,
+              fontColor: '#C0C0C0'
+            }
+          }
+        ],
+        yAxes: [
+          {
+            gridLines: {
+              color: 'rgba(255,255,255, 1)'
+              // tickMarkLength: 45
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Electricity (MWa)',
+              fontSize: 12,
+              fontColor: '#C0C0C0'
+            },
+            ticks: { fontColor: '#C0C0C0', fontSize: 10 }
+          }
+        ]
+      },
+      layout: { padding: { left: 20, right: 0, top: 20, bottom: 20 } },
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { fontColor: 'white' }
+      },
+      tooltips: { displayColors: 'true' }
     };
 
     let dataset0 = {
@@ -142,7 +164,7 @@ export class ChartComp implements OnInit {
 
     const config = {
       type: 'line',
-      data: {labels: this.dataService.getHours(), datasets: mydatasets},
+      data: { labels: this.dataService.getHours(), datasets: mydatasets },
       options: myoptions
     };
 
@@ -150,7 +172,8 @@ export class ChartComp implements OnInit {
   }
 
   ngOnInit() {
-    this.spinnerService.show();
+    // console.log('init');
+    // this.spinnerService.show();
     this.dataService.dataChange.subscribe(result => {
       if (result.status === true) {
         this.reDrawChart();
@@ -159,6 +182,20 @@ export class ChartComp implements OnInit {
       }
       this.spinnerService.hide();
     });
+
+    if (!this.dataService.hasData()) {
+      const d = moment('2018-11-20').toDate();
+      this.dataService.fetchWeeklyData(d);
+    } else {
+      this.dataService.dataChange.emit({ status: true, description: '' });
+    }
+  }
+
+  ngAfterViewInit() {
+  }
+
+  ngOnDestroy() {
+    // console.log('destroy');
   }
 
   private reDrawChart() {
@@ -169,8 +206,9 @@ export class ChartComp implements OnInit {
     this.dayPointer = new Date(d1);
     this.setXminMax(d1, d2);
     this.zoom = 2;
-    this.tabularDataSource =
-        new MatTableDataSource(this.dataService.getTabularData(null));
+    this.tabularDataSource = new MatTableDataSource(
+      this.dataService.getTabularData(null)
+    );
 
     this.tabularDataSource.sort = this.sort;
     this.tabularDataSource.paginator = this.paginator;
@@ -197,7 +235,9 @@ export class ChartComp implements OnInit {
     this.chart.config.data.datasets[0].backgroundColor = '';
     this.chart.config.data.datasets[1].backgroundColor = '';
 
-    const {scales: {xAxes}} = this.chart.options;
+    const {
+      scales: { xAxes }
+    } = this.chart.options;
     xAxes[0].gridLines = '';
 
     this.chart.config.type = 'line';
@@ -219,13 +259,13 @@ export class ChartComp implements OnInit {
       this.isUpdate = true;
     }
     this.type = ChartType.area;
-    this.chart.config.data.datasets[0].backgroundColor =
-        this.fillColor0.backgroundColor;
-    this.chart.config.data.datasets[1].backgroundColor =
-        this.fillColor1.backgroundColor;
+    this.chart.config.data.datasets[0].backgroundColor = this.fillColor0.backgroundColor;
+    this.chart.config.data.datasets[1].backgroundColor = this.fillColor1.backgroundColor;
 
-    const {scales: {xAxes}} = this.chart.options;
-    xAxes[0].gridLines = {color: 'rgba(255,255,255, 0.3)'};
+    const {
+      scales: { xAxes }
+    } = this.chart.options;
+    xAxes[0].gridLines = { color: 'rgba(255,255,255, 0.3)' };
 
     this.chart.config.type = 'line';
     this.refresh();
@@ -247,13 +287,13 @@ export class ChartComp implements OnInit {
     }
 
     this.type = ChartType.bar;
-    this.chart.config.data.datasets[0].backgroundColor =
-        this.fillColor0.backgroundColor;
-    this.chart.config.data.datasets[1].backgroundColor =
-        this.fillColor1.backgroundColor;
+    this.chart.config.data.datasets[0].backgroundColor = this.fillColor0.backgroundColor;
+    this.chart.config.data.datasets[1].backgroundColor = this.fillColor1.backgroundColor;
 
-    const {scales: {xAxes}} = this.chart.options;
-    xAxes[0].gridLines = {color: 'rgba(255,255,255, 0.3)'};
+    const {
+      scales: { xAxes }
+    } = this.chart.options;
+    xAxes[0].gridLines = { color: 'rgba(255,255,255, 0.3)' };
 
     this.chart.config.type = 'bar';
 
@@ -270,7 +310,7 @@ export class ChartComp implements OnInit {
     this.type = ChartType.stderr;
     const dsLow = this.chart.config.data.datasets[0];
     this.chart.config.options.title.text =
-        this.title + ' -- Forecast & Std Errors';
+      this.title + ' -- Forecast & Std Errors';
 
     const optionalLegend = {
       display: true,
@@ -357,7 +397,7 @@ export class ChartComp implements OnInit {
     this.chart.update();
   }
 
-  formatLabel(value: number|null) {
+  formatLabel(value: number | null) {
     if (!value) {
       return '1X';
     }
@@ -375,28 +415,34 @@ export class ChartComp implements OnInit {
   }
 
   setXminMax(d1: Date, d2: Date, isUpdate = true) {
-    if (d2 > d1 && d1 >= this.dataService.getMinHour() &&
-        d1 <= this.dataService.getMaxHour()) {
-      const {scales: {xAxes}} = this.chart.options;
+    if (
+      d2 > d1 &&
+      d1 >= this.dataService.getMinHour() &&
+      d1 <= this.dataService.getMaxHour()
+    ) {
+      const {
+        scales: { xAxes }
+      } = this.chart.options;
       xAxes[0].time.min = new Date(d1);
       xAxes[0].time.max = new Date(d2);
-      this.xMinMax = {min: new Date(d1), max: new Date(d2)};
+      this.xMinMax = { min: new Date(d1), max: new Date(d2) };
 
       const m1 = moment(d1);
       const m2 = moment(d2);
-      this.chart.options.scales.xAxes[0].scaleLabel.labelString =
-          `${m1.format('MM-DD-YYYY h:mm a')}  to  ${
-              m2.format('MM-DD-YYYY h:mm a')}`;
+      this.chart.options.scales.xAxes[0].scaleLabel.labelString = `${m1.format(
+        'MM-DD-YYYY h:mm a'
+      )}  to  ${m2.format('MM-DD-YYYY h:mm a')}`;
 
       if (isUpdate) {
         this.chart.update();
+        // this.refresh();
       }
     }
   }
 
   nextDay() {
     // tslint:disable-next-line:prefer-const
-    let {min: d1, max: d2} = this.xMinMax;
+    let { min: d1, max: d2 } = this.xMinMax;
 
     const maxHourTime = this.dataService.getMaxHour().getTime();
     if ((<Date>d2).getTime() === maxHourTime) {
@@ -407,7 +453,7 @@ export class ChartComp implements OnInit {
     d1.setHours(d1.getHours() + 24);
 
     const delta =
-        (<Date>d2).getTime() - this.dataService.getMaxHour().getTime();
+      (<Date>d2).getTime() - this.dataService.getMaxHour().getTime();
 
     if (delta > 0) {
       (<Date>d2).setTime((<Date>d2).getTime() - delta);
@@ -420,7 +466,7 @@ export class ChartComp implements OnInit {
 
   previousDay() {
     // tslint:disable-next-line:prefer-const
-    let {min: d1, max: d2} = this.xMinMax;
+    let { min: d1, max: d2 } = this.xMinMax;
 
     const minHourTime = this.dataService.getMinHour().getTime();
 
@@ -464,7 +510,7 @@ export class ChartComp implements OnInit {
 
   private openSnackBar(message: string, action: string) {
     this.spinnerService.hide();
-    this.snackBar.open(message, action, {duration: 2000});
+    this.snackBar.open(message, action, { duration: 2000 });
   }
 
   async fetchDataOn(aDate = new Date()) {
@@ -472,7 +518,6 @@ export class ChartComp implements OnInit {
     this.spinnerService.show();
     const ok = await this.dataService.fetchWeeklyData(aDate);
     if (ok.status === true) {
-      // this.reDrawChart();
       this.spinnerService.hide();
     } else {
       this.openSnackBar('Refresh data failed', ok.description);
@@ -491,7 +536,7 @@ export class ChartComp implements OnInit {
       // },
       onClick: (event: any, active: Array<any>) => {
         event.stopPropagation();
-        this.onChartClick({event, active});
+        this.onChartClick({ event, active });
       }
     };
 
@@ -517,17 +562,16 @@ export class ChartComp implements OnInit {
     this.chart = new Chart('canvas', config);
   }
 
-  private onChartHover({active}) {
+  private onChartHover({ active }) {
     console.log(active);
   }
 
-  private onChartClick({event, active}) {
+  private onChartClick({ event, active }) {
     try {
       const index1 = active[0]._index;
       const index2 = active[1]._index;
       console.log(index1);
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   get zoom(): number {
@@ -537,29 +581,37 @@ export class ChartComp implements OnInit {
   set zoom(value: number) {
     this.zoomValue = value;
     switch (value) {
-      case 1: {
-        const d1 = this.dayPointer;
-        const d2 = new Date(d1);
-        d2.setHours(d1.getHours() + 23);
-        this.setXminMax(d1, d2, this.isUpdate);
-      } break;
-      case 2: {
-        const d1 = this.dayPointer;
-        const d2 = new Date(d1);
-        d2.setHours(d1.getHours() + 23 + 24);
-        this.setXminMax(d1, d2, this.isUpdate);
-      } break;
-      case 3: {
-        const d1 = this.dayPointer;
-        const d2 = new Date(d1);
-        d2.setHours(d1.getHours() + 23 + 3 * 24);
-        this.setXminMax(d1, d2, this.isUpdate);
-      } break;
-      case 4: {
-        const d1 = this.dataService.getMinHour();
-        const d2 = this.dataService.getMaxHour();
-        this.setXminMax(d1, d2, this.isUpdate);
-      } break;
+      case 1:
+        {
+          const d1 = this.dayPointer;
+          const d2 = new Date(d1);
+          d2.setHours(d1.getHours() + 23);
+          this.setXminMax(d1, d2, this.isUpdate);
+        }
+        break;
+      case 2:
+        {
+          const d1 = this.dayPointer;
+          const d2 = new Date(d1);
+          d2.setHours(d1.getHours() + 23 + 24);
+          this.setXminMax(d1, d2, this.isUpdate);
+        }
+        break;
+      case 3:
+        {
+          const d1 = this.dayPointer;
+          const d2 = new Date(d1);
+          d2.setHours(d1.getHours() + 23 + 3 * 24);
+          this.setXminMax(d1, d2, this.isUpdate);
+        }
+        break;
+      case 4:
+        {
+          const d1 = this.dataService.getMinHour();
+          const d2 = this.dataService.getMaxHour();
+          this.setXminMax(d1, d2, this.isUpdate);
+        }
+        break;
     }
   }
 

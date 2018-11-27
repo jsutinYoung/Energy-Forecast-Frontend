@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterEvent} from '@angular/router';
-import * as firebase from 'firebase';
+// import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-root',
@@ -17,10 +17,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    firebase.initializeApp({
-      apiKey: 'AIzaSyBG29GaX8Hx0HTW1fbFsS4LqCgbQLBmV40',
-      authDomain: 'energy-forecast-8.firebaseapp.com'
-    });
+    // firebase.initializeApp({
+    //   apiKey: 'AIzaSyBG29GaX8Hx0HTW1fbFsS4LqCgbQLBmV40',
+    //   authDomain: 'energy-forecast-8.firebaseapp.com'
+    // });
   }
 
   // for referrence how to use root router

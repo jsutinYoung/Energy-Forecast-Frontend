@@ -70,7 +70,6 @@ export class LoginComp implements OnInit {
 
   ngOnInit() {}
 
-  // Google Firebase
   async signInUp(
     type: string,
     email: string,
@@ -127,8 +126,8 @@ export class LoginComp implements OnInit {
         password
       );
       if (status === true) {
-        this.router.navigate(['/dash']);
         this.spinnerService.hide();
+        this.router.navigate(['/dash']);
         return true;
       } else {
         this.openSnackBar('Signed in failed', description);

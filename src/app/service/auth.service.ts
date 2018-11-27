@@ -1,31 +1,30 @@
 import { HttpClient } from '@angular/common/http';
 import {
-  HttpErrorResponse,
-  HttpHeaders,
-  HttpResponse
+  HttpHeaders
 } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { SESSION_STORAGE, StorageService } from 'angular-webstorage-service';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
+import { WeeklyDataService } from '../service/weekly-data.service';
+import * as moment from 'moment';
+import {TokenService} from '../service/token.service';
 
-export interface Credential {
-  email: string;
-  password: string;
-  token: string;
+export enum UserType {
+  admin = 1,
+  manager = 2,
+  analyst = 3
 }
-
-const STORAGE_KEY = 'user_token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  // private token = '';
+  userType: UserType;
   private SigninURL = 'http://localhost:8000/oauth/login';
   private SignupURL = 'http://localhost:8000/users/create';
 
   constructor(
     private http: HttpClient,
-    @Inject(SESSION_STORAGE) private storage: StorageService
+    private tokenService: TokenService,
+    private dataService: WeeklyDataService
   ) {}
 
   async signupUser(
@@ -34,13 +33,13 @@ export class AuthService {
     password: string
   ): Promise<{ status; description }> {
     try {
-      if (!this.isAuthenticated()) {
+      if (!this.tokenService.isAuthenticated()) {
         return { status: false, description: 'Un-authenticated' };
       }
 
       const headers = new HttpHeaders({
         'content-type': 'application/json',
-        Token: 'Bearer ' + this.getToken()
+        Token: 'Bearer ' + this.tokenService.getToken()
       });
 
       let typeIndex = 3;
@@ -57,8 +56,6 @@ export class AuthService {
         default:
           typeIndex = 3;
       }
-
-      console.log(typeIndex);
 
       const body = {
         user: { email: email, password: password, user_type: typeIndex }
@@ -108,10 +105,14 @@ export class AuthService {
       }
 
       const token = result['Token'];
-      this.storage.set(STORAGE_KEY, token);
+      this.tokenService.setToken(token);
+      this.userType = this.tokenService.getUserType();
 
-      // console.log(this.getToken());
-      // console.log(this.token);
+      // before we return, fetch default weekly data
+      // const d = moment('2018-11-20').toDate();
+      // const r = await this.dataService.fetchWeeklyData(d);
+      // console.log(r);
+
       return of({ status: true, description: '' }).toPromise();
     } catch (err) {
       // console.error(error);
@@ -120,19 +121,9 @@ export class AuthService {
   }
 
   signOut() {
-    // this.token = null;
-    this.storage.set(STORAGE_KEY, null);
+    this.tokenService.invalidateToken();
   }
 
-  isAuthenticated(): Promise<boolean> | boolean {
-    const token = this.storage.get(STORAGE_KEY);
-    return token !== null;
-  }
-
-  getToken() {
-    // return this.token;
-    return this.storage.get(STORAGE_KEY);
-  }
 
   // private async stall(stallTime = 3000) {
   //   await new Promise(resolve => setTimeout(resolve, stallTime));
