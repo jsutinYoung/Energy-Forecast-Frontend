@@ -37,7 +37,7 @@ import {
 } from '@angular/material/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 import { AlertComp } from './alert.comp/alert.comp';
 import { AlertDialog } from './alert.dialog/alert.dialog';
@@ -107,7 +107,7 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     MatDialogModule,
     MatSelectModule,
     StorageServiceModule,
-    Ng4LoadingSpinnerModule.forRoot()
+    NgxSpinnerModule
   ],
   // or @Injectable({ providedIn: 'root' })
   providers: [

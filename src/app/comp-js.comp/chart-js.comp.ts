@@ -5,13 +5,12 @@ import {
   OnDestroy,
   AfterViewInit
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { MatSnackBar } from '@angular/material';
 import { Chart } from 'chart.js';
 import _ from 'lodash';
 import * as moment from 'moment';
-import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 import { WeeklyDataService } from '../service/weekly-data.service';
 
@@ -69,7 +68,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private dataService: WeeklyDataService,
     private snackBar: MatSnackBar,
-    private spinnerService: Ng4LoadingSpinnerService
+    private spinner: NgxSpinnerService
   ) {
     // console.log('ctor');
   }
@@ -180,7 +179,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       } else {
         this.openSnackBar('Fetch weekly data failed', result.description);
       }
-      this.spinnerService.hide();
+      this.spinner.hide();
     });
 
     if (!this.dataService.hasData()) {
@@ -191,8 +190,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() {}
 
   ngOnDestroy() {
     // console.log('destroy');
@@ -509,16 +507,16 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private openSnackBar(message: string, action: string) {
-    this.spinnerService.hide();
+    this.spinner.hide();
     this.snackBar.open(message, action, { duration: 2000 });
   }
 
   async fetchDataOn(aDate = new Date()) {
     this.type = ChartType.line;
-    this.spinnerService.show();
+    this.spinner.show();
     const ok = await this.dataService.fetchWeeklyData(aDate);
     if (ok.status === true) {
-      this.spinnerService.hide();
+      this.spinner.hide();
     } else {
       this.openSnackBar('Refresh data failed', ok.description);
     }
@@ -619,21 +617,13 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     return this.type === ChartType.stderr;
   }
 
-  // get dateControl(): FormControl {
-  //   return new FormControl(moment());
-  // }
-
-  // set dateControl(control: FormControl) {
-  //   const m = control.value;
-  //   console.log(m);
-  // }
-
   pickDate(control, event) {
-    // console.log(control.value);
-    // console.log(event.value);
     const chosen = moment(event.value);
     this.fetchDataOn(chosen.toDate());
-    // console.log(chosen);
+  }
+
+  private async stall(stallTime = 3000) {
+    await new Promise(resolve => setTimeout(resolve, stallTime));
   }
 
   // reFetchTabularData(startDay: Date) {

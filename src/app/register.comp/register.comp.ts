@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 // '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
-import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 import { LoginComp } from '../login.comp/login.comp';
 import { AuthService } from '../service/auth.service';
@@ -24,9 +24,9 @@ export class RegisterComp extends LoginComp {
     authService: AuthService,
     router: Router,
     snackBar: MatSnackBar,
-    spinnerService: Ng4LoadingSpinnerService
+    spinner: NgxSpinnerService
   ) {
-    super(authService, router, snackBar, spinnerService);
+    super(authService, router, snackBar, spinner);
     this.isSigUpOpen = true;
     // this.thisDialog = this;
   }

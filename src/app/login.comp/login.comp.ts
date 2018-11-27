@@ -8,7 +8,7 @@ import {
 import { MatSnackBar } from '@angular/material';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Router } from '@angular/router';
-import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 import { AuthService } from '../service/auth.service';
 
@@ -61,14 +61,19 @@ export class LoginComp implements OnInit {
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private spinnerService: Ng4LoadingSpinnerService
-  ) {
-    // this.passFormControl.valueChanges.subscribe(
-    //   (v) => { console.log(v); console.log(this.passFormControl.errors);}
-    // );
-  }
+    private spinner: NgxSpinnerService
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // this.authService.dataChange.subscribe(result => {
+    //   if (result.status === true) {
+    //     this.router.navigate(['/dash']);
+    //     this.spinner.hide();
+    //   } else {
+    //     this.openSnackBar('Signed in failed', result.description);
+    //   }
+    // });
+  }
 
   async signInUp(
     type: string,
@@ -80,7 +85,7 @@ export class LoginComp implements OnInit {
       if (password !== password2) {
         this.openSnackBar('Register failed', 'verify password!');
       } else {
-        this.spinnerService.show();
+        this.spinner.show();
         const { status, description } = await this.authService.signupUser(
           type,
           email,
@@ -88,7 +93,7 @@ export class LoginComp implements OnInit {
         );
         if (status === true) {
           this.openSnackBar('Register succeeded', 'Can login.');
-          this.spinnerService.hide();
+          this.spinner.hide();
           return true;
         } else {
           this.openSnackBar('Registration failed.', description);
@@ -114,24 +119,26 @@ export class LoginComp implements OnInit {
   }
 
   private openSnackBar(message: string, action: string) {
-    this.spinnerService.hide();
+    this.spinner.hide();
     this.snackBar.open(message, action, { duration: 2000 });
   }
 
   async signIn(email: string, password: string) {
     try {
-      this.spinnerService.show();
+      this.spinner.show();
       const { status, description } = await this.authService.signIn(
         email,
         password
       );
       if (status === true) {
-        this.spinnerService.hide();
+        this.spinner.hide();
         this.router.navigate(['/dash']);
         return true;
       } else {
         this.openSnackBar('Signed in failed', description);
       }
+
+      // this.authService.signIn(email, password);
     } catch (error) {
       this.openSnackBar('Signed in failed', error);
     }

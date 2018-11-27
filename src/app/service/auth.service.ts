@@ -1,13 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import {
-  HttpHeaders
-} from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
-import { WeeklyDataService } from '../service/weekly-data.service';
-import * as moment from 'moment';
-import {TokenService} from '../service/token.service';
+import { HttpHeaders } from '@angular/common/http';
+import { Output, Injectable, EventEmitter } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { retry } from 'rxjs/operators';
+// import { WeeklyDataService } from '../service/weekly-data.service';
+import { TokenService } from '../service/token.service';
 
 export enum UserType {
   admin = 1,
@@ -21,10 +18,11 @@ export class AuthService {
   private SigninURL = 'http://localhost:8000/oauth/login';
   private SignupURL = 'http://localhost:8000/users/create';
 
+  // @Output() dataChange = new EventEmitter<{ status; description }>();
+
   constructor(
     private http: HttpClient,
-    private tokenService: TokenService,
-    private dataService: WeeklyDataService
+    private tokenService: TokenService
   ) {}
 
   async signupUser(
@@ -108,10 +106,10 @@ export class AuthService {
       this.tokenService.setToken(token);
       this.userType = this.tokenService.getUserType();
 
-      // before we return, fetch default weekly data
-      // const d = moment('2018-11-20').toDate();
-      // const r = await this.dataService.fetchWeeklyData(d);
-      // console.log(r);
+      // this.dataChange.emit({
+      //   status: true,
+      //   description: ''
+      // });
 
       return of({ status: true, description: '' }).toPromise();
     } catch (err) {
@@ -123,7 +121,6 @@ export class AuthService {
   signOut() {
     this.tokenService.invalidateToken();
   }
-
 
   // private async stall(stallTime = 3000) {
   //   await new Promise(resolve => setTimeout(resolve, stallTime));
