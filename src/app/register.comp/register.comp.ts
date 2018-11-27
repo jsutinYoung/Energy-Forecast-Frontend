@@ -17,7 +17,7 @@ import { AuthService } from '../service/auth.service';
 // tslint:disable-next-line:component-class-suffix
 export class RegisterComp extends LoginComp {
   // thisDialog: RegisterComp;
-  userTypes = ['Analyst', 'Manager', 'Admin'];
+  userTypes = ['Analyst', 'Manager'];
 
   constructor(
     public dialogRef: MatDialogRef<RegisterComp>,

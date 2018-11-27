@@ -14,16 +14,12 @@ export enum UserType {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  userType: UserType;
   private SigninURL = 'http://localhost:8000/oauth/login';
   private SignupURL = 'http://localhost:8000/users/create';
 
   // @Output() dataChange = new EventEmitter<{ status; description }>();
 
-  constructor(
-    private http: HttpClient,
-    private tokenService: TokenService
-  ) {}
+  constructor(private http: HttpClient, private tokenService: TokenService) {}
 
   async signupUser(
     type: string,
@@ -37,7 +33,7 @@ export class AuthService {
 
       const headers = new HttpHeaders({
         'content-type': 'application/json',
-        Token: 'Bearer ' + this.tokenService.getToken()
+        Token: 'Bearer ' + this.tokenService.userToken
       });
 
       let typeIndex = 3;
@@ -103,8 +99,9 @@ export class AuthService {
       }
 
       const token = result['Token'];
-      this.tokenService.setToken(token);
-      this.userType = this.tokenService.getUserType();
+      this.tokenService.userToken = token;
+
+      console.log(this.userType);
 
       // this.dataChange.emit({
       //   status: true,
@@ -120,6 +117,10 @@ export class AuthService {
 
   signOut() {
     this.tokenService.invalidateToken();
+  }
+
+  get userType(): UserType {
+    return this.tokenService.userType;
   }
 
   // private async stall(stallTime = 3000) {
