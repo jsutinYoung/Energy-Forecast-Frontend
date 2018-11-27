@@ -22,6 +22,9 @@ A) Frontend setup:
 
   'open -a Google\ Chrome --args --disable-web-security --user-data-dir'
 
+  6) use the default credential to login
+    user: admin@gmail.com
+    password: admin1
 ---------------------------------------------------------------------------------------------------------------
 
 B) Backend setup:
