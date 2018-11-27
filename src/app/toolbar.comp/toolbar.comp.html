@@ -12,14 +12,16 @@
       <span (click)="registerUserDialog()">Register User</span>
     </button>
 
+    <button mat-menu-item *ngIf="hasManagerRight()">
+      <!-- <mat-icon>people_outline</mat-icon> -->
+      <span>Manage Users</span>
+    </button>
+
     <button mat-menu-item>
       <!-- <mat-icon>home</mat-icon> -->
       <span>Edit Profile</span>
     </button>
-    <button mat-menu-item>
-      <!-- <mat-icon>people_outline</mat-icon> -->
-      <span>Manage Setting</span>
-    </button>
+
   </mat-menu>
 
   <span class="eft-spacer"></span> <span class="eft-spacer">Energy Forecast Tool</span>
@@ -30,11 +32,17 @@
     </button>
   -->
 
-  <button mat-icon-button matTooltip="Upload data for ML"><mat-icon>cloud_upload</mat-icon></button>
+  <button mat-icon-button matTooltip="Upload data for ML">
+    <mat-icon>cloud_upload</mat-icon>
+  </button>
 
-  <button mat-icon-button matTooltip="Download CSV"><mat-icon>cloud_download</mat-icon></button>
+  <button mat-icon-button matTooltip="Download CSV">
+    <mat-icon>cloud_download</mat-icon>
+  </button>
 
-  <button mat-icon-button matTooltip="Help topics"><mat-icon>help</mat-icon></button>
+  <button mat-icon-button matTooltip="Help topics">
+    <mat-icon>help</mat-icon>
+  </button>
 
   <button mat-icon-button matTooltip="User" [matMenuTriggerFor]="menu">
     <mat-icon>account_circle</mat-icon>
