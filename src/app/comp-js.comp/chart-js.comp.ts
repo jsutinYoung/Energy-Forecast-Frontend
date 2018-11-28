@@ -511,7 +511,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.snackBar.open(message, action, { duration: 2000 });
   }
 
-  async fetchDataOn(aDate = new Date()) {
+  async fetchDataOn(aDate: Date) {
+    if (!aDate) {
+      aDate = this.dataService.getMinHour();
+    }
     this.type = ChartType.line;
     this.spinner.show();
     const ok = await this.dataService.fetchWeeklyData(aDate);
