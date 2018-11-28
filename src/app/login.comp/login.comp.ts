@@ -35,14 +35,20 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 
 // tslint:disable-next-line:component-class-suffix
 export class LoginComp implements OnInit {
-  isSigUpOpen = false;
-  // oauth
-  // userProfile: object;
+  isRegisterMode = false;
 
-  emailFormControl = new FormControl('', [
-    Validators.required,
-    Validators.email
-  ]);
+  // emailFormControl3 = new FormControl('', [
+  //   Validators.required,
+  //   Validators.email
+  // ]);
+
+  emailFormControl = new FormControl(
+    '',
+    Validators.compose([
+      Validators.required,
+      Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
+    ])
+  );
 
   passFormControl = new FormControl('', [
     Validators.required,
@@ -107,7 +113,7 @@ export class LoginComp implements OnInit {
   }
 
   isOK(): boolean {
-    if (this.isSigUpOpen) {
+    if (this.isRegisterMode) {
       return (
         this.passFormControl.invalid ||
         this.emailFormControl.invalid ||

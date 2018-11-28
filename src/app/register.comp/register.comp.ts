@@ -27,7 +27,7 @@ export class RegisterComp extends LoginComp {
     spinner: NgxSpinnerService
   ) {
     super(authService, router, snackBar, spinner);
-    this.isSigUpOpen = true;
+    this.isRegisterMode = true;
     // this.thisDialog = this;
   }
 
