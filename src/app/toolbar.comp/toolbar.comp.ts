@@ -63,4 +63,8 @@ export class Toolbar implements OnInit {
       // }
     });
   }
+
+  get userID() {
+    return this.authService.userID;
+  }
 }

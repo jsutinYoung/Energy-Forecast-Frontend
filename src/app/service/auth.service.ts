@@ -100,8 +100,9 @@ export class AuthService {
 
       const token = result['Token'];
       this.tokenService.userToken = token;
+      this.tokenService.userID = email;
 
-      console.log(this.userType);
+      // console.log(this.userType);
 
       // this.dataChange.emit({
       //   status: true,
@@ -123,6 +124,9 @@ export class AuthService {
     return this.tokenService.userType;
   }
 
+  get userID(): string {
+    return this.tokenService.userID;
+  }
   // private async stall(stallTime = 3000) {
   //   await new Promise(resolve => setTimeout(resolve, stallTime));
   // }

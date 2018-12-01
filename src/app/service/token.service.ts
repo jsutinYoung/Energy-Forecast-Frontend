@@ -4,6 +4,7 @@ import * as jwtdecode from 'jwt-decode';
 
 const TOKEN_KEY = 'user_token';
 const USER_TYPE_KEY = 'user_type';
+const USERID_KEY = 'user_id';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {
@@ -22,6 +23,14 @@ export class TokenService {
     this.storage.set(TOKEN_KEY, token);
   }
 
+  get userID() {
+    return this.storage.get(USERID_KEY);
+  }
+
+  set userID(email: string) {
+    this.storage.set(USERID_KEY, email);
+  }
+
   get userType() {
     const ut = this.storage.get(USER_TYPE_KEY);
     if (ut) {
@@ -38,6 +47,7 @@ export class TokenService {
   invalidateToken() {
     this.storage.set(TOKEN_KEY, null);
     this.storage.set(USER_TYPE_KEY, null);
+    this.storage.set(USERID_KEY, null);
   }
 
   // getUserType() {

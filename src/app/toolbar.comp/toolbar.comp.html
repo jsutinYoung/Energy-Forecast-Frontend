@@ -44,11 +44,11 @@
     <mat-icon>help</mat-icon>
   </button>
 
-  <button mat-icon-button matTooltip="User" [matMenuTriggerFor]="menu">
+  <button mat-icon-button matTooltip="{{userID}}" [matMenuTriggerFor]="menu">
     <mat-icon>account_circle</mat-icon>
   </button>
 
-  <button matTooltip="logout" mat-icon-button (click)="signOut()">
+  <button matTooltip="Logout" mat-icon-button (click)="signOut()">
     <mat-icon>exit_to_app</mat-icon>
   </button>
 </mat-toolbar>
