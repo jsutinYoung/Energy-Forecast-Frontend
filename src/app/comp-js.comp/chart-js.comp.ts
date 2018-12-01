@@ -509,7 +509,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.snackBar.open(message, action, { duration: 2000 });
   }
 
-  async fetchDataOn(aDate: Date) {
+  async fetchDataOn(aDate?: Date) {
     if (!aDate) {
       aDate = this.dataService.getMinHour();
     }
