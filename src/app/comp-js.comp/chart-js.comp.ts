@@ -171,8 +171,6 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    // console.log('init');
-    // this.spinnerService.show();
     this.dataService.dataChange.subscribe(result => {
       if (result.status === true) {
         this.reDrawChart();
@@ -427,13 +425,13 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
       const m1 = moment(d1);
       const m2 = moment(d2);
+      // todo need to change later.
       this.chart.options.scales.xAxes[0].scaleLabel.labelString = `${m1.format(
         'MM-DD-YYYY h:mm a'
       )}  to  ${m2.format('MM-DD-YYYY h:mm a')}`;
 
       if (isUpdate) {
         this.chart.update();
-        // this.refresh();
       }
     }
   }
@@ -571,7 +569,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     try {
       const index1 = active[0]._index;
       const index2 = active[1]._index;
-      console.log(index1);
+      // console.log(index1);
     } catch (error) {}
   }
 
@@ -622,6 +620,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   pickDate(control, event) {
     const chosen = moment(event.value);
+    // console.log(chosen.toDate());
     this.fetchDataOn(chosen.toDate());
   }
 

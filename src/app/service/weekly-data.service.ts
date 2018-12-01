@@ -35,7 +35,6 @@ export class WeeklyDataService {
 
         m = m.add(1, 'hour');
       }
-      // m = m.add(1, 'day');
     }
   }
 
@@ -157,16 +156,17 @@ export class WeeklyDataService {
 
       const begin = moment(date)
         .startOf('week')
-        .format('YYYY-MM-DD');
+        .utc()
+        .format('YYYY-MM-DDTHH:mm:ss');
 
       const end = moment(date)
         .endOf('week')
-        .format('YYYY-MM-DD');
+        // .add(23, 'hour')
+        // .add(1, 'second')
+        // .utc()
+        .format('YYYY-MM-DDTHH:mm:ss');
 
-      const modifiedURL =
-        this.URL + '?start=' + begin + 'T00:00:00&end=' + end + 'T23:00:00';
-
-      // console.log(modifiedURL);
+      const modifiedURL = this.URL + '?start=' + begin + '&end=' + end;
 
       const data = await this.http
         .get(modifiedURL, { headers: headers })
@@ -186,6 +186,7 @@ export class WeeklyDataService {
         }, []);
 
         this.hours = rdata.map(e => {
+          // to do a hack to be changed!!!
           const h: Date = new Date(Date.parse(e[0]));
           return h;
         });
