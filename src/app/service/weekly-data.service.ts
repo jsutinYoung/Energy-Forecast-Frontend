@@ -156,7 +156,7 @@ export class WeeklyDataService {
 
       const begin = moment(date)
         .startOf('week')
-        .utc()
+        // .utc()
         .format('YYYY-MM-DDTHH:mm:ss');
 
       const end = moment(date)
@@ -165,6 +165,10 @@ export class WeeklyDataService {
         // .add(1, 'second')
         // .utc()
         .format('YYYY-MM-DDTHH:mm:ss');
+
+
+        console.log(begin);
+        console.log(end);
 
       const modifiedURL = this.URL + '?start=' + begin + '&end=' + end;
 
@@ -185,9 +189,11 @@ export class WeeklyDataService {
           return acc;
         }, []);
 
+        // GMT+01:00
         this.hours = rdata.map(e => {
-          // to do a hack to be changed!!!
-          const h: Date = new Date(Date.parse(e[0]));
+          console.log(e[0]);
+          const h: Date = moment(e[0]).toDate();
+          console.log(h);
           return h;
         });
         this.baseline = rdata.map(e => {
