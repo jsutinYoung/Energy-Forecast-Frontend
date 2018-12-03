@@ -1,9 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PlatformLocation } from '@angular/common';
-import { Output, Injectable, EventEmitter } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, EventEmitter } from '@angular/core';
+import { of } from 'rxjs';
 import { retry } from 'rxjs/operators';
-// import { WeeklyDataService } from '../service/weekly-data.service';
 import { TokenService } from '../service/token.service';
 import { environment } from '../../environments/environment';
 
@@ -18,12 +17,9 @@ export class AuthService {
   private SigninURL = environment.baseUrl + '/oauth/login';
   private SignupURL = environment.baseUrl + '/users/create';
 
-  // @Output() dataChange = new EventEmitter<{ status; description }>();
-
   constructor(
     private http: HttpClient,
     private tokenService: TokenService,
-    private loc: PlatformLocation
   ) {
     // console.log(this.loc.);
   }
@@ -75,8 +71,6 @@ export class AuthService {
 
       return of({ status: true, description: '' }).toPromise();
     } catch (err) {
-      // console.log(error);
-      // console.log('Sign up user failed.' + error);
       return of({ status: false, description: err.error.reason }).toPromise();
     }
   }
@@ -86,7 +80,6 @@ export class AuthService {
     password: string
   ): Promise<{ status; description }> {
     try {
-      // this.token = '';
       const headers = new HttpHeaders().set('content-type', 'application/json');
       const body = { user: { email: email, password: password } };
 
@@ -109,16 +102,8 @@ export class AuthService {
       this.tokenService.userToken = token;
       this.tokenService.userID = email;
 
-      // console.log(this.userType);
-
-      // this.dataChange.emit({
-      //   status: true,
-      //   description: ''
-      // });
-
       return of({ status: true, description: '' }).toPromise();
     } catch (err) {
-      // console.error(error);
       return of({ status: false, description: err.error.reason }).toPromise();
     }
   }

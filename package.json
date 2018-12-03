@@ -5,11 +5,14 @@
   "author": "Justin Young",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host 10.0.1.13",
+    "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "copy": "cp -R ./dist/eft-app/*  ../eft-back/public/",
+    "prod": "ng build --prod && npm run copy"
+
   },
   "private": true,
   "dependencies": {
