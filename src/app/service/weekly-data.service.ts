@@ -167,8 +167,8 @@ export class WeeklyDataService {
         .format('YYYY-MM-DDTHH:mm:ss');
 
 
-        console.log(begin);
-        console.log(end);
+        // console.log(begin);
+        // console.log(end);
 
       const modifiedURL = this.URL + '?start=' + begin + '&end=' + end;
 
@@ -191,9 +191,9 @@ export class WeeklyDataService {
 
         // GMT+01:00
         this.hours = rdata.map(e => {
-          console.log(e[0]);
+          // console.log(e[0]);
           const h: Date = moment(e[0]).toDate();
-          console.log(h);
+          // console.log(h);
           return h;
         });
         this.baseline = rdata.map(e => {

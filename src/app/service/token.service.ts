@@ -38,6 +38,7 @@ export class TokenService {
     } else {
       const token = this.userToken;
       const obj = jwtdecode(token);
+      console.log(obj);
       const { exp, e, user_type } = obj;
       this.storage.set(USER_TYPE_KEY, user_type);
       return user_type;
