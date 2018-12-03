@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { SESSION_STORAGE, StorageService } from 'angular-webstorage-service';
 import * as jwtdecode from 'jwt-decode';
 
+
 const TOKEN_KEY = 'user_token';
 const USER_TYPE_KEY = 'user_type';
 const USERID_KEY = 'user_id';
@@ -38,7 +39,7 @@ export class TokenService {
     } else {
       const token = this.userToken;
       const obj = jwtdecode(token);
-      console.log(obj);
+      // console.log(obj);
       const { exp, e, user_type } = obj;
       this.storage.set(USER_TYPE_KEY, user_type);
       return user_type;
@@ -50,12 +51,4 @@ export class TokenService {
     this.storage.set(USER_TYPE_KEY, null);
     this.storage.set(USERID_KEY, null);
   }
-
-  // getUserType() {
-  //   const token = this.getToken();
-  //   const obj = jwtdecode(token);
-  //   // console.log(obj);
-  //   const { exp, e, user_type } = obj;
-  //   return user_type;
-  // }
 }

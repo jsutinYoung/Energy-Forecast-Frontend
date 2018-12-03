@@ -1,10 +1,11 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { PlatformLocation } from '@angular/common';
 import { Output, Injectable, EventEmitter } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { retry } from 'rxjs/operators';
 // import { WeeklyDataService } from '../service/weekly-data.service';
 import { TokenService } from '../service/token.service';
+import { environment } from '../../environments/environment';
 
 export enum UserType {
   admin = 1,
@@ -14,12 +15,18 @@ export enum UserType {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private SigninURL = 'http://localhost:8000/oauth/login';
-  private SignupURL = 'http://localhost:8000/users/create';
+  private SigninURL = environment.baseUrl + '/oauth/login';
+  private SignupURL = environment.baseUrl + '/users/create';
 
   // @Output() dataChange = new EventEmitter<{ status; description }>();
 
-  constructor(private http: HttpClient, private tokenService: TokenService) {}
+  constructor(
+    private http: HttpClient,
+    private tokenService: TokenService,
+    private loc: PlatformLocation
+  ) {
+    // console.log(this.loc.);
+  }
 
   async signupUser(
     type: string,

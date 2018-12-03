@@ -5,12 +5,12 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 
 import { ITabularRow } from '../comp-js.comp/chart-js.comp';
-// import {WEEK_DATA} from '../data/week_data';
 import { TokenService } from './token.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class WeeklyDataService {
-  private URL = 'http://localhost:8000/forecasts/comparisons';
+  private URL = environment.baseUrl + '/forecasts/comparisons';
   // ?start=2018-10-01T00:00:00&end=2018-10-07T23:00:00
 
   private forecast: number[] = [];
@@ -166,9 +166,8 @@ export class WeeklyDataService {
         // .utc()
         .format('YYYY-MM-DDTHH:mm:ss');
 
-
-        // console.log(begin);
-        // console.log(end);
+      // console.log(begin);
+      // console.log(end);
 
       const modifiedURL = this.URL + '?start=' + begin + '&end=' + end;
 

@@ -71,14 +71,6 @@ export class LoginComp implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.authService.dataChange.subscribe(result => {
-    //   if (result.status === true) {
-    //     this.router.navigate(['/dash']);
-    //     this.spinner.hide();
-    //   } else {
-    //     this.openSnackBar('Signed in failed', result.description);
-    //   }
-    // });
   }
 
   async signInUp(
