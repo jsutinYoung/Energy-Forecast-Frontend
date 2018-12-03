@@ -8,24 +8,24 @@ import {
 import { MatSnackBar } from '@angular/material';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Router } from '@angular/router';
-import { NgxSpinnerService } from 'ngx-spinner';
+// import { NgxSpinnerService } from 'ngx-spinner';
 
 import { AuthService } from '../service/auth.service';
 
 /** Error when invalid control is dirty, touched, or submitted. */
-export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(
-    control: FormControl | null,
-    form: FormGroupDirective | NgForm | null
-  ): boolean {
-    const isSubmitted = form && form.submitted;
-    return !!(
-      control &&
-      control.invalid &&
-      (control.dirty || control.touched || isSubmitted)
-    );
-  }
-}
+// export class MyErrorStateMatcher implements ErrorStateMatcher {
+//   isErrorState(
+//     control: FormControl | null,
+//     form: FormGroupDirective | NgForm | null
+//   ): boolean {
+//     const isSubmitted = form && form.submitted;
+//     return !!(
+//       control &&
+//       control.invalid &&
+//       (control.dirty || control.touched || isSubmitted)
+//     );
+//   }
+// }
 
 @Component({
   selector: 'app-login.comp',
@@ -66,14 +66,14 @@ export class LoginComp implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar,
-    private spinner: NgxSpinnerService
+    private snackBar: MatSnackBar
+    // private spinner: NgxSpinnerService
   ) {}
 
   ngOnInit() {
   }
 
-  async signInUp(
+  async signUp(
     type: string,
     email: string,
     password: string,
@@ -83,7 +83,7 @@ export class LoginComp implements OnInit {
       if (password !== password2) {
         this.openSnackBar('Register failed', 'verify password!');
       } else {
-        this.spinner.show();
+        // this.spinner.show();
         const { status, description } = await this.authService.signupUser(
           type,
           email,
@@ -91,7 +91,7 @@ export class LoginComp implements OnInit {
         );
         if (status === true) {
           this.openSnackBar('Register succeeded', 'Can login.');
-          this.spinner.hide();
+          // this.spinner.hide();
           return true;
         } else {
           this.openSnackBar('Registration failed.', description);
@@ -117,19 +117,19 @@ export class LoginComp implements OnInit {
   }
 
   private openSnackBar(message: string, action: string) {
-    this.spinner.hide();
+    // this.spinner.hide();
     this.snackBar.open(message, action, { duration: 2000 });
   }
 
   async signIn(email: string, password: string) {
     try {
-      this.spinner.show();
+      // this.spinner.show();
       const { status, description } = await this.authService.signIn(
         email,
         password
       );
       if (status === true) {
-        this.spinner.hide();
+        // this.spinner.hide();
         this.router.navigate(['/dash']);
         return true;
       } else {

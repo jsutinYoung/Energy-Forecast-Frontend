@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 // '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
-import { NgxSpinnerService } from 'ngx-spinner';
+// import { NgxSpinnerService } from 'ngx-spinner';
 
 import { LoginComp } from '../login.comp/login.comp';
 import { AuthService } from '../service/auth.service';
@@ -24,9 +24,9 @@ export class RegisterComp extends LoginComp {
     authService: AuthService,
     router: Router,
     snackBar: MatSnackBar,
-    spinner: NgxSpinnerService
+    // spinner: NgxSpinnerService
   ) {
-    super(authService, router, snackBar, spinner);
+    super(authService, router, snackBar);
     this.isRegisterMode = true;
     // this.thisDialog = this;
   }
@@ -37,7 +37,7 @@ export class RegisterComp extends LoginComp {
 
   async onDone(result) {
     const { type, user, pass, pass2 } = result;
-    const ok = await this.signInUp(type, user, pass, pass2);
+    const ok = await this.signUp(type, user, pass, pass2);
     if (ok) {
       this.dialogRef.close();
     }

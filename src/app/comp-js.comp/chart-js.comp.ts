@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material';
 import { Chart } from 'chart.js';
 import _ from 'lodash';
 import * as moment from 'moment';
-import { NgxSpinnerService } from 'ngx-spinner';
+// import { NgxSpinnerService } from 'ngx-spinner';
 
 import { WeeklyDataService } from '../service/weekly-data.service';
 
@@ -67,8 +67,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private dataService: WeeklyDataService,
-    private snackBar: MatSnackBar,
-    private spinner: NgxSpinnerService
+    private snackBar: MatSnackBar
+    // private spinner: NgxSpinnerService
   ) {
     // console.log('ctor');
   }
@@ -177,7 +177,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       } else {
         this.openSnackBar('Fetch weekly data failed', result.description);
       }
-      this.spinner.hide();
+      // this.spinner.hide();
     });
 
     if (!this.dataService.hasData()) {
@@ -505,7 +505,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private openSnackBar(message: string, action: string) {
-    this.spinner.hide();
+    // this.spinner.hide();
     this.snackBar.open(message, action, { duration: 2000 });
   }
 
@@ -514,10 +514,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       aDate = this.dataService.getMinHour();
     }
     this.type = ChartType.line;
-    this.spinner.show();
+    // this.spinner.show();
     const ok = await this.dataService.fetchWeeklyData(aDate);
     if (ok.status === true) {
-      this.spinner.hide();
+      // this.spinner.hide();
     } else {
       this.openSnackBar('Refresh data failed', ok.description);
     }

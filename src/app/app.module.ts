@@ -112,7 +112,7 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
   // or @Injectable({ providedIn: 'root' })
   providers: [
     AlertService,
-    { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
+    // { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
     MyHttpInterceptorProviders
   ],
   entryComponents: [AlertDialog, RegisterComp],
