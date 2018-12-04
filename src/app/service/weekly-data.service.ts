@@ -153,7 +153,7 @@ export class WeeklyDataService {
 
       const headers = new HttpHeaders({
         'content-type': 'application/json',
-        Token: 'Bearer ' + this.tokenService.userToken
+        // Token: 'Bearer ' + this.tokenService.userToken
       });
 
       const begin = moment(date)

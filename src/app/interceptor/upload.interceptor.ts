@@ -1,16 +1,26 @@
-import {HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpProgressEvent, HttpRequest, HttpResponse} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {
+  HttpEvent,
+  HttpEventType,
+  HttpHandler,
+  HttpInterceptor,
+  HttpProgressEvent,
+  HttpRequest,
+  HttpResponse
+} from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 /** Simulate server replying to file upload request */
 @Injectable()
 export class UploadInterceptor implements HttpInterceptor {
-  intercept(req: HttpRequest<any>, next: HttpHandler):
-      Observable<HttpEvent<any>> {
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
     if (req.url.indexOf('/upload/file') === -1) {
       return next.handle(req);
     }
-    const delay = 300;  // TODO: inject delay?
+    const delay = 300; // TODO: inject delay?
     return createUploadEvents(delay);
   }
 }
@@ -25,7 +35,7 @@ function createUploadEvents(delay: number) {
 
   return new Observable<HttpEvent<any>>(observer => {
     // notify the event stream that the request was sent.
-    observer.next({type: HttpEventType.Sent});
+    observer.next({ type: HttpEventType.Sent });
 
     uploadLoop(0);
 
@@ -38,7 +48,7 @@ function createUploadEvents(delay: number) {
 
         if (loaded >= total) {
           const doneResponse = new HttpResponse({
-            status: 201,  // OK but no body;
+            status: 201 // OK but no body;
           });
           observer.next(doneResponse);
           observer.complete();
@@ -56,4 +66,3 @@ function createUploadEvents(delay: number) {
     }
   });
 }
-
