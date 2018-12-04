@@ -1,10 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { PlatformLocation } from '@angular/common';
+// import { PlatformLocation } from '@angular/common';
 import { Injectable, EventEmitter } from '@angular/core';
 import { of } from 'rxjs';
 import { retry } from 'rxjs/operators';
 import { TokenService } from '../service/token.service';
-import { environment } from '../../environments/environment';
+// import { environment } from '../../environments/environment';
 
 export enum UserType {
   admin = 1,
@@ -14,14 +14,13 @@ export enum UserType {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private SigninURL = environment.baseUrl + '/oauth/login';
-  private SignupURL = environment.baseUrl + '/users/create';
+  private SigninURL = null;
+  private SignupURL = null;
 
-  constructor(
-    private http: HttpClient,
-    private tokenService: TokenService,
-  ) {
-    // console.log(this.loc.);
+  constructor(private http: HttpClient, private tokenService: TokenService) {
+    // console.log(this.tokenService.baseURL);
+    this.SigninURL = tokenService.baseURL + '/oauth/login';
+    this.SignupURL = tokenService.baseURL + '/users/create';
   }
 
   async signupUser(

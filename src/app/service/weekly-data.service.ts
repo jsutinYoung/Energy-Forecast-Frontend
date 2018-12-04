@@ -6,11 +6,11 @@ import { catchError, retry } from 'rxjs/operators';
 
 import { ITabularRow } from '../comp-js.comp/chart-js.comp';
 import { TokenService } from './token.service';
-import { environment } from '../../environments/environment';
+// import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class WeeklyDataService {
-  private URL = environment.baseUrl + '/forecasts/comparisons';
+  private URL = '';
   // ?start=2018-10-01T00:00:00&end=2018-10-07T23:00:00
 
   private forecast: number[] = [];
@@ -20,7 +20,9 @@ export class WeeklyDataService {
 
   @Output() dataChange = new EventEmitter<{ status; description }>();
 
-  constructor(private http: HttpClient, private tokenService: TokenService) {}
+  constructor(private http: HttpClient, private tokenService: TokenService) {
+    this.URL = tokenService.baseURL + '/forecasts/comparisons';
+  }
 
   fillDefaultData(date: Date) {
     let m = moment(date).startOf('week');
