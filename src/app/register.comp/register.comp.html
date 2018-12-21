@@ -18,7 +18,7 @@
       <input #userid matInput mdc-text-field placeholder="Email" [formControl]="emailFormControl" />
       <mat-hint>e.g. justin@wsu.edu</mat-hint>
       <mat-error
-        *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')"
+        *ngIf="emailFormControl.hasError('pattern')"
       >
         Please enter a valid email address
       </mat-error>
