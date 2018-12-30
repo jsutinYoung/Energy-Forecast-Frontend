@@ -705,6 +705,14 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.fetchDataOn(chosen.toDate());
   }
 
+  chartColor(type: string): string {
+    if (this.type === type) {
+      return 'primary';
+    } else {
+      return '';
+    }
+  }
+
   // private async stall(stallTime = 3000) {
   //   await new Promise(resolve => setTimeout(resolve, stallTime));
   // }

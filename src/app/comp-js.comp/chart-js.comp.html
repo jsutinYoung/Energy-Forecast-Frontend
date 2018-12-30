@@ -59,7 +59,7 @@
 
       <button mat-icon-button [disabled]="true"><mat-icon>more_vert</mat-icon></button>
 
-      <button mat-icon-button matTooltip="delta chart" (click)="displayDelta()">
+      <button mat-icon-button matTooltip="delta chart" (click)="displayDelta()" [color]="chartColor('delta')">
         <mat-icon>compare_arrows</mat-icon>
       </button>
 
@@ -68,17 +68,17 @@
         <!-- <i class="fas fa-chart-bar fa-lg mat-icon"></i> -->
       <!-- </button> -->
 
-      <button mat-icon-button matTooltip="line chart" (click)="displayLine()">
+      <button mat-icon-button matTooltip="line chart" (click)="displayLine()" [color]="chartColor('line')">
         <!-- <mat-icon> show_chart</mat-icon> -->
         <i class="fas fa-chart-line fa-lg mat-icon"></i>
       </button>
 
-      <button mat-icon-button matTooltip="area chart" (click)="displayArea()">
+      <button mat-icon-button matTooltip="area chart" (click)="displayArea()" [color]="chartColor('area')">
         <!-- <mat-icon>photo</mat-icon> -->
         <i class="fa fa-chart-area fa-lg mat-icon"></i>
       </button>
 
-      <button mat-icon-button matTooltip="stderr chart" (click)="displayStdError()">
+      <button mat-icon-button matTooltip="stderr chart" (click)="displayStdError()" [color]="chartColor('stderr')">
         <mat-icon>graphic_eq</mat-icon>
         <!-- <i class="fab fa-creative-commons-sampling fa-2x mat-icon"></i> -->
       </button>
