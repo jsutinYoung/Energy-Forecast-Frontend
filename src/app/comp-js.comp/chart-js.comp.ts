@@ -707,7 +707,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   chartColor(type: string): string {
     if (this.type === type) {
-      return 'primary';
+      return 'accent';
     } else {
       return '';
     }
