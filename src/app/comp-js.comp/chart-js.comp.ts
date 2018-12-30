@@ -1,16 +1,16 @@
 import {
+  AfterViewInit,
   Component,
-  OnInit,
-  ViewChild,
   OnDestroy,
-  AfterViewInit
+  OnInit,
+  ViewChild
 } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { MatSnackBar } from '@angular/material';
+import { Router } from '@angular/router';
 import { Chart } from 'chart.js';
 import _ from 'lodash';
 import * as moment from 'moment';
-// import { NgxSpinnerService } from 'ngx-spinner';
 
 import { WeeklyDataService } from '../service/weekly-data.service';
 
@@ -37,6 +37,8 @@ export interface ITabularRow {
 
 // tslint:disable-next-line:component-class-suffix
 export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
+  static readonly title = 'NWPCC Energy Demand';
+
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -57,8 +59,6 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   private hasRadius = true;
   private zoomValue = 1;
   private dayPointer: Date;
-  private isUpdate = true;
-  private title = 'NWP Energy Demand';
   type: ChartType;
 
   tabularDataSource: MatTableDataSource<ITabularRow>;
@@ -67,20 +67,63 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private dataService: WeeklyDataService,
-    private snackBar: MatSnackBar
-    // private spinner: NgxSpinnerService
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {
     // console.log('ctor');
   }
 
-  configCompare(isLoadData = true): {} {
+  ngOnInit() {
+    this.dataService.dataChange.subscribe(result => {
+      if (result.status === true) {
+        this.reDrawChart();
+      } else {
+        this.openSnackBar('Fetch weekly data failed', result.description);
+        this.router.navigate(['/']);
+      }
+    });
+
+    if (!this.dataService.hasData()) {
+      // const d = moment('2018-11-20').toDate();
+      this.dataService.fetchWeeklyData(new Date());
+    } else {
+      this.dataService.dataChange.emit({ status: true, description: '' });
+    }
+  }
+
+  ngAfterViewInit() {}
+
+  ngOnDestroy() {
+    // console.log('destroy');
+  }
+
+  private applyFilter(filterValue: string) {
+    this.tabularDataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  private reDrawChart() {
+    // this.refresh(this.configCompare());
+    const d1 = this.dataService.getMinHour();
+    const d2 = this.dataService.get48Hour();
+    this.dayPointer = new Date(d1);
+    this.zoomValue = 2;
+    this.displayStdError();
+    this.tabularDataSource = new MatTableDataSource(
+      this.dataService.getTabularData(null)
+    );
+
+    this.tabularDataSource.sort = this.sort;
+    this.tabularDataSource.paginator = this.paginator;
+  }
+
+  private configCompare(tempAxis = null): {} {
     const myoptions = {
       animationEasing: 'easeInOutQuart',
       animation: { duration: '200' },
       responsive: true,
       title: {
         display: true,
-        text: this.title,
+        text: ChartComp.title,
         fontColor: 'white',
         fontSize: 16
       },
@@ -137,10 +180,23 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       tooltips: { displayColors: 'true' }
     };
 
+    if (tempAxis) {
+      myoptions.scales.yAxes.push(tempAxis);
+    }
+
+    const config = {
+      type: 'line',
+      data: { labels: this.dataService.getHours(), datasets: [] },
+      options: myoptions
+    };
+
+    return config;
+  }
+  private configCompareDataset() {
     let dataset0 = {
       label: 'Actual',
-      data: isLoadData ? this.dataService.getBaseline() : [],
-      pointRadius: 3,
+      data: this.dataService.getBaseline(),
+      // pointRadius: 3,
 
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
@@ -150,8 +206,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     let dataset1 = {
       label: 'Forecast',
-      data: isLoadData ? this.dataService.getForecast() : [],
-      pointRadius: 3,
+      data: this.dataService.getForecast(),
+      // pointRadius: 3,
 
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
@@ -159,75 +215,26 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     };
     dataset1 = _.merge(dataset1, this.fillColor1);
 
-    const mydatasets = [dataset0, dataset1];
+    const yDatasets = [dataset0, dataset1];
 
-    const config = {
-      type: 'line',
-      data: { labels: this.dataService.getHours(), datasets: mydatasets },
-      options: myoptions
-    };
-
-    return config;
-  }
-
-  ngOnInit() {
-    this.dataService.dataChange.subscribe(result => {
-      if (result.status === true) {
-        this.reDrawChart();
-      } else {
-        this.openSnackBar('Fetch weekly data failed', result.description);
-      }
-      // this.spinner.hide();
-    });
-
-    if (!this.dataService.hasData()) {
-      const d = moment('2018-11-20').toDate();
-      this.dataService.fetchWeeklyData(d);
-    } else {
-      this.dataService.dataChange.emit({ status: true, description: '' });
-    }
-  }
-
-  ngAfterViewInit() {}
-
-  ngOnDestroy() {
-    // console.log('destroy');
-  }
-
-  private reDrawChart() {
-    this.refresh(this.configCompare(false));
-    this.displayStdError(true);
-    const d1 = this.dataService.getMinHour();
-    const d2 = this.dataService.get48Hour();
-    this.dayPointer = new Date(d1);
-    this.setXminMax(d1, d2);
-    this.zoom = 2;
-    this.tabularDataSource = new MatTableDataSource(
-      this.dataService.getTabularData(null)
-    );
-
-    this.tabularDataSource.sort = this.sort;
-    this.tabularDataSource.paginator = this.paginator;
-  }
-
-  applyFilter(filterValue: string) {
-    this.tabularDataSource.filter = filterValue.trim().toLowerCase();
+    return yDatasets;
   }
 
   displayLine() {
     if (this.type === ChartType.line) {
       return;
     }
+
+    this.refresh(this.configCompare(this.getTempAxis()));
+    this.chart.config.data.datasets = this.configCompareDataset();
     const ds = this.chart.config.data.datasets;
-    if (ds.length === 3 || this.type === ChartType.delta) {
-      this.refresh(this.configCompare());
-      this.setMarker(this.hasRadius);
-      this.isUpdate = false;
-      this.zoom = this.zoomValue;
-      this.isUpdate = true;
+    if (this.hasTemperature()) {
+      ds.push(this.getTempDataset());
     }
+    this.setZoom(this.zoomValue);
 
     this.type = ChartType.line;
+    this.setMarker(this.hasRadius);
     this.chart.config.data.datasets[0].backgroundColor = '';
     this.chart.config.data.datasets[1].backgroundColor = '';
 
@@ -245,16 +252,16 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // this.chart.options.animation.duration = '1500';
+    this.refresh(this.configCompare(this.getTempAxis()));
+    this.chart.config.data.datasets = this.configCompareDataset();
     const ds = this.chart.config.data.datasets;
-    if (ds.length === 3 || this.type === ChartType.delta) {
-      this.refresh(this.configCompare());
-      this.setMarker(this.hasRadius);
-      this.isUpdate = false;
-      this.zoom = this.zoomValue;
-      this.isUpdate = true;
+    if (this.hasTemperature()) {
+      ds.push(this.getTempDataset());
     }
+    this.setZoom(this.zoomValue);
+
     this.type = ChartType.area;
+    this.setMarker(this.hasRadius);
     this.chart.config.data.datasets[0].backgroundColor = this.fillColor0.backgroundColor;
     this.chart.config.data.datasets[1].backgroundColor = this.fillColor1.backgroundColor;
 
@@ -267,46 +274,50 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.refresh();
   }
 
-  displayBar() {
-    if (this.type === ChartType.bar) {
+  displayDelta() {
+    if (this.type === ChartType.delta) {
       return;
     }
 
-    // this.chart.options.animation.duration = '1000';
+    this.refresh(this.configCompare(this.getTempAxis()));
+    this.chart.config.data.datasets = this.configCompareDataset();
     const ds = this.chart.config.data.datasets;
-    if (ds.length === 3 || this.type === ChartType.delta) {
-      this.refresh(this.configCompare());
-      this.setMarker(this.hasRadius);
-      this.isUpdate = false;
-      this.zoom = this.zoomValue;
-      this.isUpdate = true;
+    if (this.hasTemperature()) {
+      ds.push(this.getTempDataset());
     }
+    this.setZoom(this.zoomValue);
 
-    this.type = ChartType.bar;
-    this.chart.config.data.datasets[0].backgroundColor = this.fillColor0.backgroundColor;
-    this.chart.config.data.datasets[1].backgroundColor = this.fillColor1.backgroundColor;
+    this.type = ChartType.delta;
+    this.chart.config.options.title.text = ChartComp.title + ' -- Delta';
 
-    const {
-      scales: { xAxes }
-    } = this.chart.options;
-    xAxes[0].gridLines = { color: 'rgba(255,255,255, 0.3)' };
+    this.chart.config.type = 'line';
+    const isOn = this.hasRadius ? 3 : 0;
+    ds[0].data = this.dataService.getZeros();
+    ds[0].label = 'Relative Actual';
+    ds[0].pointRadius = 0;
+    ds[1].data = this.dataService.getDiff();
+    ds.label = 'Forecast-Actual';
+    ds[1].pointRadius = isOn;
 
-    this.chart.config.type = 'bar';
-
-    this.chart.update();
+    this.refresh();
   }
 
-  displayStdError(isRefresh = true) {
+  displayStdError() {
     if (this.type === ChartType.stderr) {
       return;
     }
 
+    let tempAxis = null;
+    try {
+      tempAxis = this.getTempAxis();
+    } catch (error) {}
+
+    this.refresh(this.configCompare(tempAxis));
     // this.chart.options.animation.duration = '1000';
     this.chart.config.type = 'line';
     this.type = ChartType.stderr;
-    const dsLow = this.chart.config.data.datasets[0];
     this.chart.config.options.title.text =
-      this.title + ' -- Forecast & Std Errors';
+      ChartComp.title + ' -- Forecast & Std Errors';
 
     const optionalLegend = {
       display: true,
@@ -317,6 +328,9 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
           if (legendItem.datasetIndex === 0) {
             legendItem.fillStyle = 'rgba(5, 206, 250,0.6)';
             return true;
+          } else if (legendItem.datasetIndex === 3) {
+            legendItem.fillStyle = 'rgba(244, 142, 3,0.6)';
+            return true;
           } else {
             return false;
           }
@@ -326,18 +340,27 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     this.chart.config.options.legend = optionalLegend;
 
-    dsLow.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    dsLow.borderColor = '';
-    dsLow.data = this.dataService.getLowError();
-    dsLow.label = 'Lower';
-    dsLow.pointRadius = '0';
+    const dsLow = {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      borderColor: '',
+      data: this.dataService.getLowError(),
+      label: 'Lower',
+      pointRadius: '0',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+    };
 
-    const dsHigh = this.chart.config.data.datasets[1];
-    dsHigh.borderColor = '';
-    dsHigh.backgroundColor = 'rgba(175, 176, 180, 0.5)';
-    dsHigh.data = this.dataService.getHighError();
-    dsHigh.label = 'Higher';
-    dsHigh.pointRadius = '0';
+    const dsHigh = {
+      borderColor: '',
+      backgroundColor: 'rgba(175, 176, 180, 0.5)',
+      data: this.dataService.getHighError(),
+      label: 'Higher',
+      pointRadius: '0',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+    };
 
     const dsLine = {
       type: 'line',
@@ -352,45 +375,85 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     };
 
     const ds = this.chart.config.data.datasets;
-    ds.pop();
-    ds.pop();
     ds.push(dsLine);
     ds.push(dsLow);
     ds.push(dsHigh);
-
-    if (isRefresh) {
-      // this.chart.options.animation.duration = '1000';
-      this.refresh();
+    if (this.hasTemperature()) {
+      ds.push(this.getTempDataset());
     }
+
+    this.setZoom(this.zoomValue);
+    this.refresh();
   }
 
-  displayDelta() {
-    if (this.type === ChartType.delta) {
-      return;
+  toggleMarker() {
+    this.hasRadius = !this.hasRadius;
+    this.setMarker(this.hasRadius);
+    this.refresh();
+  }
+
+  // temperature stuff
+  private hasTemperature(): boolean {
+    return this.chart.options.scales.yAxes.length === 2;
+  }
+  private getTempAxis() {
+    const yAxes = this.chart.options.scales.yAxes;
+    const tempAxis = this.hasTemperature() ? yAxes[1] : null;
+    return tempAxis;
+  }
+
+  private getTempDataset() {
+    const dataset = {
+      yAxisID: '_ID_TEMP',
+      label: 'Temperature',
+      data: this.dataService.getTemperature(),
+      pointRadius: 2,
+      pointBorderColor: 'orange',
+      backgroundColor: '',
+      borderColor: 'orange'
+      // pointHoverBackgroundColor: '#fff',
+      // pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+    };
+
+    return dataset;
+  }
+
+  toogleTemperature() {
+    const yAxes = this.chart.options.scales.yAxes;
+    if (yAxes.length === 2) {
+      for (let i = 0; i < yAxes.length; i++) {
+        const ax = yAxes[i];
+        if (ax.id === '_ID_TEMP') {
+          yAxes.splice(i, 1);
+        }
+      }
+
+      const ds = this.chart.config.data.datasets;
+      for (let i = 0; i < ds.length; i++) {
+        const d = ds[i];
+        if (d.yAxisID === '_ID_TEMP') {
+          ds.splice(i, 1);
+        }
+      }
+    } else {
+      const axis = {
+        id: '_ID_TEMP',
+        type: 'linear',
+        position: 'right',
+        scaleLabel: {
+          display: true,
+          labelString: 'Temperature F',
+          fontSize: 12,
+          fontColor: 'orange'
+        },
+        ticks: { fontColor: '#C0C0C0', fontSize: 10 }
+      };
+      yAxes.push(axis);
+
+      this.chart.config.data.datasets.push(this.getTempDataset());
     }
 
-    // this.chart.options.animation.duration = '1000';
-    this.type = ChartType.delta;
-    const ds = this.chart.config.data.datasets;
-    if (ds.length === 3) {
-      this.refresh(this.configCompare());
-      // this.setMarker(this.hasRadius);
-      this.isUpdate = false;
-      this.zoom = this.zoomValue;
-      this.isUpdate = true;
-    }
-
-    this.chart.config.options.title.text = this.title + ' -- Delta';
-
-    this.chart.config.type = 'line';
-    const isOn = this.hasRadius ? 3 : 0;
-    this.chart.config.data.datasets[0].data = this.dataService.getZeros();
-    this.chart.config.data.datasets[0].label = 'Relative Actual';
-    this.chart.config.data.datasets[0].pointRadius = 0;
-    this.chart.config.data.datasets[1].data = this.dataService.getDiff();
-    this.chart.config.data.datasets[1].label = 'Forecast-Actual';
-    this.chart.config.data.datasets[1].pointRadius = isOn;
-    this.chart.update();
+    this.refresh();
   }
 
   formatLabel(value: number | null) {
@@ -410,7 +473,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  setXminMax(d1: Date, d2: Date, isUpdate = true) {
+  setXminMax(d1: Date, d2: Date) {
     if (
       d2 > d1 &&
       d1 >= this.dataService.getMinHour() &&
@@ -429,10 +492,6 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       this.chart.options.scales.xAxes[0].scaleLabel.labelString = `${m1.format(
         'MM-DD-YYYY h:mm a'
       )}  to  ${m2.format('MM-DD-YYYY h:mm a')}`;
-
-      if (isUpdate) {
-        this.chart.update();
-      }
     }
   }
 
@@ -458,6 +517,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     this.dayPointer = new Date(d1);
     this.setXminMax(d1, d2);
+    this.chart.update();
   }
 
   previousDay() {
@@ -482,12 +542,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     this.dayPointer = new Date(d1);
     this.setXminMax(d1, d2);
-  }
-
-  toggleMarker() {
-    this.hasRadius = !this.hasRadius;
-    this.setMarker(this.hasRadius);
-    this.refresh();
+    this.chart.update();
   }
 
   private setMarker(hasRadius: boolean) {
@@ -520,6 +575,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       // this.spinner.hide();
     } else {
       this.openSnackBar('Refresh data failed', ok.description);
+      this.router.navigate(['/']);
     }
   }
 
@@ -578,6 +634,11 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   set zoom(value: number) {
+    this.setZoom(value);
+    this.chart.update();
+  }
+
+  setZoom(value: number) {
     this.zoomValue = value;
     switch (value) {
       case 1:
@@ -585,7 +646,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
           const d1 = this.dayPointer;
           const d2 = new Date(d1);
           d2.setHours(d1.getHours() + 23);
-          this.setXminMax(d1, d2, this.isUpdate);
+          this.setXminMax(d1, d2);
         }
         break;
       case 2:
@@ -593,7 +654,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
           const d1 = this.dayPointer;
           const d2 = new Date(d1);
           d2.setHours(d1.getHours() + 23 + 24);
-          this.setXminMax(d1, d2, this.isUpdate);
+          this.setXminMax(d1, d2);
         }
         break;
       case 3:
@@ -601,14 +662,14 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
           const d1 = this.dayPointer;
           const d2 = new Date(d1);
           d2.setHours(d1.getHours() + 23 + 3 * 24);
-          this.setXminMax(d1, d2, this.isUpdate);
+          this.setXminMax(d1, d2);
         }
         break;
       case 4:
         {
           const d1 = this.dataService.getMinHour();
           const d2 = this.dataService.getMaxHour();
-          this.setXminMax(d1, d2, this.isUpdate);
+          this.setXminMax(d1, d2);
         }
         break;
     }
@@ -620,19 +681,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   pickDate(control, event) {
     const chosen = moment(event.value);
-    // console.log(chosen.toDate());
     this.fetchDataOn(chosen.toDate());
   }
 
-  private async stall(stallTime = 3000) {
-    await new Promise(resolve => setTimeout(resolve, stallTime));
-  }
-
-  // reFetchTabularData(startDay: Date) {
-  //   // need more logic
-  //   if (this.tabularDataSource.data.length === 0) {
-  //     this.tabularDataSource =
-  //         new MatTableDataSource(this.dataService.getTabularData(startDay));
-  //   }
+  // private async stall(stallTime = 3000) {
+  //   await new Promise(resolve => setTimeout(resolve, stallTime));
   // }
 }
