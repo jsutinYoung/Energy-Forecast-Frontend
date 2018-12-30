@@ -1,12 +1,18 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
-import {MatSnackBar} from '@angular/material';
-import {Router} from '@angular/router';
-import {Chart} from 'chart.js';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatSnackBar } from '@angular/material';
+import { Router } from '@angular/router';
+import { Chart } from 'chart.js';
 import _ from 'lodash';
 import * as moment from 'moment';
 
-import {WeeklyDataService} from '../service/weekly-data.service';
+import { WeeklyDataService } from '../service/weekly-data.service';
 
 enum ChartType {
   line = 'line',
@@ -49,20 +55,27 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   };
 
   private chart: Chart;
-  private xMinMax: {min; max};
+  private xMinMax: { min; max };
   private hasRadius = true;
   private zoomValue = 1;
   private dayPointer: Date;
   type: ChartType;
 
   tabularDataSource: MatTableDataSource<ITabularRow>;
-  displayedColumns: string[] =
-      ['date', 'forecast', 'actual', 'stderr', 'temperature'];
+  displayedColumns: string[] = [
+    'date',
+    'forecast',
+    'actual',
+    'stderr',
+    'temperature'
+  ];
   isTableOpen: boolean;
 
   constructor(
-      private dataService: WeeklyDataService, private snackBar: MatSnackBar,
-      private router: Router) {
+    private dataService: WeeklyDataService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {
     // console.log('ctor');
   }
 
@@ -80,7 +93,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       // const d = moment('2018-11-20').toDate();
       this.dataService.fetchWeeklyData(new Date());
     } else {
-      this.dataService.dataChange.emit({status: true, description: ''});
+      this.dataService.dataChange.emit({ status: true, description: '' });
     }
   }
 
@@ -101,17 +114,18 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.dayPointer = new Date(d1);
     this.zoomValue = 2;
     this.displayStdError();
-    this.tabularDataSource =
-        new MatTableDataSource(this.dataService.getTabularData(null));
+    this.tabularDataSource = new MatTableDataSource(
+      this.dataService.getTabularData(null)
+    );
 
     this.tabularDataSource.sort = this.sort;
     this.tabularDataSource.paginator = this.paginator;
   }
 
-  private configCompare(tempAxis = null): {} {
+  private configCompare(): {} {
     const myoptions = {
       animationEasing: 'easeInOutQuart',
-      animation: {duration: '200'},
+      animation: { duration: '200' },
       responsive: true,
       title: {
         display: true,
@@ -120,57 +134,66 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
         fontSize: 16
       },
       scales: {
-        xAxes: [{
-          gridLines: {color: 'rgba(255,255,255, 0.3)'},
-          type: 'time',
-          distribution: 'series',
-          time: {displayFormats: {hour: 'MMM D - hA'}, unit: 'hour'},
+        xAxes: [
+          {
+            gridLines: { color: 'rgba(255,255,255, 0.3)' },
+            type: 'time',
+            distribution: 'series',
+            time: { displayFormats: { hour: 'MMM D - hA' }, unit: 'hour' },
 
-          ticks: {
-            fontColor: '#C0C0C0',
-            fontSize: 10
-            // minor: {
-            //   fontColor: 'red'
-            // }
-            // Include a dollar sign in the ticks
-            // callback:
-            //     function(value, index, values) {
-            //       return '$' + value;
-            //     }
-          },
-          scaleLabel: {
-            display: true,
-            labelString: 'Date & Hours',
-            fontSize: 12,
-            fontColor: '#C0C0C0'
+            ticks: {
+              fontColor: '#C0C0C0',
+              fontSize: 10
+              // minor: {
+              //   fontColor: 'red'
+              // }
+              // Include a dollar sign in the ticks
+              // callback:
+              //     function(value, index, values) {
+              //       return '$' + value;
+              //     }
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Date & Hours',
+              fontSize: 12,
+              fontColor: '#C0C0C0'
+            }
           }
-        }],
-        yAxes: [{
-          gridLines: {
-            color: 'rgba(255,255,255, 1)'
-            // tickMarkLength: 45
-          },
-          scaleLabel: {
-            display: true,
-            labelString: 'Electricity (MWa)',
-            fontSize: 12,
-            fontColor: '#C0C0C0'
-          },
-          ticks: {fontColor: '#C0C0C0', fontSize: 10}
-        }]
+        ],
+        yAxes: [
+          {
+            gridLines: {
+              color: 'rgba(255,255,255, 1)'
+              // tickMarkLength: 45
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Electricity (MWa)',
+              fontSize: 12,
+              fontColor: '#C0C0C0'
+            },
+            ticks: { fontColor: '#C0C0C0', fontSize: 10 }
+          }
+        ]
       },
-      layout: {padding: {left: 20, right: 0, top: 20, bottom: 20}},
-      legend: {display: true, position: 'bottom', labels: {fontColor: 'white'}},
-      tooltips: {displayColors: 'true'}
+      layout: { padding: { left: 20, right: 0, top: 20, bottom: 20 } },
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: { fontColor: 'white' }
+      },
+      tooltips: { displayColors: 'true' }
     };
 
+    const tempAxis = this.getTempAxis();
     if (tempAxis) {
       myoptions.scales.yAxes.push(tempAxis);
     }
 
     const config = {
       type: 'line',
-      data: {labels: this.dataService.getHours(), datasets: []},
+      data: { labels: this.dataService.getHours(), datasets: [] },
       options: myoptions
     };
 
@@ -209,7 +232,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.refresh(this.configCompare(this.getTempAxis()));
+    this.refresh(this.configCompare());
     this.chart.config.data.datasets = this.configCompareDataset();
     const ds = this.chart.config.data.datasets;
     if (this.hasTemperature()) {
@@ -222,12 +245,14 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.chart.config.data.datasets[0].backgroundColor = '';
     this.chart.config.data.datasets[1].backgroundColor = '';
 
-    const {scales: {xAxes}} = this.chart.options;
+    const {
+      scales: { xAxes }
+    } = this.chart.options;
     xAxes[0].gridLines = '';
 
     this.chart.config.type = 'line';
     this.chart.config.options.title.text =
-        ChartComp.title + ' \u27f6 Forecast vs Actual';
+      ChartComp.title + ' \u27f6 Forecast vs Actual';
     this.refresh();
   }
 
@@ -236,7 +261,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.refresh(this.configCompare(this.getTempAxis()));
+    this.refresh(this.configCompare());
     this.chart.config.data.datasets = this.configCompareDataset();
     const ds = this.chart.config.data.datasets;
     if (this.hasTemperature()) {
@@ -246,17 +271,17 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     this.type = ChartType.area;
     this.setMarker(this.hasRadius);
-    this.chart.config.data.datasets[0].backgroundColor =
-        this.fillColor0.backgroundColor;
-    this.chart.config.data.datasets[1].backgroundColor =
-        this.fillColor1.backgroundColor;
+    this.chart.config.data.datasets[0].backgroundColor = this.fillColor0.backgroundColor;
+    this.chart.config.data.datasets[1].backgroundColor = this.fillColor1.backgroundColor;
 
-    const {scales: {xAxes}} = this.chart.options;
-    xAxes[0].gridLines = {color: 'rgba(255,255,255, 0.3)'};
+    const {
+      scales: { xAxes }
+    } = this.chart.options;
+    xAxes[0].gridLines = { color: 'rgba(255,255,255, 0.3)' };
 
     this.chart.config.type = 'line';
     this.chart.config.options.title.text =
-        ChartComp.title + ' \u27f6 Forecast vs Actual';
+      ChartComp.title + ' \u27f6 Forecast vs Actual';
     this.refresh();
   }
 
@@ -265,7 +290,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    this.refresh(this.configCompare(this.getTempAxis()));
+    this.refresh(this.configCompare());
     this.chart.config.data.datasets = this.configCompareDataset();
     const ds = this.chart.config.data.datasets;
     if (this.hasTemperature()) {
@@ -275,7 +300,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     this.type = ChartType.delta;
     this.chart.config.options.title.text =
-        ChartComp.title + ' \u27f6 Forecast - Actual';
+      ChartComp.title + ' \u27f6 Forecast - Actual';
 
     this.chart.config.type = 'line';
     const isOn = this.hasRadius ? 3 : 0;
@@ -294,18 +319,12 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    let tempAxis = null;
-    try {
-      tempAxis = this.getTempAxis();
-    } catch (error) {
-    }
-
-    this.refresh(this.configCompare(tempAxis));
+    this.refresh(this.configCompare());
     // this.chart.options.animation.duration = '1000';
     this.chart.config.type = 'line';
     this.type = ChartType.stderr;
     this.chart.config.options.title.text =
-        ChartComp.title + ' \u27f6 Forecast & Std Errors';
+      ChartComp.title + ' \u27f6 Forecast & Std Errors';
 
     const optionalLegend = {
       display: true,
@@ -381,12 +400,22 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // temperature stuff
-  private hasTemperature(): boolean {
+  hasTemperature(): boolean {
     return this.chart.options.scales.yAxes.length === 2;
   }
+
+  hasMarker(): boolean {
+    return this.hasRadius;
+  }
+
   private getTempAxis() {
-    const yAxes = this.chart.options.scales.yAxes;
-    const tempAxis = this.hasTemperature() ? yAxes[1] : null;
+    let tempAxis;
+    try {
+      const yAxes = this.chart.options.scales.yAxes;
+      tempAxis = this.hasTemperature() ? yAxes[1] : null;
+    } catch (err) {
+      tempAxis = null;
+    }
     return tempAxis;
   }
 
@@ -434,7 +463,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
           fontSize: 12,
           fontColor: 'orange'
         },
-        ticks: {fontColor: '#C0C0C0', fontSize: 10, min: 0}
+        ticks: { fontColor: '#C0C0C0', fontSize: 10, min: 0 }
       };
       yAxes.push(axis);
 
@@ -444,7 +473,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.refresh();
   }
 
-  formatLabel(value: number|null) {
+  formatLabel(value: number | null) {
     if (!value) {
       return '1X';
     }
@@ -462,25 +491,30 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setXminMax(d1: Date, d2: Date) {
-    if (d2 > d1 && d1 >= this.dataService.getMinHour() &&
-        d1 <= this.dataService.getMaxHour()) {
-      const {scales: {xAxes}} = this.chart.options;
+    if (
+      d2 > d1 &&
+      d1 >= this.dataService.getMinHour() &&
+      d1 <= this.dataService.getMaxHour()
+    ) {
+      const {
+        scales: { xAxes }
+      } = this.chart.options;
       xAxes[0].time.min = new Date(d1);
       xAxes[0].time.max = new Date(d2);
-      this.xMinMax = {min: new Date(d1), max: new Date(d2)};
+      this.xMinMax = { min: new Date(d1), max: new Date(d2) };
 
       const m1 = moment(d1);
       const m2 = moment(d2);
       // todo need to change later.
-      this.chart.options.scales.xAxes[0].scaleLabel.labelString =
-          `${m1.format('MM-DD-YYYY h:mm a')}  to  ${
-              m2.format('MM-DD-YYYY h:mm a')}`;
+      this.chart.options.scales.xAxes[0].scaleLabel.labelString = `${m1.format(
+        'MM-DD-YYYY h:mm a'
+      )}  to  ${m2.format('MM-DD-YYYY h:mm a')}`;
     }
   }
 
   nextDay() {
     // tslint:disable-next-line:prefer-const
-    let {min: d1, max: d2} = this.xMinMax;
+    let { min: d1, max: d2 } = this.xMinMax;
 
     const maxHourTime = this.dataService.getMaxHour().getTime();
     if ((<Date>d2).getTime() === maxHourTime) {
@@ -491,7 +525,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     d1.setHours(d1.getHours() + 24);
 
     const delta =
-        (<Date>d2).getTime() - this.dataService.getMaxHour().getTime();
+      (<Date>d2).getTime() - this.dataService.getMaxHour().getTime();
 
     if (delta > 0) {
       (<Date>d2).setTime((<Date>d2).getTime() - delta);
@@ -505,7 +539,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   previousDay() {
     // tslint:disable-next-line:prefer-const
-    let {min: d1, max: d2} = this.xMinMax;
+    let { min: d1, max: d2 } = this.xMinMax;
 
     const minHourTime = this.dataService.getMinHour().getTime();
 
@@ -544,7 +578,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   private openSnackBar(message: string, action: string) {
     // this.spinner.hide();
-    this.snackBar.open(message, action, {duration: 2000});
+    this.snackBar.open(message, action, { duration: 2000 });
   }
 
   async fetchDataOn(aDate?: Date) {
@@ -574,7 +608,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       // },
       onClick: (event: any, active: Array<any>) => {
         event.stopPropagation();
-        this.onChartClick({event, active});
+        this.onChartClick({ event, active });
       }
     };
 
@@ -600,17 +634,16 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.chart = new Chart('canvas', config);
   }
 
-  private onChartHover({active}) {
+  private onChartHover({ active }) {
     console.log(active);
   }
 
-  private onChartClick({event, active}) {
+  private onChartClick({ event, active }) {
     try {
       const index1 = active[0]._index;
       const index2 = active[1]._index;
       // console.log(index1);
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   get zoom(): number {
@@ -622,32 +655,40 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.chart.update();
   }
 
-  setZoom(value: number) {
+  private setZoom(value: number) {
     this.zoomValue = value;
     switch (value) {
-      case 1: {
-        const d1 = this.dayPointer;
-        const d2 = new Date(d1);
-        d2.setHours(d1.getHours() + 23);
-        this.setXminMax(d1, d2);
-      } break;
-      case 2: {
-        const d1 = this.dayPointer;
-        const d2 = new Date(d1);
-        d2.setHours(d1.getHours() + 23 + 24);
-        this.setXminMax(d1, d2);
-      } break;
-      case 3: {
-        const d1 = this.dayPointer;
-        const d2 = new Date(d1);
-        d2.setHours(d1.getHours() + 23 + 3 * 24);
-        this.setXminMax(d1, d2);
-      } break;
-      case 4: {
-        const d1 = this.dataService.getMinHour();
-        const d2 = this.dataService.getMaxHour();
-        this.setXminMax(d1, d2);
-      } break;
+      case 1:
+        {
+          const d1 = this.dayPointer;
+          const d2 = new Date(d1);
+          d2.setHours(d1.getHours() + 23);
+          this.setXminMax(d1, d2);
+        }
+        break;
+      case 2:
+        {
+          const d1 = this.dayPointer;
+          const d2 = new Date(d1);
+          d2.setHours(d1.getHours() + 23 + 24);
+          this.setXminMax(d1, d2);
+        }
+        break;
+      case 3:
+        {
+          const d1 = this.dayPointer;
+          const d2 = new Date(d1);
+          d2.setHours(d1.getHours() + 23 + 3 * 24);
+          this.setXminMax(d1, d2);
+        }
+        break;
+      case 4:
+        {
+          const d1 = this.dataService.getMinHour();
+          const d2 = this.dataService.getMaxHour();
+          this.setXminMax(d1, d2);
+        }
+        break;
     }
   }
 

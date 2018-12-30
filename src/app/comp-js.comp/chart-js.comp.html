@@ -37,7 +37,8 @@
     <div fxLayout="row" fxLayoutAlign="end" fxFlex="10px">
       <button mat-icon-button matTooltip="toggle temperature" (click)="toogleTemperature()">
         <!-- <i class="fas fa-temperature-high fa-lg mat-icon"></i> -->
-        <i class="fas fa-thermometer-three-quarters fa-lg mat-icon"></i>
+        <i class="fas fa-thermometer-full fa-lg mat-icon" *ngIf="hasTemperature()"></i>
+        <i class="fas fa-thermometer-empty fa-lg mat-icon" *ngIf="!hasTemperature()"></i>
       </button>
 
       <button
@@ -46,7 +47,8 @@
         (click)="toggleMarker()"
         [disabled]="disableToggleMarker()"
       >
-        <mat-icon>location_searching</mat-icon>
+        <mat-icon *ngIf="hasMarker()">location_searching</mat-icon>
+        <mat-icon *ngIf="!hasMarker()">location_disabled</mat-icon>
         <!-- <i class="fas fa-crosshairs fa-lg mat-icon"></i> -->
       </button>
 
