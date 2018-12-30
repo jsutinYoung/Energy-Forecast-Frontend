@@ -17,7 +17,6 @@ import { WeeklyDataService } from '../service/weekly-data.service';
 enum ChartType {
   line = 'line',
   area = 'area',
-  // bar = 'bar',
   stderr = 'stderr',
   delta = 'delta'
 }
@@ -111,7 +110,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   private reDrawChart() {
     // this.refresh(this.configCompare());
     const d1 = this.dataService.getMinHour();
-    const d2 = this.dataService.get48Hour();
+    // const d2 = this.dataService.get48Hour();
     this.dayPointer = new Date(d1);
     this.zoomValue = 2;
     this.displayStdError();
@@ -329,7 +328,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.chart.config.type = 'line';
     this.type = ChartType.stderr;
     this.chart.config.options.title.text =
-      ChartComp.title + ' \u27f6 Forecast vs Std Errors';
+      ChartComp.title + ' \u27f6 Forecast & Std Errors';
 
     const optionalLegend = {
       display: true,
