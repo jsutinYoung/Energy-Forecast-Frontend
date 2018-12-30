@@ -131,7 +131,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
         display: true,
         text: ChartComp.title,
         fontColor: 'white',
-        fontSize: 16
+        fontSize: 13
       },
       scales: {
         xAxes: [
