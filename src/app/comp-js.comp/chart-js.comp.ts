@@ -405,7 +405,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   private getTempDataset() {
     const dataset = {
       yAxisID: '_ID_TEMP',
-      label: 'Temperature',
+      label: '°F',
       data: this.dataService.getTemperature(),
       pointRadius: 2,
       pointBorderColor: 'orange',
@@ -442,7 +442,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
         position: 'right',
         scaleLabel: {
           display: true,
-          labelString: 'Temperature F',
+          labelString: 'Temperature °F',
           fontSize: 12,
           fontColor: 'orange'
         },
