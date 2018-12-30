@@ -1,25 +1,25 @@
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {EventEmitter, Injectable, Injector, Output} from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { EventEmitter, Injectable, Injector, Output } from '@angular/core';
 import * as moment from 'moment';
-import {Observable, of, throwError} from 'rxjs';
-import {catchError, retry} from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, retry } from 'rxjs/operators';
 
-import {ITabularRow} from '../comp-js.comp/chart-js.comp';
-import {TokenService} from './token.service';
+import { ITabularRow } from '../comp-js.comp/chart-js.comp';
+import { TokenService } from './token.service';
 // import { environment } from '../../environments/environment';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class WeeklyDataService {
   private URL = '';
   // ?start=2018-10-01T00:00:00&end=2018-10-07T23:00:00
 
   private forecast: number[] = [];
-  private baseline: number[] = [];
+  private actual: number[] = [];
   private hours: Date[] = [];
   private stderr: number[] = [];
   private temperature: number[] = [];
 
-  @Output() dataChange = new EventEmitter<{status; description}>();
+  @Output() dataChange = new EventEmitter<{ status; description }>();
 
   constructor(private http: HttpClient, private tokenService: TokenService) {
     this.URL = tokenService.baseURL + '/forecasts/comparisons';
@@ -32,7 +32,7 @@ export class WeeklyDataService {
         // const time = m.format('YYYY-MM-DDTHH:mm:ss');
         // console.log(time);
         this.hours.push(new Date(m.toDate()));
-        this.baseline.push(null);
+        this.actual.push(null);
         this.forecast.push(null);
         this.stderr.push(null);
         this.temperature.push(null);
@@ -93,12 +93,12 @@ export class WeeklyDataService {
   }
 
   getBaseline(): number[] {
-    return this.baseline;
+    return this.actual;
   }
 
   getDiff(): number[] {
     return this.forecast.map((e, i) => {
-      return e - this.baseline[i];
+      return e - this.actual[i];
     });
   }
 
@@ -132,11 +132,18 @@ export class WeeklyDataService {
         return {
           date: this.formatDate(this.hours[i], true),
           forecast: parseFloat(e.toFixed(3)),
-          baseline: parseFloat(this.baseline[i].toFixed(3)),
-          stderr: parseFloat((this.stderr[i] * 100).toFixed(2))
+          actual: parseFloat(this.actual[i].toFixed(3)),
+          stderr: parseFloat((this.stderr[i] * 100).toFixed(2)),
+          temperature: parseFloat(this.temperature[i].toFixed(2))
         };
       } else {
-        return {date: null, forecast: null, baseline: null, stderr: null};
+        return {
+          date: null,
+          forecast: null,
+          actual: null,
+          stderr: null,
+          temperature: null
+        };
       }
     });
 
@@ -150,39 +157,43 @@ export class WeeklyDataService {
     // give a date figure out the begin and end date
     try {
       if (!this.tokenService.isAuthenticated()) {
-        this.dataChange.emit({status: false, description: 'Un-authenticated'});
-        return {status: false, description: 'Un-authenticated'};
+        this.dataChange.emit({
+          status: false,
+          description: 'Un-authenticated'
+        });
+        return { status: false, description: 'Un-authenticated' };
       }
 
       const headers = new HttpHeaders({
-        'content-type': 'application/json',
+        'content-type': 'application/json'
         // Token: 'Bearer ' + this.tokenService.userToken
       });
 
       const begin = moment(date)
-                        .startOf('week')
-                        // .utc()
-                        .format('YYYY-MM-DDTHH:mm:ss');
+        .startOf('week')
+        // .utc()
+        .format('YYYY-MM-DDTHH:mm:ss');
 
       const end = moment(date)
-                      .endOf('week')
-                      // .add(23, 'hour')
-                      // .add(1, 'second')
-                      // .utc()
-                      .format('YYYY-MM-DDTHH:mm:ss');
+        .endOf('week')
+        // .add(23, 'hour')
+        // .add(1, 'second')
+        // .utc()
+        .format('YYYY-MM-DDTHH:mm:ss');
 
       // console.log(begin);
       // console.log(end);
 
       const modifiedURL = this.URL + '?start=' + begin + '&end=' + end;
 
-      const data = await this.http.get(modifiedURL, {headers: headers})
-                       .pipe(retry(3))
-                       .toPromise();
+      const data = await this.http
+        .get(modifiedURL, { headers: headers })
+        .pipe(retry(3))
+        .toPromise();
 
       if (data['status'] === 'fail') {
-        this.dataChange.emit({status: false, description: data['reason']});
-        return of({status: false, description: data['reason']}).toPromise();
+        this.dataChange.emit({ status: false, description: data['reason'] });
+        return of({ status: false, description: data['reason'] }).toPromise();
       }
 
       if (Array.isArray(data) && data.length > 0) {
@@ -199,7 +210,7 @@ export class WeeklyDataService {
           // console.log(h);
           return h;
         });
-        this.baseline = rdata.map(e => {
+        this.actual = rdata.map(e => {
           return e[1];
         });
         this.forecast = rdata.map(e => {
@@ -214,19 +225,18 @@ export class WeeklyDataService {
           this.temperature = rdata.map(e => {
             return e[4];
           });
-        } catch (err) {
-        }
+        } catch (err) {}
 
-        this.dataChange.emit({status: true, description: ''});
+        this.dataChange.emit({ status: true, description: '' });
 
-        return of({status: true, description: ''}).toPromise();
+        return of({ status: true, description: '' }).toPromise();
       } else {
-        this.dataChange.emit({status: false, description: 'Data not found'});
-        return of({status: false, description: 'Data not found'}).toPromise();
+        this.dataChange.emit({ status: false, description: 'Data not found' });
+        return of({ status: false, description: 'Data not found' }).toPromise();
       }
     } catch (error) {
-      this.dataChange.emit({status: false, description: error.message});
-      return of({status: false, description: error.message}).toPromise();
+      this.dataChange.emit({ status: false, description: error.message });
+      return of({ status: false, description: error.message }).toPromise();
     }
   }
 }

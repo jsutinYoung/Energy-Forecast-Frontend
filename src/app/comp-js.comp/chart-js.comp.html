@@ -121,12 +121,12 @@
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.forecast }}</mat-cell>
         </ng-container>
 
-        <!-- baseline Column -->
-        <ng-container matColumnDef="baseline">
+        <!-- actual Column -->
+        <ng-container matColumnDef="actual">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
-            >Baseline (MWa)</mat-header-cell
+            >Actual (MWa)</mat-header-cell
           >
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.baseline }}</mat-cell>
+          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.actual }}</mat-cell>
         </ng-container>
 
         <!-- stderr Column -->
@@ -135,6 +135,14 @@
             >StdErr %</mat-header-cell
           >
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.stderr }}</mat-cell>
+        </ng-container>
+
+         <!-- temperature Column -->
+         <ng-container matColumnDef="temperature">
+          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
+            >°F</mat-header-cell
+          >
+          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.temperature }}</mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>

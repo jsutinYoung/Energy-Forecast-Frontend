@@ -17,7 +17,7 @@ import { WeeklyDataService } from '../service/weekly-data.service';
 enum ChartType {
   line = 'line',
   area = 'area',
-  bar = 'bar',
+  // bar = 'bar',
   stderr = 'stderr',
   delta = 'delta'
 }
@@ -25,8 +25,9 @@ enum ChartType {
 export interface ITabularRow {
   date: string;
   forecast: number;
-  baseline: number;
+  actual: number;
   stderr: number;
+  temperature: number;
 }
 
 @Component({
@@ -62,7 +63,13 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   type: ChartType;
 
   tabularDataSource: MatTableDataSource<ITabularRow>;
-  displayedColumns: string[] = ['date', 'forecast', 'baseline', 'stderr'];
+  displayedColumns: string[] = [
+    'date',
+    'forecast',
+    'actual',
+    'stderr',
+    'temperature'
+  ];
   isTableOpen: boolean;
 
   constructor(
