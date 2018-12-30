@@ -244,6 +244,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     xAxes[0].gridLines = '';
 
     this.chart.config.type = 'line';
+    this.chart.config.options.title.text =
+      ChartComp.title + ' \u27f6 Forecast vs Actual';
     this.refresh();
   }
 
@@ -271,6 +273,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     xAxes[0].gridLines = { color: 'rgba(255,255,255, 0.3)' };
 
     this.chart.config.type = 'line';
+    this.chart.config.options.title.text =
+      ChartComp.title + ' \u27f6 Forecast vs Actual';
     this.refresh();
   }
 
@@ -288,7 +292,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.setZoom(this.zoomValue);
 
     this.type = ChartType.delta;
-    this.chart.config.options.title.text = ChartComp.title + ' -- Delta';
+    this.chart.config.options.title.text =
+      ChartComp.title + ' \u27f6 Forecast - Actual';
 
     this.chart.config.type = 'line';
     const isOn = this.hasRadius ? 3 : 0;
@@ -317,7 +322,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.chart.config.type = 'line';
     this.type = ChartType.stderr;
     this.chart.config.options.title.text =
-      ChartComp.title + ' -- Forecast & Std Errors';
+      ChartComp.title + ' \u27f6 Forecast vs Std Errors';
 
     const optionalLegend = {
       display: true,
