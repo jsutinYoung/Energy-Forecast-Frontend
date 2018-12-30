@@ -115,7 +115,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.zoomValue = 2;
     this.displayStdError();
     this.tabularDataSource = new MatTableDataSource(
-      this.dataService.getTabularData(null)
+      this.dataService.getTabularData()
     );
 
     this.tabularDataSource.sort = this.sort;
@@ -437,14 +437,16 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   toogleTemperature() {
     const yAxes = this.chart.options.scales.yAxes;
-    if (yAxes.length === 2) {
+
+    if (this.hasTemperature()) {
+      // remove the temp y-axis
       for (let i = 0; i < yAxes.length; i++) {
         const ax = yAxes[i];
         if (ax.id === '_ID_TEMP') {
           yAxes.splice(i, 1);
         }
       }
-
+      // remove dataset
       const ds = this.chart.config.data.datasets;
       for (let i = 0; i < ds.length; i++) {
         const d = ds[i];
@@ -453,6 +455,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     } else {
+      // add temp y-aix
       const axis = {
         id: '_ID_TEMP',
         type: 'linear',
@@ -467,6 +470,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       };
       yAxes.push(axis);
 
+      // add temp dataset
       this.chart.config.data.datasets.push(this.getTempDataset());
     }
 
