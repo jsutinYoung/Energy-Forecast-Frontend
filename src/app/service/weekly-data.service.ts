@@ -126,7 +126,7 @@ export class WeeklyDataService {
     return this.temperature;
   }
 
-  getTabularData(startDate: Date): ITabularRow[] {
+  getTabularData(): ITabularRow[] {
     const result = this.forecast.map((e, i) => {
       if (e) {
         // may be optional
