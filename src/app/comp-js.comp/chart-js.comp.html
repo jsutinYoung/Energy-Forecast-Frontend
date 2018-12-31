@@ -54,31 +54,47 @@
 
       <button mat-icon-button matTooltip="refresh" (click)="fetchDataOn()">
         <mat-icon>autorenew</mat-icon>
-        <!-- <i class="fab fa-sync fa-2x mat-icon"></i> -->
       </button>
 
-      <button mat-icon-button [disabled]="true"><mat-icon>more_vert</mat-icon></button>
+      <button mat-icon-button [disabled]="true">
+        <mat-icon>more_vert</mat-icon>
+      </button>
 
-      <button mat-icon-button matTooltip="delta chart" (click)="displayDelta()" [color]="chartColor('delta')">
+      <button
+        mat-icon-button
+        matTooltip="delta chart"
+        (click)="displayDelta()"
+        [color]="chartColor('delta')"
+      >
         <mat-icon>compare_arrows</mat-icon>
       </button>
 
-      <!-- <button mat-icon-button matTooltip="bar chart" (click)="displayBar()"> -->
-        <!-- <mat-icon> bar_chart</mat-icon> -->
-        <!-- <i class="fas fa-chart-bar fa-lg mat-icon"></i> -->
-      <!-- </button> -->
-
-      <button mat-icon-button matTooltip="line chart" (click)="displayLine()" [color]="chartColor('line')">
+      <button
+        mat-icon-button
+        matTooltip="line chart"
+        (click)="displayLine()"
+        [color]="chartColor('line')"
+      >
         <!-- <mat-icon> show_chart</mat-icon> -->
         <i class="fas fa-chart-line fa-lg mat-icon"></i>
       </button>
 
-      <button mat-icon-button matTooltip="area chart" (click)="displayArea()" [color]="chartColor('area')">
+      <button
+        mat-icon-button
+        matTooltip="area chart"
+        (click)="displayArea()"
+        [color]="chartColor('area')"
+      >
         <!-- <mat-icon>photo</mat-icon> -->
         <i class="fa fa-chart-area fa-lg mat-icon"></i>
       </button>
 
-      <button mat-icon-button matTooltip="stderr chart" (click)="displayStdError()" [color]="chartColor('stderr')">
+      <button
+        mat-icon-button
+        matTooltip="stderr chart"
+        (click)="displayStdError()"
+        [color]="chartColor('stderr')"
+      >
         <mat-icon>graphic_eq</mat-icon>
         <!-- <i class="fab fa-creative-commons-sampling fa-2x mat-icon"></i> -->
       </button>
@@ -139,12 +155,14 @@
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.stderr }}</mat-cell>
         </ng-container>
 
-         <!-- temperature Column -->
-         <ng-container matColumnDef="temperature">
+        <!-- temperature Column -->
+        <ng-container matColumnDef="temperature">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
             >°F</mat-header-cell
           >
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.temperature }}</mat-cell>
+          <mat-cell class="my-mat-cell" *matCellDef="let element">{{
+            element.temperature
+          }}</mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
