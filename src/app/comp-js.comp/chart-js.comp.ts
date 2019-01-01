@@ -125,7 +125,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   private configCompare(): {} {
     const myoptions = {
       animationEasing: 'easeInOutQuart',
-      animation: { duration: '200' },
+      animation: { duration: '100' },
       responsive: true,
       title: {
         display: true,
@@ -514,6 +514,18 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
         'MM-DD-YYYY h:mm a'
       )}  to  ${m2.format('MM-DD-YYYY h:mm a')}`;
     }
+  }
+
+  reachedRightEnd(): boolean {
+    const { min: d1, max: d2 } = this.xMinMax;
+    const maxHourTime = this.dataService.getMaxHour().getTime();
+    return (<Date>d2).getTime() === maxHourTime;
+  }
+
+  reachedLeftEnd(): boolean {
+    const { min: d1, max: d2 } = this.xMinMax;
+    const minHourTime = this.dataService.getMinHour().getTime();
+    return (<Date>d1).getTime() === minHourTime;
   }
 
   nextDay() {

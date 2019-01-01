@@ -24,11 +24,11 @@
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
 
-      <button mat-icon-button matTooltip="previous 24 hrs" (click)="previousDay()">
+      <button mat-icon-button matTooltip="previous 24 hrs" (click)="previousDay()" [disabled]="reachedLeftEnd()">
         <mat-icon>arrow_back</mat-icon>
       </button>
 
-      <button mat-icon-button matTooltip="next 24 hrs" (click)="nextDay()">
+      <button mat-icon-button matTooltip="next 24 hrs" (click)="nextDay()" [disabled]="reachedRightEnd()">
         <mat-icon>arrow_forward</mat-icon>
       </button>
       <!-- (click)="next24hour()" -->
@@ -56,9 +56,7 @@
         <mat-icon>autorenew</mat-icon>
       </button>
 
-      <button mat-icon-button [disabled]="true">
-        <mat-icon>more_vert</mat-icon>
-      </button>
+      <button mat-icon-button [disabled]="true"><mat-icon>more_vert</mat-icon></button>
 
       <button
         mat-icon-button
