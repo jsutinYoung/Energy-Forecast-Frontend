@@ -511,8 +511,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       const m2 = moment(d2);
       // todo need to change later.
       this.chart.options.scales.xAxes[0].scaleLabel.labelString = `${m1.format(
-        'MM-DD-YYYY h:mm a'
-      )}  to  ${m2.format('MM-DD-YYYY h:mm a')}`;
+        '(ddd) MM-DD-YYYY h:mm a'
+      )}  \u27f6  ${m2.format('(ddd) MM-DD-YYYY h:mm a')}`;
     }
   }
 
