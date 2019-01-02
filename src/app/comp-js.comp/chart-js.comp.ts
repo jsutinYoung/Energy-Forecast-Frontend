@@ -252,7 +252,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     this.chart.config.type = 'line';
     this.chart.config.options.title.text =
-      ChartComp.title + ' \u27f6 Forecast vs Actual';
+      ChartComp.title + ' \u27f9 Forecast vs Actual';
     this.refresh();
   }
 
@@ -281,7 +281,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     this.chart.config.type = 'line';
     this.chart.config.options.title.text =
-      ChartComp.title + ' \u27f6 Forecast vs Actual';
+      ChartComp.title + ' \u27f9 Forecast vs Actual';
     this.refresh();
   }
 
@@ -300,7 +300,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     this.type = ChartType.delta;
     this.chart.config.options.title.text =
-      ChartComp.title + ' \u27f6 Forecast - Actual';
+      ChartComp.title + ' \u27f9 Forecast - Actual';
 
     this.chart.config.type = 'line';
     const isOn = this.hasRadius ? 3 : 0;
@@ -324,7 +324,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.chart.config.type = 'line';
     this.type = ChartType.stderr;
     this.chart.config.options.title.text =
-      ChartComp.title + ' \u27f6 Forecast & Std Errors';
+      ChartComp.title + ' \u27f9 Forecast & Std Errors';
 
     const optionalLegend = {
       display: true,
