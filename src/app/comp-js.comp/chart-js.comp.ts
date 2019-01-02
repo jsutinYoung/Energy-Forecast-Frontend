@@ -512,7 +512,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       // todo need to change later.
       this.chart.options.scales.xAxes[0].scaleLabel.labelString = `${m1.format(
         '(ddd) MM-DD-YYYY h:mm a'
-      )}  \u27f6  ${m2.format('(ddd) MM-DD-YYYY h:mm a')}`;
+      )}  \u27fa  ${m2.format('(ddd) MM-DD-YYYY h:mm a')}`;
     }
   }
 
