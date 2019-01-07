@@ -608,7 +608,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       // this.spinner.hide();
     } else {
       this.openSnackBar('Refresh data failed', ok.description);
-      this.router.navigate(['/']);
+      // to do need to differntiate error message
+      // this.router.navigate(['/']);
     }
   }
 
