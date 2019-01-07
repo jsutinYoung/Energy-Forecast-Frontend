@@ -85,7 +85,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
         this.reDrawChart();
       } else {
         this.openSnackBar('Fetch weekly data failed', result.description);
-        this.router.navigate(['/']);
+        // this.router.navigate(['/']);
       }
     });
 
@@ -401,6 +401,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   // temperature stuff
   hasTemperature(): boolean {
+    if (!this.dataService.hasData()) {
+      return false;
+    }
+
     return this.chart.options.scales.yAxes.length === 2;
   }
 
@@ -435,7 +439,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     return dataset;
   }
 
-  toogleTemperature() {
+  togleTemperature() {
     const yAxes = this.chart.options.scales.yAxes;
 
     if (this.hasTemperature()) {
@@ -517,12 +521,19 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   reachedRightEnd(): boolean {
+    if (!this.dataService.hasData()) {
+      return false;
+    }
     const { min: d1, max: d2 } = this.xMinMax;
     const maxHourTime = this.dataService.getMaxHour().getTime();
     return (<Date>d2).getTime() === maxHourTime;
   }
 
   reachedLeftEnd(): boolean {
+    if (!this.dataService.hasData()) {
+      return false;
+    }
+
     const { min: d1, max: d2 } = this.xMinMax;
     const minHourTime = this.dataService.getMinHour().getTime();
     return (<Date>d1).getTime() === minHourTime;
