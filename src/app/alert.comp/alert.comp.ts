@@ -1,3 +1,11 @@
+//
+// CS 421 Keystore project: Energy Forecast Tool
+// Author: Justin Young
+// Team: Justin Young, John Karasev, Sean Bates
+// 2019
+//
+
+
 import {Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';

@@ -1,3 +1,10 @@
+//
+// CS 421 Keystore project: Energy Forecast Tool
+// Author: Justin Young
+// Team: Justin Young, John Karasev, Sean Bates
+// 2019
+//
+
 import {EventEmitter, Injectable} from '@angular/core';
 // const fakeAlertsJson = require('../../assets/testAlert.json');
 import * as fakeAlertsJson from '../../assets/testAlert.json';

@@ -1,3 +1,10 @@
+//
+// CS 421 Keystore project: Energy Forecast Tool
+// Author: Justin Young
+// Team: Justin Young, John Karasev, Sean Bates
+// 2019
+//
+
 /* "Barrel" of Http Interceptors */
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
