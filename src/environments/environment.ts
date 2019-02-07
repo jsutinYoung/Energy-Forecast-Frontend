@@ -1,3 +1,10 @@
+//
+// CS 421 Keystore project: Energy Forecast Tool
+// Author: Justin Young
+// Team: Justin Young, John Karasev, Sean Bates
+// 2019
+//
+
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
