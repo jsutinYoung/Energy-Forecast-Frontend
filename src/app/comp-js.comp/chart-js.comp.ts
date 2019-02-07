@@ -70,6 +70,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     'temperature'
   ];
   isTableOpen: boolean;
+  dateFilter = (d: Date): boolean => {
+    const now = new Date();
+    return (d > now ? false : true);
+  }
 
   constructor(
     private dataService: WeeklyDataService,

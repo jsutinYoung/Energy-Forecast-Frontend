@@ -17,6 +17,7 @@
         #date_input
         matInput
         [matDatepicker]="picker"
+        [matDatepickerFilter]="dateFilter"
         placeholder="Choose a date"
         class="hidden"
         (dateInput)="pickDate(date_input, $event)"
