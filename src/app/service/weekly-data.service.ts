@@ -17,11 +17,12 @@ import { TokenService } from './token.service';
 
 @Injectable({ providedIn: 'root' })
 export class WeeklyDataService {
-  private URL = '';
+  private forecastURL = '';
+  private loadURL = '';
   // ?start=2018-10-01T00:00:00&end=2018-10-07T23:00:00
 
   private forecast: number[] = [];
-  private actual: number[] = [];
+  private load: number[] = [];
   private hours: Date[] = [];
   private stderr: number[] = [];
   private temperature: number[] = [];
@@ -30,7 +31,9 @@ export class WeeklyDataService {
   @Output() dataChange = new EventEmitter<{ status; description }>();
 
   constructor(private http: HttpClient, private tokenService: TokenService) {
-    this.URL = tokenService.baseURL + '/forecasts/comparisons';
+    // this.URL = tokenService.baseURL + '/forecasts/comparisons';
+    this.forecastURL = tokenService.baseURL + '/forecasts';
+    this.loadURL = tokenService.baseURL + '/loads';
   }
 
   fillDefaultData(date: Date) {
@@ -40,7 +43,7 @@ export class WeeklyDataService {
         // const time = m.format('YYYY-MM-DDTHH:mm:ss');
         // console.log(time);
         this.hours.push(new Date(m.toDate()));
-        this.actual.push(null);
+        this.load.push(null);
         this.forecast.push(null);
         this.stderr.push(null);
         this.temperature.push(null);
@@ -100,13 +103,13 @@ export class WeeklyDataService {
     return this.forecast;
   }
 
-  getBaseline(): number[] {
-    return this.actual;
+  getLoad(): number[] {
+    return this.load;
   }
 
   getDiff(): number[] {
     return this.forecast.map((e, i) => {
-      return e - this.actual[i];
+      return e - this.load[i];
     });
   }
 
@@ -148,7 +151,7 @@ export class WeeklyDataService {
         // may be optional
         let load;
         try {
-          load = parseFloat(this.actual[i].toFixed(3));
+          load = parseFloat(this.load[i].toFixed(3));
         } catch (err) {
           load = null;
         }
@@ -177,34 +180,21 @@ export class WeeklyDataService {
   hasData(): boolean {
     return this.hours.length > 0;
   }
-  async fetchWeeklyData(date: Date) {
-    // give a date figure out the begin and end date
+
+  hasLoad(): boolean {
+    return this.load && this.load.length > 0;
+  }
+
+  // todo this is legacy code need to remove
+  async legacyRead(date: Date, headers: HttpHeaders) {
+    // old style
     try {
-      if (!this.tokenService.isAuthenticated()) {
-        this.dataChange.emit({ status: false, description: 'Un-authenticated' });
-        return { status: false, description: 'Un-authenticated' };
-      }
-
-      const headers = new HttpHeaders({
-        'content-type': 'application/json'
-        // Token: 'Bearer ' + this.tokenService.userToken
-      });
-
       const begin = moment(date);
-      // .startOf('week')
-      // .utc()
-      //
       const begintext = begin.format('YYYY-MM-DDTHH:mm:ss');
-
       const end = begin.clone().add(7, 'day');
       const endtext = end.format('YYYY-MM-DDTHH:mm:ss');
-      // .endOf('week')
-      // .add(23, 'hour')
-      // .add(1, 'second')
-      // .utc()
-
-      const modifiedURL = this.URL + '?start=' + begintext + '&end=' + endtext;
-
+      const URL = this.tokenService.baseURL + '/forecasts/comparisons';
+      const modifiedURL = URL + '?start=' + begintext + '&end=' + endtext;
       const data = await this.http
         .get(modifiedURL, { headers: headers })
         .pipe(retry(3))
@@ -229,7 +219,7 @@ export class WeeklyDataService {
           // console.log(h);
           return h;
         });
-        this.actual = rdata.map(e => {
+        this.load = rdata.map(e => {
           return e[1];
         });
         this.forecast = rdata.map(e => {
@@ -255,6 +245,108 @@ export class WeeklyDataService {
         return of({ status: false, description: 'Data not found' }).toPromise();
       }
     } catch (error) {
+      this.dataChange.emit({ status: false, description: error.message });
+      return of({ status: false, description: error.message }).toPromise();
+    }
+  }
+
+  async readLoad(date: Date, headers: HttpHeaders) {
+    // now try the load data if any
+    const begin = moment(date);
+    const begintext = begin.format('YYYY-MM-DDTHH:mm:ss');
+    const end = begin.clone().add(6, 'day');
+    end.add(23, 'hour');
+    const endtext = end.format('YYYY-MM-DDTHH:mm:ss');
+    const lURL = this.loadURL + '?start=' + begintext + '&end=' + endtext + '&local=1';
+    const data = await this.http
+      .get(lURL, { headers: headers })
+      .pipe(retry(3))
+      .toPromise();
+
+    if (data['status'] === 'fail') {
+      return; // ok to silently ignore
+    }
+
+    if (Array.isArray(data) && data.length > 0 && data.length <= 168) {
+      // start proessing
+      const rdata = data.reduceRight((acc, e) => {
+        acc.push(e);
+        return acc;
+      }, []);
+
+      // GMT+01:00
+      this.load = rdata.map(e => {
+        // console.log(e[0]);
+        return e[1];
+      });
+    }
+  }
+
+  async fetchWeeklyData(date: Date) {
+    const headers = new HttpHeaders({
+      'content-type': 'application/json'
+      // Token: 'Bearer ' + this.tokenService.userToken
+    });
+
+    try {
+      if (!this.tokenService.isAuthenticated()) {
+        this.dataChange.emit({ status: false, description: 'Un-authenticated' });
+        return { status: false, description: 'Un-authenticated' };
+      }
+
+      // read the main forecast data
+      const gen_date = moment(date).format('YYYY-MM-DDTHH:mm:ss');
+      const fURL = this.forecastURL + '?gen_date=' + gen_date + '&local=1';
+      const data = await this.http
+        .get(fURL, { headers: headers })
+        .pipe(retry(3))
+        .toPromise();
+
+      if (data['status'] === 'fail') {
+        this.dataChange.emit({ status: false, description: data['reason'] });
+        return of({ status: false, description: data['reason'] }).toPromise();
+      }
+
+      if (Array.isArray(data) && data.length > 0) {
+        // start proessing
+        const rdata = data.reduceRight((acc, e) => {
+          acc.push(e);
+          return acc;
+        }, []);
+
+        // GMT+01:00
+        this.hours = rdata.map(e => {
+          const h: Date = moment(e[0]).toDate();
+          return h;
+        });
+        this.load = null;
+        this.forecast = rdata.map(e => {
+          return e[1];
+        });
+        this.stderr = rdata.map(e => {
+          return e[2];
+        });
+
+        // optional temperature
+        try {
+          this.temperature = rdata.map(e => {
+            return e[3];
+          });
+        } catch (err) {}
+
+        this.theDate = date; // keep track chosen date
+        this.readLoad(date, headers); // read load if any
+
+        this.dataChange.emit({ status: true, description: '' });
+        return of({ status: true, description: '' }).toPromise();
+      } else {
+        this.dataChange.emit({ status: false, description: 'Data not found' });
+        return of({ status: false, description: 'Data not found' }).toPromise();
+      }
+    } catch (error) {
+      // todo for backword compatibility need to remove
+      return this.legacyRead(date, headers);
+
       this.dataChange.emit({ status: false, description: error.message });
       return of({ status: false, description: error.message }).toPromise();
     }

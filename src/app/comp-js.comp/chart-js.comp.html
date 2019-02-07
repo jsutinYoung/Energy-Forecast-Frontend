@@ -80,6 +80,7 @@
       <button
         mat-icon-button
         matTooltip="area chart"
+        [disabled]=!hasLoad()
         (click)="displayArea()"
         [color]="chartColor('area')"
       >

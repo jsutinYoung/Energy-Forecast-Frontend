@@ -5,13 +5,7 @@
 // 2019
 //
 
-import {
-  AfterViewInit,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
@@ -69,17 +63,11 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   type: ChartType;
 
   tabularDataSource: MatTableDataSource<ITabularRow>;
-  displayedColumns: string[] = [
-    'date',
-    'forecast',
-    'load',
-    'stderr',
-    'temperature'
-  ];
+  displayedColumns: string[] = ['date', 'forecast', 'load', 'stderr', 'temperature'];
   isTableOpen: boolean;
   dateFilter = (d: Date): boolean => {
     const now = new Date();
-    return (d > now ? false : true);
+    return d > now ? false : true;
   }
 
   constructor(
@@ -102,7 +90,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     if (!this.dataService.hasData()) {
       // const d = moment('2018-11-20').toDate();
-      this.dataService.fetchWeeklyData(new Date());
+      this.dataService.fetchWeeklyData(moment().startOf('day').toDate());
     } else {
       this.dataService.dataChange.emit({ status: true, description: '' });
     }
@@ -125,9 +113,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.dayPointer = new Date(d1);
     this.zoomValue = 2;
     this.displayStdError();
-    this.tabularDataSource = new MatTableDataSource(
-      this.dataService.getTabularData()
-    );
+    this.tabularDataSource = new MatTableDataSource(this.dataService.getTabularData());
 
     this.tabularDataSource.sort = this.sort;
     this.tabularDataSource.paginator = this.paginator;
@@ -213,7 +199,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   private configCompareDataset() {
     let dataset0 = {
       label: 'Load',
-      data: this.dataService.getBaseline(),
+      data: this.dataService.getLoad(),
       // pointRadius: 3,
 
       pointBorderColor: '#fff',
@@ -293,9 +279,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.chart.config.type = 'line';
 
     const m = moment(this.dataService.chosenDate).format('MM-DD-YYYY (ddd)');
-    this.chart.config.options.title.text =
-      ChartComp.title + '\u27f9 ' + m + ' with Load';
-
+    this.chart.config.options.title.text = ChartComp.title + '\u27f9 ' + m + ' with Load';
 
     // this.chart.config.options.title.text =
     //   ChartComp.title + ' \u27f9 Forecast vs Load';
@@ -342,8 +326,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.type = ChartType.stderr;
 
     const m = moment(this.dataService.chosenDate).format('MM-DD-YYYY (ddd)');
-    this.chart.config.options.title.text =
-      ChartComp.title + '\u27f9 ' + m;
+    this.chart.config.options.title.text = ChartComp.title + '\u27f9 ' + m;
 
     const optionalLegend = {
       display: true,
@@ -429,6 +412,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   hasMarker(): boolean {
     return this.hasRadius;
+  }
+
+  hasLoad(): boolean {
+    return this.dataService.hasLoad();
   }
 
   private getTempAxis() {
@@ -518,11 +505,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setXminMax(d1: Date, d2: Date) {
-    if (
-      d2 > d1 &&
-      d1 >= this.dataService.getMinHour() &&
-      d1 <= this.dataService.getMaxHour()
-    ) {
+    if (d2 > d1 && d1 >= this.dataService.getMinHour() && d1 <= this.dataService.getMaxHour()) {
       const {
         scales: { xAxes }
       } = this.chart.options;
@@ -570,8 +553,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     d2.setHours(d2.getHours() + 24);
     d1.setHours(d1.getHours() + 24);
 
-    const delta =
-      (<Date>d2).getTime() - this.dataService.getMaxHour().getTime();
+    const delta = (<Date>d2).getTime() - this.dataService.getMaxHour().getTime();
 
     if (delta > 0) {
       (<Date>d2).setTime((<Date>d2).getTime() - delta);
