@@ -59,24 +59,23 @@
 
       <button mat-icon-button [disabled]="true"><mat-icon>more_vert</mat-icon></button>
 
-      <button
+      <!-- <button
         mat-icon-button
         matTooltip="delta chart"
         (click)="displayDelta()"
         [color]="chartColor('delta')"
       >
         <mat-icon>compare_arrows</mat-icon>
-      </button>
+      </button> -->
 
-      <button
+      <!-- <button
         mat-icon-button
         matTooltip="line chart"
         (click)="displayLine()"
         [color]="chartColor('line')"
       >
-        <!-- <mat-icon> show_chart</mat-icon> -->
         <i class="fas fa-chart-line fa-lg mat-icon"></i>
-      </button>
+      </button> -->
 
       <button
         mat-icon-button
@@ -139,11 +138,11 @@
         </ng-container>
 
         <!-- actual Column -->
-        <ng-container matColumnDef="actual">
+        <ng-container matColumnDef="load">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
-            >Actual (MWa)</mat-header-cell
+            >Load (MWa)</mat-header-cell
           >
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.actual }}</mat-cell>
+          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.load }}</mat-cell>
         </ng-container>
 
         <!-- stderr Column -->

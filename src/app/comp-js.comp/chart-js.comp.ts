@@ -31,7 +31,7 @@ enum ChartType {
 export interface ITabularRow {
   date: string;
   forecast: number;
-  actual: number;
+  load: number;
   stderr: number;
   temperature: number;
 }
@@ -44,7 +44,7 @@ export interface ITabularRow {
 
 // tslint:disable-next-line:component-class-suffix
 export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
-  static readonly title = 'NWPCC Energy Demand';
+  static readonly title = 'Forecast On ';
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -72,7 +72,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   displayedColumns: string[] = [
     'date',
     'forecast',
-    'actual',
+    'load',
     'stderr',
     'temperature'
   ];
@@ -212,7 +212,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
   private configCompareDataset() {
     let dataset0 = {
-      label: 'Actual',
+      label: 'Load',
       data: this.dataService.getBaseline(),
       // pointRadius: 3,
 
@@ -238,34 +238,34 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     return yDatasets;
   }
 
-  displayLine() {
-    if (this.type === ChartType.line) {
-      return;
-    }
+  // displayLine() {
+  //   if (this.type === ChartType.line) {
+  //     return;
+  //   }
 
-    this.refresh(this.configCompare());
-    this.chart.config.data.datasets = this.configCompareDataset();
-    const ds = this.chart.config.data.datasets;
-    if (this.hasTemperature()) {
-      ds.push(this.getTempDataset());
-    }
-    this.setZoom(this.zoomValue);
+  //   this.refresh(this.configCompare());
+  //   this.chart.config.data.datasets = this.configCompareDataset();
+  //   const ds = this.chart.config.data.datasets;
+  //   if (this.hasTemperature()) {
+  //     ds.push(this.getTempDataset());
+  //   }
+  //   this.setZoom(this.zoomValue);
 
-    this.type = ChartType.line;
-    this.setMarker(this.hasRadius);
-    this.chart.config.data.datasets[0].backgroundColor = '';
-    this.chart.config.data.datasets[1].backgroundColor = '';
+  //   this.type = ChartType.line;
+  //   this.setMarker(this.hasRadius);
+  //   this.chart.config.data.datasets[0].backgroundColor = '';
+  //   this.chart.config.data.datasets[1].backgroundColor = '';
 
-    const {
-      scales: { xAxes }
-    } = this.chart.options;
-    xAxes[0].gridLines = '';
+  //   const {
+  //     scales: { xAxes }
+  //   } = this.chart.options;
+  //   xAxes[0].gridLines = '';
 
-    this.chart.config.type = 'line';
-    this.chart.config.options.title.text =
-      ChartComp.title + ' \u27f9 Forecast vs Actual';
-    this.refresh();
-  }
+  //   this.chart.config.type = 'line';
+  //   this.chart.config.options.title.text =
+  //     ChartComp.title + ' \u27f9 Forecast vs Actual';
+  //   this.refresh();
+  // }
 
   displayArea() {
     if (this.type === ChartType.area) {
@@ -291,39 +291,45 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     xAxes[0].gridLines = { color: 'rgba(255,255,255, 0.3)' };
 
     this.chart.config.type = 'line';
+
+    const m = moment(this.dataService.chosenDate).format('MM-DD-YYYY (ddd)');
     this.chart.config.options.title.text =
-      ChartComp.title + ' \u27f9 Forecast vs Actual';
+      ChartComp.title + '\u27f9 ' + m + ' with Load';
+
+
+    // this.chart.config.options.title.text =
+    //   ChartComp.title + ' \u27f9 Forecast vs Load';
     this.refresh();
   }
 
-  displayDelta() {
-    if (this.type === ChartType.delta) {
-      return;
-    }
+  // displayDelta() {
+  //   if (this.type === ChartType.delta) {
+  //     return;
+  //   }
 
-    this.refresh(this.configCompare());
-    this.chart.config.data.datasets = this.configCompareDataset();
-    const ds = this.chart.config.data.datasets;
-    if (this.hasTemperature()) {
-      ds.push(this.getTempDataset());
-    }
-    this.setZoom(this.zoomValue);
+  //   this.refresh(this.configCompare());
+  //   this.chart.config.data.datasets = this.configCompareDataset();
+  //   const ds = this.chart.config.data.datasets;
+  //   if (this.hasTemperature()) {
+  //     ds.push(this.getTempDataset());
+  //   }
+  //   this.setZoom(this.zoomValue);
 
-    this.type = ChartType.delta;
-    this.chart.config.options.title.text =
-      ChartComp.title + ' \u27f9 Forecast - Actual';
+  //   this.type = ChartType.delta;
+  //   this.chart.config.options.title.text =
+  //     ChartComp.title + ' \u27f9 Forecast - Actual';
 
-    this.chart.config.type = 'line';
-    const isOn = this.hasRadius ? 3 : 0;
-    ds[0].data = this.dataService.getZeros();
-    ds[0].label = 'Relative Actual';
-    ds[0].pointRadius = 0;
-    ds[1].data = this.dataService.getDiff();
-    ds.label = 'Forecast-Actual';
-    ds[1].pointRadius = isOn;
+  //   this.chart.config.type = 'line';
+  //   const isOn = this.hasRadius ? 3 : 0;
+  //   ds[0].data = this.dataService.getZeros();
+  //   ds[0].label = 'Relative Actual';
+  //   ds[0].pointRadius = 0;
+  //   ds[1].data = this.dataService.getDiff();
+  //   ds.label = 'Forecast-Actual';
+  //   ds[1].pointRadius = isOn;
 
-    this.refresh();
-  }
+  //   this.refresh();
+  // }
 
   displayStdError() {
     if (this.type === ChartType.stderr) {
@@ -334,8 +340,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     // this.chart.options.animation.duration = '1000';
     this.chart.config.type = 'line';
     this.type = ChartType.stderr;
+
+    const m = moment(this.dataService.chosenDate).format('MM-DD-YYYY (ddd)');
     this.chart.config.options.title.text =
-      ChartComp.title + ' \u27f9 Forecast & Std Errors';
+      ChartComp.title + '\u27f9 ' + m;
 
     const optionalLegend = {
       display: true,

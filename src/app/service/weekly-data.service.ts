@@ -5,17 +5,17 @@
 // 2019
 //
 
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {EventEmitter, Injectable, Injector, Output} from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { EventEmitter, Injectable, Injector, Output } from '@angular/core';
 import * as moment from 'moment';
-import {Observable, of, throwError} from 'rxjs';
-import {catchError, retry} from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, retry } from 'rxjs/operators';
 
-import {ITabularRow} from '../comp-js.comp/chart-js.comp';
-import {TokenService} from './token.service';
+import { ITabularRow } from '../comp-js.comp/chart-js.comp';
+import { TokenService } from './token.service';
 // import { environment } from '../../environments/environment';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class WeeklyDataService {
   private URL = '';
   // ?start=2018-10-01T00:00:00&end=2018-10-07T23:00:00
@@ -25,15 +25,16 @@ export class WeeklyDataService {
   private hours: Date[] = [];
   private stderr: number[] = [];
   private temperature: number[] = [];
+  private theDate: Date;
 
-  @Output() dataChange = new EventEmitter<{status; description}>();
+  @Output() dataChange = new EventEmitter<{ status; description }>();
 
   constructor(private http: HttpClient, private tokenService: TokenService) {
     this.URL = tokenService.baseURL + '/forecasts/comparisons';
   }
 
   fillDefaultData(date: Date) {
-    let m = moment(date).startOf('week');
+    let m = moment(date);
     for (let i = 1; i <= 7; i++) {
       for (let h = 0; h <= 23; h++) {
         // const time = m.format('YYYY-MM-DDTHH:mm:ss');
@@ -145,17 +146,17 @@ export class WeeklyDataService {
         }
 
         // may be optional
-        let actual;
+        let load;
         try {
-          actual = parseFloat(this.actual[i].toFixed(3));
+          load = parseFloat(this.actual[i].toFixed(3));
         } catch (err) {
-          actual = null;
+          load = null;
         }
 
         return {
           date: this.formatDate(this.hours[i], true),
           forecast: parseFloat(e.toFixed(3)),
-          actual: actual,
+          load: load,
           stderr: parseFloat((this.stderr[i] * 100).toFixed(2)),
           temperature: temp
         };
@@ -163,7 +164,7 @@ export class WeeklyDataService {
         return {
           date: null,
           forecast: null,
-          actual: null,
+          load: null,
           stderr: null,
           temperature: null
         };
@@ -180,8 +181,8 @@ export class WeeklyDataService {
     // give a date figure out the begin and end date
     try {
       if (!this.tokenService.isAuthenticated()) {
-        this.dataChange.emit({status: false, description: 'Un-authenticated'});
-        return {status: false, description: 'Un-authenticated'};
+        this.dataChange.emit({ status: false, description: 'Un-authenticated' });
+        return { status: false, description: 'Un-authenticated' };
       }
 
       const headers = new HttpHeaders({
@@ -189,27 +190,29 @@ export class WeeklyDataService {
         // Token: 'Bearer ' + this.tokenService.userToken
       });
 
-      const begin = moment(date)
-                        .startOf('week')
-                        // .utc()
-                        .format('YYYY-MM-DDTHH:mm:ss');
+      const begin = moment(date);
+      // .startOf('week')
+      // .utc()
+      //
+      const begintext = begin.format('YYYY-MM-DDTHH:mm:ss');
 
-      const end = moment(date)
-                      .endOf('week')
-                      // .add(23, 'hour')
-                      // .add(1, 'second')
-                      // .utc()
-                      .format('YYYY-MM-DDTHH:mm:ss');
+      const end = begin.clone().add(7, 'day');
+      const endtext = end.format('YYYY-MM-DDTHH:mm:ss');
+      // .endOf('week')
+      // .add(23, 'hour')
+      // .add(1, 'second')
+      // .utc()
 
-      const modifiedURL = this.URL + '?start=' + begin + '&end=' + end;
+      const modifiedURL = this.URL + '?start=' + begintext + '&end=' + endtext;
 
-      const data = await this.http.get(modifiedURL, {headers: headers})
-                       .pipe(retry(3))
-                       .toPromise();
+      const data = await this.http
+        .get(modifiedURL, { headers: headers })
+        .pipe(retry(3))
+        .toPromise();
 
       if (data['status'] === 'fail') {
-        this.dataChange.emit({status: false, description: data['reason']});
-        return of({status: false, description: data['reason']}).toPromise();
+        this.dataChange.emit({ status: false, description: data['reason'] });
+        return of({ status: false, description: data['reason'] }).toPromise();
       }
 
       if (Array.isArray(data) && data.length > 0) {
@@ -241,19 +244,23 @@ export class WeeklyDataService {
           this.temperature = rdata.map(e => {
             return e[4];
           });
-        } catch (err) {
-        }
+        } catch (err) {}
 
-        this.dataChange.emit({status: true, description: ''});
+        this.theDate = date;
+        this.dataChange.emit({ status: true, description: '' });
 
-        return of({status: true, description: ''}).toPromise();
+        return of({ status: true, description: '' }).toPromise();
       } else {
-        this.dataChange.emit({status: false, description: 'Data not found'});
-        return of({status: false, description: 'Data not found'}).toPromise();
+        this.dataChange.emit({ status: false, description: 'Data not found' });
+        return of({ status: false, description: 'Data not found' }).toPromise();
       }
     } catch (error) {
-      this.dataChange.emit({status: false, description: error.message});
-      return of({status: false, description: error.message}).toPromise();
+      this.dataChange.emit({ status: false, description: error.message });
+      return of({ status: false, description: error.message }).toPromise();
     }
+  }
+
+  get chosenDate(): Date {
+    return this.theDate;
   }
 }
