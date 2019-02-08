@@ -32,8 +32,8 @@ export class WeeklyDataService {
 
   constructor(private http: HttpClient, private tokenService: TokenService) {
     // this.URL = tokenService.baseURL + '/forecasts/comparisons';
-    this.forecastURL = tokenService.baseURL + '/forecasts';
-    this.loadURL = tokenService.baseURL + '/loads';
+    this.forecastURL = tokenService.baseURL + '/demand/forecast';
+    this.loadURL = tokenService.baseURL + '/demand';
   }
 
   fillDefaultData(date: Date) {
@@ -257,7 +257,7 @@ export class WeeklyDataService {
     const end = begin.clone().add(6, 'day');
     end.add(23, 'hour');
     const endtext = end.format('YYYY-MM-DDTHH:mm:ss');
-    const lURL = this.loadURL + '?start=' + begintext + '&end=' + endtext + '&local=1';
+    const lURL = this.loadURL + '?start_date=' + begintext + '&end_date=' + endtext + '&local=1';
     const data = await this.http
       .get(lURL, { headers: headers })
       .pipe(retry(3))
@@ -296,7 +296,7 @@ export class WeeklyDataService {
 
       // read the main forecast data
       const gen_date = moment(date).format('YYYY-MM-DDTHH:mm:ss');
-      const fURL = this.forecastURL + '?gen_date=' + gen_date + '&local=1';
+      const fURL = this.forecastURL + '?forecast_date=' + gen_date + '&local=1';
       const data = await this.http
         .get(fURL, { headers: headers })
         .pipe(retry(3))
