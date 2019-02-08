@@ -63,7 +63,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   type: ChartType;
 
   tabularDataSource: MatTableDataSource<ITabularRow>;
-  displayedColumns: string[] = ['date', 'forecast', 'load', 'stderr', 'temperature'];
+  displayedColumns: string[] = ['date', 'forecast', 'stderr', 'temperature', 'load'];
   isTableOpen: boolean;
   dateFilter = (d: Date): boolean => {
     const now = new Date();

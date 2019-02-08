@@ -159,17 +159,17 @@ export class WeeklyDataService {
         return {
           date: this.formatDate(this.hours[i], true),
           forecast: parseFloat(e.toFixed(3)),
-          load: load,
           stderr: parseFloat((this.stderr[i] * 100).toFixed(2)),
-          temperature: temp
+          temperature: temp,
+          load: load
         };
       } else {
         return {
           date: null,
           forecast: null,
-          load: null,
           stderr: null,
-          temperature: null
+          temperature: null,
+          load: null,
         };
       }
     });
@@ -335,7 +335,7 @@ export class WeeklyDataService {
         } catch (err) {}
 
         this.theDate = date; // keep track chosen date
-        this.readLoad(date, headers); // read load if any
+        await this.readLoad(date, headers); // read load if any
 
         this.dataChange.emit({ status: true, description: '' });
         return of({ status: true, description: '' }).toPromise();
@@ -345,7 +345,7 @@ export class WeeklyDataService {
       }
     } catch (error) {
       // todo for backword compatibility need to remove
-      return this.legacyRead(date, headers);
+      return await this.legacyRead(date, headers);
 
       this.dataChange.emit({ status: false, description: error.message });
       return of({ status: false, description: error.message }).toPromise();
