@@ -90,7 +90,11 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     if (!this.dataService.hasData()) {
       // const d = moment('2018-11-20').toDate();
-      this.dataService.fetchWeeklyData(moment().startOf('day').toDate());
+      this.dataService.fetchWeeklyData(
+        moment()
+          .startOf('day')
+          .toDate()
+      );
     } else {
       this.dataService.dataChange.emit({ status: true, description: '' });
     }
@@ -408,6 +412,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       return false;
     }
 
+    if (!this.chart || !this.chart.options) { return false; }
+
     return this.chart.options.scales.yAxes.length === 2;
   }
 
@@ -524,7 +530,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   reachedRightEnd(): boolean {
-    if (!this.dataService.hasData()) {
+    if (!this.dataService.hasData() || !this.xMinMax) {
       return false;
     }
     const { min: d1, max: d2 } = this.xMinMax;
@@ -533,7 +539,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   reachedLeftEnd(): boolean {
-    if (!this.dataService.hasData()) {
+    if (!this.dataService.hasData() || !this.xMinMax) {
       return false;
     }
 
