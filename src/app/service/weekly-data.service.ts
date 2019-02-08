@@ -13,6 +13,7 @@ import { catchError, retry } from 'rxjs/operators';
 
 import { ITabularRow } from '../chart-js.comp/chart-js.comp';
 import { TokenService } from './token.service';
+import { ITabularRow24 } from '../hist-chart.comp/hist-chart.comp';
 // import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -28,12 +29,15 @@ export class WeeklyDataService {
   private temperature: number[] = [];
   private theDate: Date;
 
+
   // comparison data
   private hour_24: Date[] = [];
   private current_24: number[] = [];
   private d_6_24: number[] = [];
   private d_1_24: number[] = [];
-  // private load_24: number[] = [];
+  private temperature24: number[] = [];
+  private theDate24: Date;
+
 
   @Output() dataChange = new EventEmitter<{ status; description }>();
   @Output() dataChange2 = new EventEmitter<{ status; description }>();
@@ -433,7 +437,14 @@ export class WeeklyDataService {
         this.current_24 = rdata.map(e => {
           return e[1];
         });
-        this.theDate = date; // keep track chosen date
+        // optional temperature
+        try {
+          this.temperature24 = rdata.map(e => {
+            return e[3];
+          });
+        } catch (err) {}
+
+        this.theDate24 = date; // keep track chosen date
 
         // optional data d-6 days, last 24 hrs
         data = await this.http24(
@@ -509,4 +520,60 @@ export class WeeklyDataService {
   hasData24(): boolean {
     return this.hour_24.length > 0;
   }
+
+  getTabularData24(): ITabularRow24[] {
+    const result = this.current_24.map((e, i) => {
+      if (e) {
+        // may be optional
+        let temp;
+        try {
+          temp = parseFloat(this.temperature[i].toFixed(2));
+        } catch (err) {
+          temp = null;
+        }
+
+        // may be optional
+        let d_1;
+        try {
+          d_1 = parseFloat(this.d_1_24[i].toFixed(3));
+        } catch (err) {
+          d_1 = null;
+        }
+
+        let d_6;
+        try {
+          d_6 = parseFloat(this.d_6_24[i].toFixed(3));
+        } catch (err) {
+          d_6 = null;
+        }
+
+        return {
+          date: this.formatDate(this.hour_24[i], true),
+          current: parseFloat(e.toFixed(3)),
+          d_1: d_1,
+          d_6: d_6,
+          temperature: temp
+        };
+      } else {
+        return {
+          date: null,
+          current: null,
+          d_1: null,
+          d_6: null,
+          temperature: null
+        };
+      }
+    });
+
+    return result;
+  }
+
+  get chosenDate24(): Date {
+    return this.theDate24;
+  }
+
+  getTemperature24(): number[] {
+    return this.temperature24;
+  }
+
 }

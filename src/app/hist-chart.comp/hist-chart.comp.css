@@ -1,12 +1,12 @@
 canvas {
   border: 1px dotted white;
   margin-top: 0px;
-  height: 65vh;
+  /* height: 100%; */
 }
 
 .chart-container {
   position: relative;
-  margin-top: 30px;
+  margin-top: 10px;
   margin-left: 26px;
   /* height: 85vh; */
   width: 95vw;

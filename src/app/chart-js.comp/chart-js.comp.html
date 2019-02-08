@@ -1,5 +1,5 @@
 <div class="chart-container" fxLayout="column" fxLayoutAlign="start">
-  <div fxFlex="45px">
+  <div fxFlex="45px" class="mini-bar">
     <div fxLayout="row" fxLayoutAlign="begin stretch" fxFlex="">
       <mat-slider
         [(ngModel)]="zoom"
@@ -100,9 +100,9 @@
       </button>
     </div>
   </div>
-  <canvas fxFlex="grow" id="canvas"> </canvas>
+  <canvas fxFlex="500px" id="canvas"> </canvas>
 
-  <mat-accordion fxFlex="" class="my-form-field">
+  <mat-accordion fxFlex="100px" class="my-form-field">
     <mat-expansion-panel
       #exp
       class="my-form-field"

@@ -1,14 +1,15 @@
 canvas {
   border: 1px dotted white;
   margin-top: 0px;
-  height: 65vh;
+  /* height: 100px; */
 }
 
 .chart-container {
   position: relative;
-  margin-top: 38px;
+  margin-top: 10px;
   margin-left: 26px;
   /* height: 90vh; */
+  /* height: 700px; */
   width: 95vw;
 }
 
@@ -53,4 +54,9 @@ canvas {
 .my-mat-cell {
   font-size: 0.85em;
   min-height: 100%;
+}
+
+.mini-bar{
+  /* position: fixed;
+  z-index: 999; */
 }

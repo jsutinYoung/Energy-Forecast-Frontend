@@ -1,8 +1,8 @@
 <div class="chart-container" fxLayout="column" fxLayoutAlign="start">
   <div fxFlex="45px">
+
     <div fxLayout="row" fxLayoutAlign="begin stretch" fxFlex="">
     </div>
-
     <div fxLayout="row" fxLayoutAlign="end" fxFlex="10px">
       <input
         #date_input
@@ -41,9 +41,9 @@
 
     </div>
   </div>
-  <canvas fxFlex="grow" id="hist-canvas"> </canvas>
+  <canvas fxFlex="500px" id="hist-canvas"> </canvas>
 
-  <mat-accordion fxFlex="" class="my-form-field">
+  <mat-accordion fxFlex="100px" class="my-form-field">
     <mat-expansion-panel
       #exp
       class="my-form-field"
@@ -68,34 +68,30 @@
         </ng-container>
 
         <!-- forecast Column -->
-        <ng-container matColumnDef="forecast">
+        <ng-container matColumnDef="current">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
-            >Forecast (MWa)</mat-header-cell
-          >
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.forecast }}</mat-cell>
+            >Current (MWa)</mat-header-cell>
+          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.current }}</mat-cell>
         </ng-container>
 
         <!-- actual Column -->
-        <ng-container matColumnDef="load">
+        <ng-container matColumnDef="d_1">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
-            >Load (MWa)</mat-header-cell
-          >
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.load }}</mat-cell>
+            >-1 day (MWa)</mat-header-cell>
+          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.d_1 }}</mat-cell>
         </ng-container>
 
         <!-- stderr Column -->
-        <ng-container matColumnDef="stderr">
+        <ng-container matColumnDef="d_6">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
-            >StdErr %</mat-header-cell
-          >
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.stderr }}</mat-cell>
+            >-6 days (MWa)</mat-header-cell>
+          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.d_6 }}</mat-cell>
         </ng-container>
 
         <!-- temperature Column -->
         <ng-container matColumnDef="temperature">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
-            >°F</mat-header-cell
-          >
+            >°F</mat-header-cell>
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{
             element.temperature
           }}</mat-cell>

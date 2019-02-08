@@ -5,7 +5,13 @@
 // 2019
 //
 
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
@@ -15,11 +21,11 @@ import * as moment from 'moment';
 
 import { WeeklyDataService } from '../service/weekly-data.service';
 
-export interface ITabularRow {
+export interface ITabularRow24 {
   date: string;
-  forecast: number;
-  load: number;
-  stderr: number;
+  current: number;
+  d_1: number;
+  d_6: number;
   temperature: number;
 }
 
@@ -39,13 +45,13 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
   private chart: Chart;
   private hasRadius = true;
 
-  tabularDataSource: MatTableDataSource<ITabularRow>;
-  displayedColumns: string[] = ['date', 'forecast', 'stderr', 'temperature', 'load'];
+  tabularDataSource: MatTableDataSource<ITabularRow24>;
+  displayedColumns: string[] = ['date', 'current', 'd_1', 'd_6', 'temperature'];
   isTableOpen: boolean;
   dateFilter = (d: Date): boolean => {
     const now = new Date();
     return d > now ? false : true;
-  }
+  };
 
   constructor(
     private dataService: WeeklyDataService,
@@ -58,7 +64,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
       if (result.status === true) {
         this.reDrawChart();
       } else {
-        this.openSnackBar('Fetch weekly data failed', result.description);
+        this.openSnackBar('Fetch 24hr data failed', result.description);
         // this.router.navigate(['/']);
       }
     });
@@ -85,7 +91,9 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     this.displayLine();
 
     // take care of table
-    this.tabularDataSource = new MatTableDataSource(this.dataService.getTabularData());
+    this.tabularDataSource = new MatTableDataSource(
+      this.dataService.getTabularData24()
+    );
     this.tabularDataSource.sort = this.sort;
     this.tabularDataSource.paginator = this.paginator;
   }
@@ -244,7 +252,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
 
     this.chart.config.options.legend = optionalLegend;
 
-    const m = moment(this.dataService.chosenDate);
+    const m = moment(this.dataService.chosenDate24);
     this.chart.config.options.title.text =
       HistComp.title + '\u27f9 ' + m.format('MM-DD-YYYY ( ddd )');
 
@@ -265,7 +273,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
 
   // temperature stuff
   hasTemperature(): boolean {
-    if (!this.dataService.hasData()) {
+    if (!this.dataService.hasData24()) {
       return false;
     }
 
@@ -299,13 +307,11 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     const dataset = {
       yAxisID: '_ID_TEMP',
       label: '°F',
-      data: this.dataService.getTemperature(),
+      data: this.dataService.getTemperature24(),
       pointRadius: 2,
       pointBorderColor: 'orange',
       backgroundColor: '',
       borderColor: 'orange'
-      // pointHoverBackgroundColor: '#fff',
-      // pointHoverBorderColor: 'rgba(148,159,177,0.8)'
     };
 
     return dataset;
@@ -351,23 +357,6 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.refresh();
-  }
-
-  formatLabel(value: number | null) {
-    if (!value) {
-      return '1X';
-    }
-
-    switch (value) {
-      case 1:
-        return '1d';
-      case 2:
-        return '2d';
-      case 3:
-        return '4d';
-      case 4:
-        return '7d';
-    }
   }
 
   private setMarker(hasRadius: boolean) {
