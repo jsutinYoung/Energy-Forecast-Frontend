@@ -68,14 +68,15 @@
         <mat-icon>compare_arrows</mat-icon>
       </button> -->
 
-      <!-- <button
+      <button
         mat-icon-button
         matTooltip="line chart"
         (click)="displayLine()"
+        [disabled]=!hasLoad()
         [color]="chartColor('line')"
       >
         <i class="fas fa-chart-line fa-lg mat-icon"></i>
-      </button> -->
+      </button>
 
       <button
         mat-icon-button

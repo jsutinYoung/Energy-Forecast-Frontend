@@ -224,34 +224,37 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     return yDatasets;
   }
 
-  // displayLine() {
-  //   if (this.type === ChartType.line) {
-  //     return;
-  //   }
+  displayLine() {
+    if (this.type === ChartType.line) {
+      return;
+    }
 
-  //   this.refresh(this.configCompare());
-  //   this.chart.config.data.datasets = this.configCompareDataset();
-  //   const ds = this.chart.config.data.datasets;
-  //   if (this.hasTemperature()) {
-  //     ds.push(this.getTempDataset());
-  //   }
-  //   this.setZoom(this.zoomValue);
+    this.refresh(this.configCompare());
+    this.chart.config.data.datasets = this.configCompareDataset();
+    const ds = this.chart.config.data.datasets;
+    if (this.hasTemperature()) {
+      ds.push(this.getTempDataset());
+    }
+    this.setZoom(this.zoomValue);
 
-  //   this.type = ChartType.line;
-  //   this.setMarker(this.hasRadius);
-  //   this.chart.config.data.datasets[0].backgroundColor = '';
-  //   this.chart.config.data.datasets[1].backgroundColor = '';
+    this.type = ChartType.line;
+    this.setMarker(this.hasRadius);
+    this.chart.config.data.datasets[0].backgroundColor = '';
+    this.chart.config.data.datasets[1].backgroundColor = '';
 
-  //   const {
-  //     scales: { xAxes }
-  //   } = this.chart.options;
-  //   xAxes[0].gridLines = '';
+    const {
+      scales: { xAxes }
+    } = this.chart.options;
+    xAxes[0].gridLines = '';
 
-  //   this.chart.config.type = 'line';
-  //   this.chart.config.options.title.text =
-  //     ChartComp.title + ' \u27f9 Forecast vs Actual';
-  //   this.refresh();
-  // }
+    this.chart.config.type = 'line';
+    // this.chart.config.options.title.text =
+    //   ChartComp.title + ' \u27f9 Forecast vs Actual';
+    const m = moment(this.dataService.chosenDate).format('MM-DD-YYYY (ddd)');
+    this.chart.config.options.title.text = ChartComp.title + '\u27f9 ' + m + ' with Load';
+
+    this.refresh();
+  }
 
   displayArea() {
     if (this.type === ChartType.area) {
@@ -281,8 +284,6 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     const m = moment(this.dataService.chosenDate).format('MM-DD-YYYY (ddd)');
     this.chart.config.options.title.text = ChartComp.title + '\u27f9 ' + m + ' with Load';
 
-    // this.chart.config.options.title.text =
-    //   ChartComp.title + ' \u27f9 Forecast vs Load';
     this.refresh();
   }
 
