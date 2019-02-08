@@ -10,3 +10,10 @@
 .eft-sidenav {
   padding: 0px;
 }
+
+.tab-container {
+  position: relative;
+  /* margin-top: 20px; */
+  height: 92vh;
+  width: 100vw;
+}

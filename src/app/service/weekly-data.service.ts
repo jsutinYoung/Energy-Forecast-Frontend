@@ -11,7 +11,7 @@ import * as moment from 'moment';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 
-import { ITabularRow } from '../comp-js.comp/chart-js.comp';
+import { ITabularRow } from '../chart-js.comp/chart-js.comp';
 import { TokenService } from './token.service';
 // import { environment } from '../../environments/environment';
 
@@ -21,14 +21,22 @@ export class WeeklyDataService {
   private loadURL = '';
   // ?start=2018-10-01T00:00:00&end=2018-10-07T23:00:00
 
+  private hours: Date[] = [];
   private forecast: number[] = [];
   private load: number[] = [];
-  private hours: Date[] = [];
   private stderr: number[] = [];
   private temperature: number[] = [];
   private theDate: Date;
 
+  // comparison data
+  private hour_24: Date[] = [];
+  private current_24: number[] = [];
+  private d_6_24: number[] = [];
+  private d_1_24: number[] = [];
+  // private load_24: number[] = [];
+
   @Output() dataChange = new EventEmitter<{ status; description }>();
+  @Output() dataChange2 = new EventEmitter<{ status; description }>();
 
   constructor(private http: HttpClient, private tokenService: TokenService) {
     // this.URL = tokenService.baseURL + '/forecasts/comparisons';
@@ -169,7 +177,7 @@ export class WeeklyDataService {
           forecast: null,
           stderr: null,
           temperature: null,
-          load: null,
+          load: null
         };
       }
     });
@@ -294,6 +302,9 @@ export class WeeklyDataService {
         return { status: false, description: 'Un-authenticated' };
       }
 
+      // make sure no time portion
+      date = moment(date).startOf('day').toDate();
+
       // read the main forecast data
       const gen_date = moment(date).format('YYYY-MM-DDTHH:mm:ss');
       const fURL = this.forecastURL + '?forecast_date=' + gen_date + '&local=1';
@@ -354,5 +365,148 @@ export class WeeklyDataService {
 
   get chosenDate(): Date {
     return this.theDate;
+  }
+
+  // Fetch 24 ....................................................................
+  async http24(gen_date: Date, start_date: Date, end_date: Date, headers: HttpHeaders) {
+    // read the main forecast data
+    const gen_date_txt = moment(gen_date).format('YYYY-MM-DDTHH:mm:ss');
+    const start_date_txt = moment(start_date).format('YYYY-MM-DDTHH:mm:ss');
+    const end_date_txt = moment(end_date).format('YYYY-MM-DDTHH:mm:ss');
+
+    const fURL =
+      this.forecastURL +
+      '?forecast_date=' +
+      gen_date_txt +
+      '&start_date=' +
+      start_date_txt +
+      '&end_date=' +
+      end_date_txt +
+      '&local=1';
+
+    const data = await this.http
+      .get(fURL, { headers: headers })
+      .pipe(retry(3))
+      .toPromise();
+
+    return data;
+  }
+
+  async fetch24Data(date: Date) {
+    const headers = new HttpHeaders({
+      'content-type': 'application/json'
+    });
+
+    try {
+      if (!this.tokenService.isAuthenticated()) {
+        this.dataChange2.emit({ status: false, description: 'Un-authenticated' });
+        return { status: false, description: 'Un-authenticated' };
+      }
+
+      // read the chosen day forecast 24
+      let data = await this.http24(
+        date,
+        date,
+        moment(date)
+          .add(23, 'hour')
+          .toDate(),
+        headers
+      );
+
+      // main data not present
+      if (data['status'] === 'fail') {
+        this.dataChange2.emit({ status: false, description: data['reason'] });
+        return of({ status: false, description: data['reason'] }).toPromise();
+      }
+
+      if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
+        // start proessing
+        let rdata = data.reduceRight((acc, e) => {
+          acc.push(e);
+          return acc;
+        }, []);
+
+        this.hour_24 = rdata.map(e => {
+          const h: Date = moment(e[0]).toDate();
+          return h;
+        });
+        this.current_24 = rdata.map(e => {
+          return e[1];
+        });
+        this.theDate = date; // keep track chosen date
+
+        // optional data d-6 days, last 24 hrs
+        data = await this.http24(
+          moment(date)
+            .add(-6, 'day')
+            .toDate(),
+          date,
+          moment(date)
+            .add(23, 'hour')
+            .toDate(),
+          headers
+        );
+        if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
+          // start proessing
+          rdata = data.reduceRight((acc, e) => {
+            acc.push(e);
+            return acc;
+          }, []);
+
+          this.d_6_24 = rdata.map(e => {
+            return e[1];
+          });
+        }
+
+        // optional data d-1 day, last 24 hrs
+        data = await this.http24(
+          moment(date)
+            .add(-1, 'day')
+            .toDate(),
+          date,
+          moment(date)
+            .add(23, 'hour')
+            .toDate(),
+          headers
+        );
+        if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
+          // start proessing
+          rdata = data.reduceRight((acc, e) => {
+            acc.push(e);
+            return acc;
+          }, []);
+
+          this.d_1_24 = rdata.map(e => {
+            return e[1];
+          });
+        }
+
+        this.dataChange2.emit({ status: true, description: '' });
+        return of({ status: true, description: '' }).toPromise();
+      } else {
+        this.dataChange2.emit({ status: false, description: 'Data not found' });
+        return of({ status: false, description: 'Data not found' }).toPromise();
+      }
+    } catch (error) {
+      this.dataChange2.emit({ status: false, description: error.message });
+      return of({ status: false, description: error.message }).toPromise();
+    }
+  }
+
+  getHour24(): Date[] {
+    return this.hour_24;
+  }
+  geCurrent24(): number[] {
+    return this.current_24;
+  }
+  getD624(): number[] {
+    return this.d_6_24;
+  }
+  getD124(): number[] {
+    return this.d_1_24;
+  }
+
+  hasData24(): boolean {
+    return this.hour_24.length > 0;
   }
 }

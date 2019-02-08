@@ -50,7 +50,8 @@ import { AlertComp } from './alert.comp/alert.comp';
 import { AlertDialog } from './alert.dialog/alert.dialog';
 import { AppRoutingModule } from './app-route.module';
 import { AppComponent } from './app.component';
-import { ChartComp } from './comp-js.comp/chart-js.comp';
+import { ChartComp } from './chart-js.comp/chart-js.comp';
+import { HistComp } from './hist-chart.comp/hist-chart.comp';
 import { DashComp } from './dash.comp/dash.comp';
 import { DownloaderComp } from './downloder/downloader.comp';
 import { DummyComp } from './dummy.comp/dummy.comp';
@@ -70,6 +71,7 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     AlertComp,
     LoginComp,
     ChartComp,
+    HistComp,
     AlertShortenerPipe,
     ErrorPageComp,
     DummyComp,

@@ -1,0 +1,56 @@
+canvas {
+  border: 1px dotted white;
+  margin-top: 0px;
+  height: 65vh;
+}
+
+.chart-container {
+  position: relative;
+  margin-top: 30px;
+  margin-left: 26px;
+  /* height: 85vh; */
+  width: 95vw;
+}
+
+.hidden {
+  /* display: none */
+  /* background: red */
+  width: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  visibility: hidden
+}
+
+.my-form-field {
+  /* padding: 10px !important; */
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: rgb(56, 53, 53) !important;
+  /* width: 100%; */
+  /* width: 100vw; */
+}
+
+.mytable {
+  width: 100%;
+}
+
+/* .mat-form-field {
+  font-size: 14px;
+  width: 20vw;
+  height: 50px;
+} */
+
+.my-mat-header-cell {
+  font-size: 0.9em
+}
+
+.my-mat-row {
+  min-height: 100%;
+}
+
+.my-mat-cell {
+  font-size: 0.85em;
+  min-height: 100%;
+}

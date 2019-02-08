@@ -205,7 +205,6 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       label: 'Load',
       data: this.dataService.getLoad(),
       // pointRadius: 3,
-
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(148,159,177,0.8)'
@@ -249,7 +248,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     const {
       scales: { xAxes }
     } = this.chart.options;
-    xAxes[0].gridLines = '';
+    // xAxes[0].gridLines = '';
 
     this.chart.config.type = 'line';
     // this.chart.config.options.title.text =

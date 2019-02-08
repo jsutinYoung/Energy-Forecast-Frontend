@@ -3,11 +3,23 @@
     <app-alert></app-alert>
   </mat-drawer>
 
-  <mat-drawer-content class="eft-sidenav-content" fxLayout='column' fxLayoutAlign="start stretch">
+  <mat-drawer-content class="eft-sidenav-content" fxLayout="column" fxLayoutAlign="start stretch">
     <app-toolbar #toolbar fxFlex="" [drawer]="drawer"></app-toolbar>
-    <app-chart-js fxFlexAlign="center" fxFlex="grow"></app-chart-js>
-  </mat-drawer-content>
+    <!-- <app-chart-js fxFlexAlign="center" fxFlex="grow"></app-chart-js> -->
 
+    <mat-tab-group class="tab-container" fxFlexAlign="">
+      <mat-tab label="Single Forecast View">
+          <ng-template matTabContent>
+          <app-chart-js fxFlexAlign="center" fxFlex=""></app-chart-js>
+         </ng-template>
+      </mat-tab>
+      <mat-tab label="Comparative View"> <ng-template matTabContent>
+          <app-hist-chart fxFlexAlign="center" fxFlex=""></app-hist-chart>>
+      </ng-template> </mat-tab>
+      <!-- <mat-tab label="Widgets"> <ng-template matTabContent></ng-template> </mat-tab> -->
+    </mat-tab-group>
+
+  </mat-drawer-content>
 </mat-drawer-container>
 
 <!-- <a fxFlexAlign="center" fxFlex="grow" routerLink="/alert/3">Alerts</a>
