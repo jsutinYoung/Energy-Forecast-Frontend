@@ -51,7 +51,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
   dateFilter = (d: Date): boolean => {
     const now = new Date();
     return d > now ? false : true;
-  };
+  }
 
   constructor(
     private dataService: WeeklyDataService,
@@ -115,11 +115,11 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
             gridLines: { color: 'rgba(255,255,255, 0.3)' },
             type: 'time',
             distribution: 'series',
-            time: { displayFormats: { hour: 'MMM D - hA' }, unit: 'hour' },
+            time: { displayFormats: { hour: 'MMM D|HH:mm' }, unit: 'hour' },
 
             ticks: {
               fontColor: '#C0C0C0',
-              fontSize: 10
+              fontSize: 11
             },
             scaleLabel: {
               display: true,
@@ -138,10 +138,10 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
             scaleLabel: {
               display: true,
               labelString: 'Electricity (MWa)',
-              fontSize: 12,
+              fontSize: 13,
               fontColor: '#C0C0C0'
             },
-            ticks: { fontColor: '#C0C0C0', fontSize: 10 }
+            ticks: { fontColor: '#C0C0C0', fontSize: 11 }
           }
         ]
       },
@@ -175,8 +175,8 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
       backgroundColor: '',
       borderColor: 'rgba(5, 206, 250,1)',
       pointBackgroundColor: 'rgba(5, 206, 250,1)',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+      pointHoverBackgroundColor: 'rgba(5, 206, 250,1)',
+      pointHoverBorderColor: 'white'
     };
 
     const dataset1 = {
@@ -187,8 +187,8 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
       backgroundColor: '',
       borderColor: 'green',
       pointBackgroundColor: 'green',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
+      pointHoverBackgroundColor: 'green',
+      pointHoverBorderColor: 'white'
     };
 
     const dataset2 = {
@@ -199,8 +199,8 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
       backgroundColor: '',
       borderColor: 'yellow',
       pointBackgroundColor: 'yellow',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
+      pointHoverBackgroundColor: 'yellow',
+      pointHoverBorderColor: 'white'
     };
 
     const yDatasets = [dataset0, dataset1, dataset2];
@@ -259,8 +259,8 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     const m2 = m.clone().add(23, 'hour');
 
     this.chart.options.scales.xAxes[0].scaleLabel.labelString = `${m.format(
-      '(ddd) MM-DD-YYYY h:mm a'
-    )}  \u27fa  ${m2.format('(ddd) MM-DD-YYYY h:mm a')}`;
+      '(ddd) MM-DD-YYYY HH:mm'
+    )}  \u27fa  ${m2.format('(ddd) MM-DD-YYYY HH:mm')}`;
 
     this.refresh();
   }
@@ -309,9 +309,10 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
       label: '°F',
       data: this.dataService.getTemperature24(),
       pointRadius: 2,
-      pointBorderColor: 'orange',
       backgroundColor: '',
-      borderColor: 'orange'
+      borderColor: 'orange',
+      pointHoverBackgroundColor: 'orange',
+      pointBorderColor: 'orange'
     };
 
     return dataset;

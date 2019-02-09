@@ -43,16 +43,24 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
+  // load
   private fillColor0 = {
     backgroundColor: 'rgba(92, 240, 155, 0.6)',
     borderColor: 'rgba(92, 240, 155, 1)',
-    pointBackgroundColor: 'rgba(148,159,177,1)'
+    pointBackgroundColor: 'rgba(92, 240, 155, 0.6)',
+    pointHoverBackgroundColor: 'rgba(92, 240, 155, 0.6)',
+    pointHoverBorderColor: 'white',
   };
 
+  // forecast
   private fillColor1 = {
     backgroundColor: 'rgba(5, 206, 250,0.6)',
     borderColor: 'rgba(5, 206, 250,1)',
-    pointBackgroundColor: 'rgba(77,83,96,1)'
+    // pointBackgroundColor: 'rgba(77,83,96,1)'
+    pointBackgroundColor: 'rgba(5, 206, 250,1)',
+    // pointBorderColor: '#fff',
+    pointHoverBackgroundColor: 'rgba(5, 206, 250,1)',
+    pointHoverBorderColor: 'white',
   };
 
   private chart: Chart;
@@ -140,11 +148,11 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
             gridLines: { color: 'rgba(255,255,255, 0.3)' },
             type: 'time',
             distribution: 'series',
-            time: { displayFormats: { hour: 'MMM D - hA' }, unit: 'hour' },
+            time: { displayFormats: { hour: 'MMM D|HH:mm' }, unit: 'hour' },
 
             ticks: {
               fontColor: '#C0C0C0',
-              fontSize: 10
+              fontSize: 12
               // minor: {
               //   fontColor: 'red'
               // }
@@ -157,7 +165,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
             scaleLabel: {
               display: true,
               labelString: 'Date & Hours',
-              fontSize: 12,
+              fontSize: 13,
               fontColor: '#C0C0C0'
             }
           }
@@ -171,10 +179,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
             scaleLabel: {
               display: true,
               labelString: 'Electricity (MWa)',
-              fontSize: 12,
+              fontSize: 13,
               fontColor: '#C0C0C0'
             },
-            ticks: { fontColor: '#C0C0C0', fontSize: 10 }
+            ticks: { fontColor: '#C0C0C0', fontSize: 11 }
           }
         ]
       },
@@ -184,7 +192,14 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
         position: 'bottom',
         labels: { fontColor: 'white' }
       },
-      tooltips: { displayColors: 'true' }
+      tooltips: {
+        displayColors: true,
+        // callbacks: {
+        //   label: function(tooltipItem) {
+        //     return ' ' + Number(tooltipItem.yLabel).toFixed(3);
+        //   }
+        // }
+      }
     };
 
     const tempAxis = this.getTempAxis();
@@ -205,9 +220,6 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       label: 'Load',
       data: this.dataService.getLoad(),
       // pointRadius: 3,
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
     };
     dataset0 = _.merge(dataset0, this.fillColor0);
 
@@ -215,10 +227,6 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       label: 'Forecast',
       data: this.dataService.getForecast(),
       // pointRadius: 3,
-
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
     };
     dataset1 = _.merge(dataset1, this.fillColor1);
 
@@ -360,8 +368,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       label: 'Lower',
       pointRadius: '0',
       pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+      pointHoverBackgroundColor: 'rgba(148,159,177,1)',
+      pointHoverBorderColor: 'black'
     };
 
     const dsHigh = {
@@ -371,8 +379,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       label: 'Higher',
       pointRadius: '0',
       pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+      pointHoverBackgroundColor: 'rgba(148,159,177,1)',
+      pointHoverBorderColor: 'black'
     };
 
     const dsLine = {
@@ -381,8 +389,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       data: this.dataService.getForecast(),
       pointRadius: '3',
       pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)',
+      pointHoverBackgroundColor: 'rgba(5, 206, 250,0.8)',
+      pointHoverBorderColor: 'white',
       backgroundColor: '',
       borderColor: 'rgba(5, 206, 250,0.8)'
     };
@@ -411,7 +419,9 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       return false;
     }
 
-    if (!this.chart || !this.chart.options) { return false; }
+    if (!this.chart || !this.chart.options) {
+      return false;
+    }
 
     return this.chart.options.scales.yAxes.length === 2;
   }
@@ -441,11 +451,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       label: '°F',
       data: this.dataService.getTemperature(),
       pointRadius: 2,
-      pointBorderColor: 'orange',
       backgroundColor: '',
-      borderColor: 'orange'
-      // pointHoverBackgroundColor: '#fff',
-      // pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+      pointBorderColor: 'orange',
+      borderColor: 'orange',
+      pointHoverBackgroundColor: 'orange',
     };
 
     return dataset;
@@ -523,8 +532,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       const m2 = moment(d2);
       // todo need to change later.
       this.chart.options.scales.xAxes[0].scaleLabel.labelString = `${m1.format(
-        '(ddd) MM-DD-YYYY h:mm a'
-      )}  \u27fa  ${m2.format('(ddd) MM-DD-YYYY h:mm a')}`;
+        '(ddd) MM-DD-YYYY HH:mm'
+      )}  \u27fa  ${m2.format('(ddd) MM-DD-YYYY HH:mm')}`;
     }
   }
 
