@@ -15,7 +15,6 @@ import {
 import { MatSnackBar } from '@angular/material';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Router } from '@angular/router';
-// import { NgxSpinnerService } from 'ngx-spinner';
 
 import { AuthService } from '../service/auth.service';
 
@@ -74,7 +73,6 @@ export class LoginComp implements OnInit {
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar
-    // private spinner: NgxSpinnerService
   ) {}
 
   ngOnInit() {

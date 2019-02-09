@@ -31,11 +31,9 @@ export class RegisterComp extends LoginComp {
     authService: AuthService,
     router: Router,
     snackBar: MatSnackBar,
-    // spinner: NgxSpinnerService
   ) {
     super(authService, router, snackBar);
     this.isRegisterMode = true;
-    // this.thisDialog = this;
   }
 
   onDismiss(): void {

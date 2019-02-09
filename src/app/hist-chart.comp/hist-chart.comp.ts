@@ -43,11 +43,13 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
 
   tabularDataSource: MatTableDataSource<ITabularRow24>;
   displayedColumns: string[] = ['date', 'load', 'd_1', 'd_1_err', 'd_6', 'd_6_err'];
-  isTableOpen: boolean;
+  isTableOpen = false;
 
   // make sure today's day is not selectable as there is no load
   dateFilter = (d: Date): boolean => {
-    const now = moment().startOf('day').toDate();
+    const now = moment()
+      .startOf('day')
+      .toDate();
     return d >= now ? false : true;
   }
 
@@ -295,9 +297,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
 
   async fetchDataOn(aDate?: Date) {
     if (!aDate) {
-      aDate = moment()
-        .startOf('day')
-        .toDate();
+      aDate = this.dataService.chosenDate24;
     }
 
     const ok = await this.dataService.fetch24Data(aDate);
@@ -346,6 +346,10 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
   pickDate(control, event) {
     const chosen = moment(event.value).startOf('day');
     this.fetchDataOn(chosen.toDate());
+  }
+
+  toggleTable() {
+    this.isTableOpen = !this.isTableOpen;
   }
 
   // temperature stuff

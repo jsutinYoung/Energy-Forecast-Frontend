@@ -72,7 +72,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   tabularDataSource: MatTableDataSource<ITabularRow>;
   displayedColumns: string[] = ['date', 'forecast', 'stderr', 'temperature', 'load'];
-  isTableOpen: boolean;
+  isTableOpen = false;
   dateFilter = (d: Date): boolean => {
     const now = new Date();
     return d > now ? false : true;
@@ -753,6 +753,16 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  toggleTable() {
+    // if (this.isTableOpen) {
+    //   chart.style.display = 'none';
+    //   table.style.display = 'block';
+    // } else {
+    //   chart.style.display = 'block';
+    //   table.style.display = 'none';
+    // }
+    this.isTableOpen = !this.isTableOpen;
+  }
   // private async stall(stallTime = 3000) {
   //   await new Promise(resolve => setTimeout(resolve, stallTime));
   // }

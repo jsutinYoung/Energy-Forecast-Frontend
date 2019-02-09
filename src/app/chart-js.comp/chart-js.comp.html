@@ -1,4 +1,4 @@
-<div class="chart-container" fxLayout="column" fxLayoutAlign="start">
+<div class="chart-container" fxLayout="column" fxLayoutAlign="start" fxFlex="">
   <div fxFlex="45px" class="mini-bar">
     <div fxLayout="row" fxLayoutAlign="begin stretch" fxFlex="">
       <mat-slider
@@ -11,6 +11,7 @@
         thumbLabel
         tickInterval="1"
         matTooltip="Zoom"
+        [disabled]="isTableOpen"
       ></mat-slider>
       <!-- [(ngModel)]="value" -->
       <input
@@ -21,22 +22,47 @@
         placeholder="Choose a date"
         class="hidden"
         (dateInput)="pickDate(date_input, $event)"
+        [disabled]="isTableOpen"
       />
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
 
-      <button mat-icon-button matTooltip="previous 24 hrs" (click)="previousDay()" [disabled]="reachedLeftEnd()">
+      <button
+        mat-icon-button
+        matTooltip="previous 24 hrs"
+        (click)="previousDay()"
+        [disabled]="reachedLeftEnd() || isTableOpen"
+      >
         <mat-icon>arrow_back</mat-icon>
       </button>
 
-      <button mat-icon-button matTooltip="next 24 hrs" (click)="nextDay()" [disabled]="reachedRightEnd()">
+      <button
+        mat-icon-button
+        matTooltip="next 24 hrs"
+        (click)="nextDay()"
+        [disabled]="reachedRightEnd() || isTableOpen"
+      >
         <mat-icon>arrow_forward</mat-icon>
       </button>
       <!-- (click)="next24hour()" -->
     </div>
 
     <div fxLayout="row" fxLayoutAlign="end" fxFlex="10px">
-      <button mat-icon-button matTooltip="toggle temperature" (click)="togleTemperature()">
+      <button
+        mat-icon-button
+        matTooltip="toggle table"
+        [color]="isTableOpen ? 'accent' : ''"
+        (click)="toggleTable()"
+      >
+        <i class="fa fa-table" aria-hidden="true"></i>
+      </button>
+
+      <button
+        mat-icon-button
+        matTooltip="toggle temperature"
+        (click)="togleTemperature()"
+        [disabled]="isTableOpen"
+      >
         <!-- <i class="fas fa-temperature-high fa-lg mat-icon"></i> -->
         <i class="fas fa-thermometer-full fa-lg mat-icon" *ngIf="hasTemperature()"></i>
         <i class="fas fa-thermometer-empty fa-lg mat-icon" *ngIf="!hasTemperature()"></i>
@@ -46,14 +72,14 @@
         mat-icon-button
         matTooltip="toggle marker"
         (click)="toggleMarker()"
-        [disabled]="disableToggleMarker()"
+        [disabled]="disableToggleMarker() || isTableOpen"
       >
         <mat-icon *ngIf="hasMarker()">location_searching</mat-icon>
         <mat-icon *ngIf="!hasMarker()">location_disabled</mat-icon>
         <!-- <i class="fas fa-crosshairs fa-lg mat-icon"></i> -->
       </button>
 
-      <button mat-icon-button matTooltip="refresh" (click)="fetchDataOn()">
+      <button mat-icon-button matTooltip="refresh" (click)="fetchDataOn()" [disabled]="isTableOpen">
         <mat-icon>autorenew</mat-icon>
       </button>
 
@@ -72,7 +98,7 @@
         mat-icon-button
         matTooltip="line chart"
         (click)="displayLine()"
-        [disabled]=!hasLoad()
+        [disabled]="!hasLoad() || isTableOpen"
         [color]="chartColor('line')"
       >
         <i class="fas fa-chart-line fa-lg mat-icon"></i>
@@ -81,11 +107,10 @@
       <button
         mat-icon-button
         matTooltip="area chart"
-        [disabled]=!hasLoad()
+        [disabled]="!hasLoad() || isTableOpen"
         (click)="displayArea()"
         [color]="chartColor('area')"
       >
-        <!-- <mat-icon>photo</mat-icon> -->
         <i class="fa fa-chart-area fa-lg mat-icon"></i>
       </button>
 
@@ -94,86 +119,72 @@
         matTooltip="stderr chart"
         (click)="displayStdError()"
         [color]="chartColor('stderr')"
+        [disabled]="isTableOpen"
       >
         <mat-icon>graphic_eq</mat-icon>
         <!-- <i class="fab fa-creative-commons-sampling fa-2x mat-icon"></i> -->
       </button>
     </div>
   </div>
-  <canvas fxFlex="500px" id="canvas"> </canvas>
 
-  <mat-accordion fxFlex="100px" class="my-form-field">
-    <mat-expansion-panel
-      #exp
-      class="my-form-field"
-      (opened)="isTableOpen = true"
-      (closed)="isTableOpen = false"
-    >
-      <mat-expansion-panel-header>
-        <mat-panel-description> Tabular View</mat-panel-description>
-        <!--
-          <mat-form-field class="form-field" *ngIf="isTableOpen">
-            <input matInput (keyup)="applyFilter($event.target.value)" (click)=$event.stopPropagation() placeholder="Filter">
-          </mat-form-field>
-        -->
-      </mat-expansion-panel-header>
 
-      <mat-paginator [pageSizeOptions]="[24, 48, 72, 168]" showFirstLastButtons></mat-paginator>
-      <mat-table
-        mat-table
-        [dataSource]="tabularDataSource"
-        class="mat-elevation-z8 mytable"
-        matSort
-      >
-        <!-- date Column -->
-        <ng-container matColumnDef="date">
-          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef>Date</mat-header-cell>
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.date }}</mat-cell>
-        </ng-container>
+  <canvas #chart fxFlex="grow" id="canvas" [style.display]="isTableOpen ? 'none' : 'block'">
+  </canvas>
 
-        <!-- forecast Column -->
-        <ng-container matColumnDef="forecast">
-          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
-            >Forecast (MWa)</mat-header-cell
-          >
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.forecast }}</mat-cell>
-        </ng-container>
+  <div
+    #mytable
+    fxFlex="fxFill"
+    class="my-form-field"
+    [style.display]="isTableOpen ? 'block' : 'none'"
+  >
+    <mat-paginator [pageSizeOptions]="[24, 48, 72, 168]" showFirstLastButtons></mat-paginator>
+    <mat-table mat-table [dataSource]="tabularDataSource" class="mat-elevation-z8 mytable" matSort>
+      <!-- date Column -->
+      <ng-container matColumnDef="date">
+        <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef>Date</mat-header-cell>
+        <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.date }}</mat-cell>
+      </ng-container>
 
-        <!-- actual Column -->
-        <ng-container matColumnDef="load">
-          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
-            >Load (MWa)</mat-header-cell
-          >
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.load }}</mat-cell>
-        </ng-container>
+      <!-- forecast Column -->
+      <ng-container matColumnDef="forecast">
+        <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
+          >Forecast (MWa)</mat-header-cell
+        >
+        <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.forecast }}</mat-cell>
+      </ng-container>
 
-        <!-- stderr Column -->
-        <ng-container matColumnDef="stderr">
-          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
-            >StdErr %</mat-header-cell
-          >
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.stderr }}</mat-cell>
-        </ng-container>
+      <!-- actual Column -->
+      <ng-container matColumnDef="load">
+        <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
+          >Load (MWa)</mat-header-cell
+        >
+        <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.load }}</mat-cell>
+      </ng-container>
 
-        <!-- temperature Column -->
-        <ng-container matColumnDef="temperature">
-          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
-            >°F</mat-header-cell
-          >
-          <mat-cell class="my-mat-cell" *matCellDef="let element">{{
-            element.temperature
-          }}</mat-cell>
-        </ng-container>
+      <!-- stderr Column -->
+      <ng-container matColumnDef="stderr">
+        <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
+          >StdErr %</mat-header-cell
+        >
+        <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.stderr }}</mat-cell>
+      </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-        <mat-row class="my-mat-row" *matRowDef="let row; columns: displayedColumns"></mat-row>
-      </mat-table>
-    </mat-expansion-panel>
-  </mat-accordion>
+      <!-- temperature Column -->
+      <ng-container matColumnDef="temperature">
+        <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
+          >°F</mat-header-cell
+        >
+        <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.temperature }}</mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+      <mat-row class="my-mat-row" *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </mat-table>
+  </div>
 </div>
-<ngx-spinner
-  bdColor="rgba(51, 51, 51, 0.8)"
-  size="large"
-  color="#fff"
-  type="ball-clip-rotate-pulse"
-></ngx-spinner>
+<!-- <ngx-spinner
+    bdColor="rgba(51, 51, 51, 0.8)"
+    size="large"
+    color="#fff"
+    type="ball-clip-rotate-pulse"
+  ></ngx-spinner> -->

@@ -5,24 +5,18 @@
 
   <mat-drawer-content class="eft-sidenav-content" fxLayout="column" fxLayoutAlign="start stretch">
     <app-toolbar #toolbar fxFlex="" [drawer]="drawer"></app-toolbar>
-    <!-- <app-chart-js fxFlexAlign="center" fxFlex="grow"></app-chart-js> -->
-
-    <mat-tab-group class="tab-container" fxFlexAlign="">
-      <mat-tab label="Single Forecast">
-          <ng-template matTabContent>
-          <app-chart-js fxFlexAlign="center" fxFlex=""></app-chart-js>
-         </ng-template>
+    <mat-tab-group class="tab-container" >
+      <mat-tab label="Single Forecast"  fxFlexAlign="center" fxFlex="fxFill">
+        <ng-template matTabContent>
+          <app-chart-js ></app-chart-js>
+        </ng-template>
       </mat-tab>
-      <mat-tab label="Load vs Forecasts"> <ng-template matTabContent>
-          <app-hist-chart fxFlexAlign="center" fxFlex=""></app-hist-chart>>
-      </ng-template> </mat-tab>
+      <mat-tab label="Load vs Forecasts"  fxFlexAlign="center" fxFlex="fxFill">
+        <ng-template matTabContent>
+          <app-hist-chart></app-hist-chart>
+        </ng-template>
+      </mat-tab>
       <!-- <mat-tab label="Widgets"> <ng-template matTabContent></ng-template> </mat-tab> -->
     </mat-tab-group>
-
   </mat-drawer-content>
 </mat-drawer-container>
-
-<!-- <a fxFlexAlign="center" fxFlex="grow" routerLink="/alert/3">Alerts</a>
-    <a fxFlexAlign="center" fxFlex="grow" routerLink="/aaaa">Home</a> -->
-<!-- <div fxFlexAlign="center" fxFlex="grow" >{{ toolbar.asyncProp | async}}</div>  -->
-<!-- <router-outlet (activate)='onActivate($event)' (deactivate)='onDeactivate($event)'></router-outlet> -->
