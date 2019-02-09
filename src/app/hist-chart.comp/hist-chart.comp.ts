@@ -169,7 +169,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
   }
   private configDataset() {
     const dataset0 = {
-      label: 'Current Forecast',
+      label: 'Chosen Forecast',
       data: this.dataService.geCurrent24(),
       // pointRadius: 3,
       backgroundColor: '',
