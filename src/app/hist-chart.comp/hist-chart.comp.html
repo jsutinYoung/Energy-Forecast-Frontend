@@ -18,11 +18,10 @@
 
       <button mat-icon-button [disabled]="true"><mat-icon>more_vert</mat-icon></button>
 
-      <button mat-icon-button matTooltip="toggle temperature" (click)="togleTemperature()">
-        <!-- <i class="fas fa-temperature-high fa-lg mat-icon"></i> -->
+      <!-- <button mat-icon-button matTooltip="toggle temperature" (click)="togleTemperature()">
         <i class="fas fa-thermometer-full fa-lg mat-icon" *ngIf="hasTemperature()"></i>
         <i class="fas fa-thermometer-empty fa-lg mat-icon" *ngIf="!hasTemperature()"></i>
-      </button>
+      </button> -->
 
       <button
         mat-icon-button
@@ -67,35 +66,44 @@
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.date }}</mat-cell>
         </ng-container>
 
-        <!-- forecast Column -->
         <ng-container matColumnDef="load">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
             >Load (MWa)</mat-header-cell>
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.load }}</mat-cell>
         </ng-container>
 
-        <!-- actual Column -->
         <ng-container matColumnDef="d_1">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
             >-1 day (MWa)</mat-header-cell>
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.d_1 }}</mat-cell>
         </ng-container>
 
-        <!-- stderr Column -->
+        <ng-container matColumnDef="d_1_err">
+          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
+            >StdErr %</mat-header-cell>
+          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.d_1_err }}</mat-cell>
+        </ng-container>
+
         <ng-container matColumnDef="d_6">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
             >-6 days (MWa)</mat-header-cell>
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.d_6 }}</mat-cell>
         </ng-container>
 
+        <ng-container matColumnDef="d_6_err">
+          <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
+            >StdErr %</mat-header-cell>
+          <mat-cell class="my-mat-cell" *matCellDef="let element">{{ element.d_6_err }}</mat-cell>
+        </ng-container>
+
         <!-- temperature Column -->
-        <ng-container matColumnDef="temperature">
+        <!-- <ng-container matColumnDef="temperature">
           <mat-header-cell class="my-mat-header-cell" *matHeaderCellDef mat-sort-header
             >°F</mat-header-cell>
           <mat-cell class="my-mat-cell" *matCellDef="let element">{{
             element.temperature
           }}</mat-cell>
-        </ng-container>
+        </ng-container> -->
 
         <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row class="my-mat-row" *matRowDef="let row; columns: displayedColumns"></mat-row>

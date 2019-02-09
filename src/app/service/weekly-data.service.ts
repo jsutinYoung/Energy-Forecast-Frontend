@@ -35,7 +35,8 @@ export class WeeklyDataService {
   private load_24: number[] = [];
   private d_6_24: number[] = [];
   private d_1_24: number[] = [];
-  private temperature24: number[] = [];
+  private d_6_24_err: number[] = [];
+  private d_1_24_err: number[] = [];
   private theDate24: Date;
 
 
@@ -429,7 +430,7 @@ export class WeeklyDataService {
         return { status: false, description: 'Un-authenticated' };
       }
 
-      // read the chosen day forecast 24
+      // read the chosen day load 24
       let data = await this.load24(
         date,
         moment(date)
@@ -459,11 +460,11 @@ export class WeeklyDataService {
           return e[1];
         });
         // optional temperature
-        try {
-          this.temperature24 = rdata.map(e => {
-            return e[3];
-          });
-        } catch (err) {}
+        // try {
+        //   this.temperature24 = rdata.map(e => {
+        //     return e[3];
+        //   });
+        // } catch (err) {}
 
         this.theDate24 = date; // keep track chosen date
 
@@ -488,6 +489,10 @@ export class WeeklyDataService {
           this.d_6_24 = rdata.map(e => {
             return e[1];
           });
+
+          this.d_6_24_err = rdata.map(e => {
+            return e[2];
+          });
         }
 
         // optional data d-1 day, last 24 hrs
@@ -510,6 +515,10 @@ export class WeeklyDataService {
 
           this.d_1_24 = rdata.map(e => {
             return e[1];
+          });
+
+          this.d_1_24_err = rdata.map(e => {
+            return e[2];
           });
         }
 
@@ -546,12 +555,12 @@ export class WeeklyDataService {
     const result = this.load_24.map((e, i) => {
       if (e) {
         // may be optional
-        let temp;
-        try {
-          temp = parseFloat(this.temperature[i].toFixed(2));
-        } catch (err) {
-          temp = null;
-        }
+        // let temp;
+        // try {
+        //   temp = parseFloat(this.temperature24[i].toFixed(2));
+        // } catch (err) {
+        //   temp = null;
+        // }
 
         // may be optional
         let d_1;
@@ -561,6 +570,13 @@ export class WeeklyDataService {
           d_1 = null;
         }
 
+        let d_1_err;
+        try {
+          d_1_err = parseFloat((this.d_1_24_err[i] * 100).toFixed(2));
+        } catch (err) {
+          d_1_err = null;
+        }
+
         let d_6;
         try {
           d_6 = parseFloat(this.d_6_24[i].toFixed(3));
@@ -568,20 +584,29 @@ export class WeeklyDataService {
           d_6 = null;
         }
 
+        let d_6_err;
+        try {
+          d_6_err = parseFloat((this.d_6_24_err[i] * 100).toFixed(2));
+        } catch (err) {
+          d_6_err = null;
+        }
+
         return {
           date: this.formatDate(this.hour_24[i], true),
           load: parseFloat(e.toFixed(3)),
           d_1: d_1,
+          d_1_err: d_1_err,
           d_6: d_6,
-          temperature: temp
+          d_6_err: d_6_err
         };
       } else {
         return {
           date: null,
           load: null,
           d_1: null,
+          d_1_err: null,
           d_6: null,
-          temperature: null
+          d_6_err: null
         };
       }
     });
@@ -593,8 +618,8 @@ export class WeeklyDataService {
     return this.theDate24;
   }
 
-  getTemperature24(): number[] {
-    return this.temperature24;
-  }
+  // getTemperature24(): number[] {
+  //   return this.temperature24;
+  // }
 
 }

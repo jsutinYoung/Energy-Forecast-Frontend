@@ -19,8 +19,10 @@ export interface ITabularRow24 {
   date: string;
   load: number;
   d_1: number;
+  d_1_err: number;
   d_6: number;
-  temperature: number;
+  d_6_err: number;
+  // temperature: number;
 }
 
 @Component({
@@ -40,7 +42,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
   private hasRadius = true;
 
   tabularDataSource: MatTableDataSource<ITabularRow24>;
-  displayedColumns: string[] = ['date', 'load', 'd_1', 'd_6', 'temperature'];
+  displayedColumns: string[] = ['date', 'load', 'd_1', 'd_1_err', 'd_6', 'd_6_err'];
   isTableOpen: boolean;
 
   // make sure today's day is not selectable as there is no load
@@ -149,10 +151,10 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
       tooltips: { displayColors: 'true' }
     };
 
-    const tempAxis = this.getTempAxis();
-    if (tempAxis) {
-      myoptions.scales.yAxes.push(tempAxis);
-    }
+    // const tempAxis = this.getTempAxis();
+    // if (tempAxis) {
+    //   myoptions.scales.yAxes.push(tempAxis);
+    // }
 
     const config = {
       type: 'line',
@@ -207,17 +209,17 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     this.refresh(this.configCompare());
     this.chart.config.data.datasets = this.configDataset();
     const ds = this.chart.config.data.datasets;
-    if (this.hasTemperature()) {
-      ds.push(this.getTempDataset());
-    }
+    // if (this.hasTemperature()) {
+    //   ds.push(this.getTempDataset());
+    // }
 
     this.setMarker(this.hasRadius);
     this.chart.config.data.datasets[0].backgroundColor = '';
     this.chart.config.data.datasets[1].backgroundColor = '';
 
-    const {
-      scales: { xAxes }
-    } = this.chart.options;
+    // const {
+    //   scales: { xAxes }
+    // } = this.chart.options;
     // xAxes[0].gridLines = '';
 
     const optionalLegend = {
@@ -266,93 +268,12 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     this.refresh();
   }
 
-  // temperature stuff
-  hasTemperature(): boolean {
-    if (!this.dataService.hasData24()) {
-      return false;
-    }
-
-    if (!this.chart || !this.chart.options) {
-      return false;
-    }
-
-    return this.chart.options.scales.yAxes.length === 2;
-  }
-
   hasMarker(): boolean {
     return this.hasRadius;
   }
 
   hasLoad(): boolean {
     return this.dataService.hasLoad();
-  }
-
-  private getTempAxis() {
-    let tempAxis;
-    try {
-      const yAxes = this.chart.options.scales.yAxes;
-      tempAxis = this.hasTemperature() ? yAxes[1] : null;
-    } catch (err) {
-      tempAxis = null;
-    }
-    return tempAxis;
-  }
-
-  private getTempDataset() {
-    const dataset = {
-      yAxisID: '_ID_TEMP',
-      label: '°F',
-      data: this.dataService.getTemperature24(),
-      pointRadius: 2,
-      backgroundColor: '',
-      borderColor: 'orange',
-      pointHoverBackgroundColor: 'orange',
-      pointBorderColor: 'orange'
-    };
-
-    return dataset;
-  }
-
-  togleTemperature() {
-    const yAxes = this.chart.options.scales.yAxes;
-
-    if (this.hasTemperature()) {
-      // remove the temp y-axis
-      for (let i = 0; i < yAxes.length; i++) {
-        const ax = yAxes[i];
-        if (ax.id === '_ID_TEMP') {
-          yAxes.splice(i, 1);
-        }
-      }
-      // remove dataset
-      const ds = this.chart.config.data.datasets;
-      for (let i = 0; i < ds.length; i++) {
-        const d = ds[i];
-        if (d.yAxisID === '_ID_TEMP') {
-          ds.splice(i, 1);
-        }
-      }
-    } else {
-      // add temp y-aix
-      const axis = {
-        id: '_ID_TEMP',
-        type: 'linear',
-        position: 'right',
-        scaleLabel: {
-          display: true,
-          labelString: 'Temperature °F',
-          fontSize: 12,
-          fontColor: 'orange'
-        },
-        ticks: { fontColor: '#C0C0C0', fontSize: 10, min: 0 }
-      };
-      yAxes.push(axis);
-
-      // add temp dataset
-      this.chart.config.data.datasets.push(this.getTempDataset());
-    }
-
-    this.refresh();
   }
 
   private setMarker(hasRadius: boolean) {
@@ -426,4 +347,85 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     const chosen = moment(event.value).startOf('day');
     this.fetchDataOn(chosen.toDate());
   }
+
+  // temperature stuff
+  // hasTemperature(): boolean {
+  //   if (!this.dataService.hasData24() || this.dataService.getTemperature24().length === 0) {
+  //     return false;
+  //   }
+
+  //   if (!this.chart || !this.chart.options) {
+  //     return false;
+  //   }
+
+  //   return this.chart.options.scales.yAxes.length === 2;
+  // }
+
+  // private getTempAxis() {
+  //   let tempAxis;
+  //   try {
+  //     const yAxes = this.chart.options.scales.yAxes;
+  //     tempAxis = this.hasTemperature() ? yAxes[1] : null;
+  //   } catch (err) {
+  //     tempAxis = null;
+  //   }
+  //   return tempAxis;
+  // }
+
+  // private getTempDataset() {
+  //   const dataset = {
+  //     yAxisID: '_ID_TEMP',
+  //     label: '°F',
+  //     data: this.dataService.getTemperature24(),
+  //     pointRadius: 2,
+  //     backgroundColor: '',
+  //     borderColor: 'orange',
+  //     pointHoverBackgroundColor: 'orange',
+  //     pointBorderColor: 'orange'
+  //   };
+
+  //   return dataset;
+  // }
+
+  // togleTemperature() {
+  //   const yAxes = this.chart.options.scales.yAxes;
+
+  //   if (this.hasTemperature()) {
+  //     // remove the temp y-axis
+  //     for (let i = 0; i < yAxes.length; i++) {
+  //       const ax = yAxes[i];
+  //       if (ax.id === '_ID_TEMP') {
+  //         yAxes.splice(i, 1);
+  //       }
+  //     }
+  //     // remove dataset
+  //     const ds = this.chart.config.data.datasets;
+  //     for (let i = 0; i < ds.length; i++) {
+  //       const d = ds[i];
+  //       if (d.yAxisID === '_ID_TEMP') {
+  //         ds.splice(i, 1);
+  //       }
+  //     }
+  //   } else {
+  //     // add temp y-aix
+  //     const axis = {
+  //       id: '_ID_TEMP',
+  //       type: 'linear',
+  //       position: 'right',
+  //       scaleLabel: {
+  //         display: true,
+  //         labelString: 'Temperature °F',
+  //         fontSize: 12,
+  //         fontColor: 'orange'
+  //       },
+  //       ticks: { fontColor: '#C0C0C0', fontSize: 10, min: 0 }
+  //     };
+  //     yAxes.push(axis);
+
+  //     // add temp dataset
+  //     this.chart.config.data.datasets.push(this.getTempDataset());
+  //   }
+
+  //   this.refresh();
+  // }
 }
