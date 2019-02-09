@@ -32,7 +32,7 @@ export class WeeklyDataService {
 
   // comparison data
   private hour_24: Date[] = [];
-  private current_24: number[] = [];
+  private load_24: number[] = [];
   private d_6_24: number[] = [];
   private d_1_24: number[] = [];
   private temperature24: number[] = [];
@@ -371,7 +371,29 @@ export class WeeklyDataService {
     return this.theDate;
   }
 
-  // Fetch 24 ....................................................................
+  // Fetch load24 ....................................................................
+
+  async load24(start_date: Date, end_date: Date, headers: HttpHeaders) {
+    // read the main forecast data
+    const start_date_txt = moment(start_date).format('YYYY-MM-DDTHH:mm:ss');
+    const end_date_txt = moment(end_date).format('YYYY-MM-DDTHH:mm:ss');
+
+    const fURL =
+      this.loadURL +
+      '?start_date=' +
+      start_date_txt +
+      '&end_date=' +
+      end_date_txt +
+      '&local=1';
+
+    const data = await this.http
+      .get(fURL, { headers: headers })
+      .pipe(retry(3))
+      .toPromise();
+
+    return data;
+  }
+   // Fetch forcast 24 ....................................................................
   async http24(gen_date: Date, start_date: Date, end_date: Date, headers: HttpHeaders) {
     // read the main forecast data
     const gen_date_txt = moment(gen_date).format('YYYY-MM-DDTHH:mm:ss');
@@ -408,8 +430,7 @@ export class WeeklyDataService {
       }
 
       // read the chosen day forecast 24
-      let data = await this.http24(
-        date,
+      let data = await this.load24(
         date,
         moment(date)
           .add(23, 'hour')
@@ -434,7 +455,7 @@ export class WeeklyDataService {
           const h: Date = moment(e[0]).toDate();
           return h;
         });
-        this.current_24 = rdata.map(e => {
+        this.load_24 = rdata.map(e => {
           return e[1];
         });
         // optional temperature
@@ -507,8 +528,8 @@ export class WeeklyDataService {
   getHour24(): Date[] {
     return this.hour_24;
   }
-  geCurrent24(): number[] {
-    return this.current_24;
+  geLoad24(): number[] {
+    return this.load_24;
   }
   getD624(): number[] {
     return this.d_6_24;
@@ -522,7 +543,7 @@ export class WeeklyDataService {
   }
 
   getTabularData24(): ITabularRow24[] {
-    const result = this.current_24.map((e, i) => {
+    const result = this.load_24.map((e, i) => {
       if (e) {
         // may be optional
         let temp;
@@ -549,7 +570,7 @@ export class WeeklyDataService {
 
         return {
           date: this.formatDate(this.hour_24[i], true),
-          current: parseFloat(e.toFixed(3)),
+          load: parseFloat(e.toFixed(3)),
           d_1: d_1,
           d_6: d_6,
           temperature: temp
@@ -557,7 +578,7 @@ export class WeeklyDataService {
       } else {
         return {
           date: null,
-          current: null,
+          load: null,
           d_1: null,
           d_6: null,
           temperature: null

@@ -5,13 +5,7 @@
 // 2019
 //
 
-import {
-  AfterViewInit,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
@@ -23,7 +17,7 @@ import { WeeklyDataService } from '../service/weekly-data.service';
 
 export interface ITabularRow24 {
   date: string;
-  current: number;
+  load: number;
   d_1: number;
   d_6: number;
   temperature: number;
@@ -46,11 +40,13 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
   private hasRadius = true;
 
   tabularDataSource: MatTableDataSource<ITabularRow24>;
-  displayedColumns: string[] = ['date', 'current', 'd_1', 'd_6', 'temperature'];
+  displayedColumns: string[] = ['date', 'load', 'd_1', 'd_6', 'temperature'];
   isTableOpen: boolean;
+
+  // make sure today's day is not selectable as there is no load
   dateFilter = (d: Date): boolean => {
-    const now = new Date();
-    return d > now ? false : true;
+    const now = moment().startOf('day').toDate();
+    return d >= now ? false : true;
   }
 
   constructor(
@@ -72,7 +68,8 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     if (!this.dataService.hasData24()) {
       // const d = moment('2018-11-20').toDate();
       this.dataService.fetch24Data(
-        moment()
+        moment() // set it to yesterday to have load
+          .add(-1, 'day')
           .startOf('day')
           .toDate()
       );
@@ -91,9 +88,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     this.displayLine();
 
     // take care of table
-    this.tabularDataSource = new MatTableDataSource(
-      this.dataService.getTabularData24()
-    );
+    this.tabularDataSource = new MatTableDataSource(this.dataService.getTabularData24());
     this.tabularDataSource.sort = this.sort;
     this.tabularDataSource.paginator = this.paginator;
   }
@@ -169,13 +164,13 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
   }
   private configDataset() {
     const dataset0 = {
-      label: 'Chosen Forecast',
-      data: this.dataService.geCurrent24(),
+      label: 'Chosen Day Load',
+      data: this.dataService.geLoad24(),
       // pointRadius: 3,
       backgroundColor: '',
-      borderColor: 'rgba(5, 206, 250,1)',
-      pointBackgroundColor: 'rgba(5, 206, 250,1)',
-      pointHoverBackgroundColor: 'rgba(5, 206, 250,1)',
+      borderColor: 'rgba(92, 240, 155, 1)',
+      pointBackgroundColor: 'rgba(92, 240, 155, 1)',
+      pointHoverBackgroundColor: 'rgba(92, 240, 155, 1)',
       pointHoverBorderColor: 'white'
     };
 
@@ -185,9 +180,9 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
       // pointRadius: 3,
 
       backgroundColor: '',
-      borderColor: 'green',
-      pointBackgroundColor: 'green',
-      pointHoverBackgroundColor: 'green',
+      borderColor: 'rgba(5, 206, 250,1)',
+      pointBackgroundColor: 'rgba(5, 206, 250,1)',
+      pointHoverBackgroundColor: 'rgba(5, 206, 250,1)',
       pointHoverBorderColor: 'white'
     };
 
@@ -232,10 +227,10 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
         fontColor: 'white',
         filter: function(legendItem, chartData) {
           if (legendItem.datasetIndex === 0) {
-            legendItem.fillStyle = 'rgba(5, 206, 250,1)';
+            legendItem.fillStyle = 'rgba(92, 240, 155, 1)';
             return true;
           } else if (legendItem.datasetIndex === 1) {
-            legendItem.fillStyle = 'green';
+            legendItem.fillStyle = 'rgba(5, 206, 250,1)';
             return true;
           } else if (legendItem.datasetIndex === 2) {
             legendItem.fillStyle = 'yellow';
