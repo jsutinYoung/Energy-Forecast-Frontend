@@ -45,7 +45,7 @@
   <canvas fxFlex="grow" id="hist-canvas" [style.display]="isTableOpen ? 'none' : 'block'"> </canvas>
 
   <div fxFlex="grow" class="my-form-field" [style.display]="isTableOpen ? 'block' : 'none'">
-    <mat-paginator [pageSizeOptions]="[24, 48, 72, 168]" showFirstLastButtons></mat-paginator>
+    <!-- <mat-paginator [pageSizeOptions]="[24, 48, 72, 168]" showFirstLastButtons></mat-paginator> -->
     <mat-table mat-table [dataSource]="tabularDataSource" class="mat-elevation-z8 mytable" matSort>
       <!-- date Column -->
       <ng-container matColumnDef="date">

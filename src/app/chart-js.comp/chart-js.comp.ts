@@ -14,8 +14,9 @@ import _ from 'lodash';
 import * as moment from 'moment';
 
 import { WeeklyDataService } from '../service/weekly-data.service';
+import { StatetService } from '../service/state.service';
 
-enum ChartType {
+export enum ChartType {
   line = 'line',
   area = 'area',
   stderr = 'stderr',
@@ -49,7 +50,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     borderColor: 'rgba(92, 240, 155, 1)',
     pointBackgroundColor: 'rgba(92, 240, 155, 0.6)',
     pointHoverBackgroundColor: 'rgba(92, 240, 155, 0.6)',
-    pointHoverBorderColor: 'white',
+    pointHoverBorderColor: 'white'
   };
 
   // forecast
@@ -60,7 +61,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     pointBackgroundColor: 'rgba(5, 206, 250,1)',
     // pointBorderColor: '#fff',
     pointHoverBackgroundColor: 'rgba(5, 206, 250,1)',
-    pointHoverBorderColor: 'white',
+    pointHoverBorderColor: 'white'
   };
 
   private chart: Chart;
@@ -81,12 +82,16 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private dataService: WeeklyDataService,
     private snackBar: MatSnackBar,
+    private state: StatetService,
     private router: Router
   ) {
     // console.log('ctor');
   }
 
   ngOnInit() {
+    this.isTableOpen = this.state.singleForecast.isTableOpen;
+    // this.zoomValue = this.state.singleForecast.zoomLevel;
+
     this.dataService.dataChange.subscribe(result => {
       if (result.status === true) {
         this.reDrawChart();
@@ -111,7 +116,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {}
 
   ngOnDestroy() {
-    // console.log('destroy');
+    this.state.singleForecast.isTableOpen = this.isTableOpen;
+    this.state.singleForecast.zoomLevel = this.zoomValue;
+    this.state.singleForecast.chartType = this.type;
+    this.state.singleForecast.hasTemp = this.isTemperatureOn();
   }
 
   private applyFilter(filterValue: string) {
@@ -123,10 +131,23 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     const d1 = this.dataService.getMinHour();
     // const d2 = this.dataService.get48Hour();
     this.dayPointer = new Date(d1);
-    this.zoomValue = 2;
-    this.displayStdError();
-    this.tabularDataSource = new MatTableDataSource(this.dataService.getTabularData());
+    // this.zoomValue = 2;
+    this.zoomValue = this.state.singleForecast.zoomLevel;
 
+    const t = this.state.singleForecast.chartType;
+    if (t === ChartType.stderr) {
+      this.displayStdError();
+    } else if (t === ChartType.area) {
+      this.displayArea();
+    } else if (t === ChartType.line) {
+      this.displayLine();
+    }
+
+    if (this.state.singleForecast.hasTemp) {
+      this.toggleTemperature();
+    }
+
+    this.tabularDataSource = new MatTableDataSource(this.dataService.getTabularData());
     this.tabularDataSource.sort = this.sort;
     this.tabularDataSource.paginator = this.paginator;
   }
@@ -193,7 +214,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
         labels: { fontColor: 'white' }
       },
       tooltips: {
-        displayColors: true,
+        displayColors: true
         // callbacks: {
         //   label: function(tooltipItem) {
         //     return ' ' + Number(tooltipItem.yLabel).toFixed(3);
@@ -218,14 +239,14 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   private configCompareDataset() {
     let dataset0 = {
       label: 'Load',
-      data: this.dataService.getLoad(),
+      data: this.dataService.getLoad()
       // pointRadius: 3,
     };
     dataset0 = _.merge(dataset0, this.fillColor0);
 
     let dataset1 = {
       label: 'Forecast',
-      data: this.dataService.getForecast(),
+      data: this.dataService.getForecast()
       // pointRadius: 3,
     };
     dataset1 = _.merge(dataset1, this.fillColor1);
@@ -423,6 +444,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       return false;
     }
 
+    return this.isTemperatureOn();
+  }
+
+  isTemperatureOn(): boolean {
     return this.chart.options.scales.yAxes.length === 2;
   }
 
@@ -454,13 +479,13 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       backgroundColor: '',
       pointBorderColor: 'orange',
       borderColor: 'orange',
-      pointHoverBackgroundColor: 'orange',
+      pointHoverBackgroundColor: 'orange'
     };
 
     return dataset;
   }
 
-  togleTemperature() {
+  toggleTemperature() {
     const yAxes = this.chart.options.scales.yAxes;
 
     if (this.hasTemperature()) {

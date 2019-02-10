@@ -14,6 +14,7 @@ import _ from 'lodash';
 import * as moment from 'moment';
 
 import { WeeklyDataService } from '../service/weekly-data.service';
+import { StatetService } from '../service/state.service';
 
 export interface ITabularRow24 {
   date: string;
@@ -56,10 +57,12 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private dataService: WeeklyDataService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private state: StatetService
   ) {}
 
   ngOnInit() {
+    this.isTableOpen = this.state.compareForecast.isTableOpen;
+
     this.dataService.dataChange2.subscribe(result => {
       if (result.status === true) {
         this.reDrawChart();
@@ -86,6 +89,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy() {
     // console.log('destroy');
+    this.state.compareForecast.isTableOpen = this.isTableOpen ;
   }
 
   private reDrawChart() {
