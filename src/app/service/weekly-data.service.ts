@@ -16,6 +16,11 @@ import { TokenService } from './token.service';
 import { ITabularRow24 } from '../hist-chart.comp/hist-chart.comp';
 // import { environment } from '../../environments/environment';
 
+const toFixedNumber = (toFixTo = 2, base = 10) => num => {
+  const pow = Math.pow(base, toFixTo);
+  return +(Math.round(num * pow) / pow);
+};
+
 @Injectable({ providedIn: 'root' })
 export class WeeklyDataService {
   private forecastURL = '';
@@ -29,7 +34,6 @@ export class WeeklyDataService {
   private temperature: number[] = [];
   private theDate: Date;
 
-
   // comparison data
   private hour_24: Date[] = [];
   private load_24: number[] = [];
@@ -38,7 +42,6 @@ export class WeeklyDataService {
   private d_6_24_err: number[] = [];
   private d_1_24_err: number[] = [];
   private theDate24: Date;
-
 
   @Output() dataChange = new EventEmitter<{ status; description }>();
   @Output() dataChange2 = new EventEmitter<{ status; description }>();
@@ -135,14 +138,14 @@ export class WeeklyDataService {
   getHighError(): number[] {
     return this.forecast.map((e, i) => {
       const f = this.forecast[i];
-      return f + f * this.stderr[i];
+      return toFixedNumber(3)(f + f * this.stderr[i]);
     });
   }
 
   getLowError(): number[] {
     return this.forecast.map((e, i) => {
       const f = this.forecast[i];
-      return f - f * this.stderr[i];
+      return toFixedNumber(3)(f - f * this.stderr[i]);
     });
   }
 
@@ -156,7 +159,7 @@ export class WeeklyDataService {
         // may be optional
         let temp;
         try {
-          temp = parseFloat(this.temperature[i].toFixed(2));
+          temp = this.temperature[i];
         } catch (err) {
           temp = null;
         }
@@ -164,15 +167,15 @@ export class WeeklyDataService {
         // may be optional
         let load;
         try {
-          load = parseFloat(this.load[i].toFixed(3));
+          load = this.load[i];
         } catch (err) {
           load = null;
         }
 
         return {
           date: this.formatDate(this.hours[i], true),
-          forecast: parseFloat(e.toFixed(3)),
-          stderr: parseFloat((this.stderr[i] * 100).toFixed(2)),
+          forecast: e,
+          stderr: toFixedNumber(2)(this.stderr[i] * 100),
           temperature: temp,
           load: load
         };
@@ -270,7 +273,13 @@ export class WeeklyDataService {
     const end = begin.clone().add(6, 'day');
     end.add(23, 'hour');
     const endtext = end.format('YYYY-MM-DDTHH:mm:ss');
-    const lURL = this.loadURL + '?start_date=' + begintext + '&end_date=' + endtext + '&local=1';
+    const lURL =
+      this.loadURL +
+      '?start_date=' +
+      begintext +
+      '&end_date=' +
+      endtext +
+      '&local=1';
     const data = await this.http
       .get(lURL, { headers: headers })
       .pipe(retry(3))
@@ -289,8 +298,11 @@ export class WeeklyDataService {
 
       // GMT+01:00
       this.load = rdata.map(e => {
-        // console.log(e[0]);
-        return e[1];
+        try {
+          return toFixedNumber(3)(e[1]);
+        } catch (err) {
+          return null;
+        }
       });
     }
   }
@@ -303,12 +315,17 @@ export class WeeklyDataService {
 
     try {
       if (!this.tokenService.isAuthenticated()) {
-        this.dataChange.emit({ status: false, description: 'Un-authenticated' });
+        this.dataChange.emit({
+          status: false,
+          description: 'Un-authenticated'
+        });
         return { status: false, description: 'Un-authenticated' };
       }
 
       // make sure no time portion
-      date = moment(date).startOf('day').toDate();
+      date = moment(date)
+        .startOf('day')
+        .toDate();
 
       // read the main forecast data
       const gen_date = moment(date).format('YYYY-MM-DDTHH:mm:ss');
@@ -337,16 +354,28 @@ export class WeeklyDataService {
         });
         this.load = null;
         this.forecast = rdata.map(e => {
-          return e[1];
+          try {
+            return toFixedNumber(3)(e[1]);
+          } catch (err) {
+            return null;
+          }
         });
         this.stderr = rdata.map(e => {
-          return e[2];
+          try {
+            return toFixedNumber(3)(e[2]);
+          } catch (err) {
+            return null;
+          }
         });
 
         // optional temperature
         try {
           this.temperature = rdata.map(e => {
-            return e[3];
+            try {
+              return toFixedNumber(2)(e[3]);
+            } catch (err) {
+              return null;
+            }
           });
         } catch (err) {}
 
@@ -394,8 +423,13 @@ export class WeeklyDataService {
 
     return data;
   }
-   // Fetch forcast 24 ....................................................................
-  async http24(gen_date: Date, start_date: Date, end_date: Date, headers: HttpHeaders) {
+  // Fetch forcast 24 ....................................................................
+  async http24(
+    gen_date: Date,
+    start_date: Date,
+    end_date: Date,
+    headers: HttpHeaders
+  ) {
     // read the main forecast data
     const gen_date_txt = moment(gen_date).format('YYYY-MM-DDTHH:mm:ss');
     const start_date_txt = moment(start_date).format('YYYY-MM-DDTHH:mm:ss');
@@ -426,7 +460,10 @@ export class WeeklyDataService {
 
     try {
       if (!this.tokenService.isAuthenticated()) {
-        this.dataChange2.emit({ status: false, description: 'Un-authenticated' });
+        this.dataChange2.emit({
+          status: false,
+          description: 'Un-authenticated'
+        });
         return { status: false, description: 'Un-authenticated' };
       }
 
@@ -457,14 +494,8 @@ export class WeeklyDataService {
           return h;
         });
         this.load_24 = rdata.map(e => {
-          return e[1];
+          return toFixedNumber(3)(e[1]);
         });
-        // optional temperature
-        // try {
-        //   this.temperature24 = rdata.map(e => {
-        //     return e[3];
-        //   });
-        // } catch (err) {}
 
         this.theDate24 = date; // keep track chosen date
 
@@ -487,7 +518,7 @@ export class WeeklyDataService {
           }, []);
 
           this.d_6_24 = rdata.map(e => {
-            return e[1];
+            return toFixedNumber(3)(e[1]);
           });
 
           this.d_6_24_err = rdata.map(e => {
@@ -514,7 +545,7 @@ export class WeeklyDataService {
           }, []);
 
           this.d_1_24 = rdata.map(e => {
-            return e[1];
+            return toFixedNumber(3)(e[1]);
           });
 
           this.d_1_24_err = rdata.map(e => {
@@ -555,45 +586,37 @@ export class WeeklyDataService {
     const result = this.load_24.map((e, i) => {
       if (e) {
         // may be optional
-        // let temp;
-        // try {
-        //   temp = parseFloat(this.temperature24[i].toFixed(2));
-        // } catch (err) {
-        //   temp = null;
-        // }
-
-        // may be optional
         let d_1;
         try {
-          d_1 = parseFloat(this.d_1_24[i].toFixed(3));
+          d_1 = this.d_1_24[i];
         } catch (err) {
           d_1 = null;
         }
 
         let d_1_err;
         try {
-          d_1_err = parseFloat((this.d_1_24_err[i] * 100).toFixed(2));
+          d_1_err = toFixedNumber(2)(this.d_1_24_err[i] * 100);
         } catch (err) {
           d_1_err = null;
         }
 
         let d_6;
         try {
-          d_6 = parseFloat(this.d_6_24[i].toFixed(3));
+          d_6 = this.d_6_24[i];
         } catch (err) {
           d_6 = null;
         }
 
         let d_6_err;
         try {
-          d_6_err = parseFloat((this.d_6_24_err[i] * 100).toFixed(2));
+          d_6_err = toFixedNumber(2)(this.d_6_24_err[i] * 100);
         } catch (err) {
           d_6_err = null;
         }
 
         return {
           date: this.formatDate(this.hour_24[i], true),
-          load: parseFloat(e.toFixed(3)),
+          load: toFixedNumber(3)(e),
           d_1: d_1,
           d_1_err: d_1_err,
           d_6: d_6,
@@ -617,9 +640,4 @@ export class WeeklyDataService {
   get chosenDate24(): Date {
     return this.theDate24;
   }
-
-  // getTemperature24(): number[] {
-  //   return this.temperature24;
-  // }
-
 }
