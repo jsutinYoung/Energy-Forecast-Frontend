@@ -63,6 +63,7 @@ import { AlertShortenerPipe } from './pipe/alert-shortener.pipe';
 import { AlertService } from './service/alert.service';
 import { Toolbar } from './toolbar.comp/toolbar.comp';
 import { UploaderComp } from './uploader.comp/uploader.comp';
+import { DailyFabComp } from './daily-fab/daily-fab.comp';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { UploaderComp } from './uploader.comp/uploader.comp';
     DashComp,
     UploaderComp,
     DownloaderComp,
-    AlertDialog
+    AlertDialog,
+    DailyFabComp
   ],
   imports: [
     BrowserModule,

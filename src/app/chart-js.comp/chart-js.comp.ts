@@ -44,6 +44,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
+  fabOptions = { buttons: new Array<{ date: string; peak: string }>(7) };
+
   // load
   private fillColor0 = {
     backgroundColor: 'rgba(92, 240, 155, 0.6)',
@@ -133,6 +135,18 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.dayPointer = new Date(d1);
     // this.zoomValue = 2;
     this.zoomValue = this.state.singleForecast.zoomLevel;
+
+    const cd = moment(this.dataService.chosenDate);
+    for (let i = 0; i < 7; i++) {
+      const ddd = cd.add(i, 'day');
+      this.fabOptions.buttons[i] = {
+        date: ddd.format('MM-DD-YYYY'),
+        peak: this.dataService.getDailyPeak(i).toFixed(2)
+      };
+    }
+    // reverse
+    this.fabOptions.buttons = this.fabOptions.buttons.reverse();
+
 
     const t = this.state.singleForecast.chartType;
     if (t === ChartType.stderr) {

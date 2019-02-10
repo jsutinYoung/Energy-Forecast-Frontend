@@ -1,0 +1,43 @@
+.fab-container {
+  position: fixed;
+  top: 195px;
+  right: 15px;
+  z-index: 100;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+
+  > div {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    margin-bottom: 5px;
+    button {
+      // margin-bottom: 17px;
+      margin-left: 10px;
+      margin-right: 10px;
+      box-shadow: 6px 6px  10px black;
+    }
+  }
+}
+
+.fab-toggler {
+  float: right;
+  z-index: 100;
+}
+
+#fab-dismiss {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+}
+
+.fab-secondary {
+  // background-color: #eee;
+  width: 96px;
+  height: 96px;
+  white-space: normal;
+}

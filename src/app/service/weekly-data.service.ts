@@ -33,6 +33,7 @@ export class WeeklyDataService {
   private stderr: number[] = [];
   private temperature: number[] = [];
   private theDate: Date;
+  private dailyPeak: number[] = [7];
 
   // comparison data
   private hour_24: Date[] = [];
@@ -114,7 +115,9 @@ export class WeeklyDataService {
       return `${month}/${day}--${hourText}`;
     }
   }
-
+  getDailyPeak(index): number {
+    return this.dailyPeak[index];
+  }
   getForecast(): number[] {
     return this.forecast;
   }
@@ -223,10 +226,12 @@ export class WeeklyDataService {
 
       if (Array.isArray(data) && data.length > 0) {
         // start proessing
-        const rdata = data.reduceRight((acc, e) => {
-          acc.push(e);
-          return acc;
-        }, []);
+        // const rdata = data.reduceRight((acc, e) => {
+        //   acc.push(e);
+        //   return acc;
+        // }, []);
+
+        const rdata = data.reverse();
 
         // GMT+01:00
         this.hours = rdata.map(e => {
@@ -273,13 +278,7 @@ export class WeeklyDataService {
     const end = begin.clone().add(6, 'day');
     end.add(23, 'hour');
     const endtext = end.format('YYYY-MM-DDTHH:mm:ss');
-    const lURL =
-      this.loadURL +
-      '?start_date=' +
-      begintext +
-      '&end_date=' +
-      endtext +
-      '&local=1';
+    const lURL = this.loadURL + '?start_date=' + begintext + '&end_date=' + endtext + '&local=1';
     const data = await this.http
       .get(lURL, { headers: headers })
       .pipe(retry(3))
@@ -291,10 +290,12 @@ export class WeeklyDataService {
 
     if (Array.isArray(data) && data.length > 0 && data.length <= 168) {
       // start proessing
-      const rdata = data.reduceRight((acc, e) => {
-        acc.push(e);
-        return acc;
-      }, []);
+      // const rdata = data.reduceRight((acc, e) => {
+      //   acc.push(e);
+      //   return acc;
+      // }, []);
+
+      const rdata = data.reverse();
 
       // GMT+01:00
       this.load = rdata.map(e => {
@@ -342,12 +343,13 @@ export class WeeklyDataService {
 
       if (Array.isArray(data) && data.length > 0) {
         // start proessing
-        const rdata = data.reduceRight((acc, e) => {
-          acc.push(e);
-          return acc;
-        }, []);
+        // const rdata = data.reduceRight((acc, e) => {
+        //   acc.push(e);
+        //   return acc;
+        // }, []);
 
-        // GMT+01:00
+        const rdata = data.reverse();
+
         this.hours = rdata.map(e => {
           const h: Date = moment(e[0]).toDate();
           return h;
@@ -367,6 +369,21 @@ export class WeeklyDataService {
             return null;
           }
         });
+
+        // calculate daily peak
+        let hrCount = 0;
+        const start = moment(this.hours[0]);
+        for (let i = 0; i < 7; i++) {
+          start.add(1, 'day');
+          let peak = 0;
+          while (this.hours[hrCount] < start.toDate()) {
+            if (this.forecast[hrCount] > peak) {
+              peak = this.forecast[hrCount];
+            }
+            hrCount++;
+          }
+          this.dailyPeak[i] = peak;
+        }
 
         // optional temperature
         try {
@@ -409,12 +426,7 @@ export class WeeklyDataService {
     const end_date_txt = moment(end_date).format('YYYY-MM-DDTHH:mm:ss');
 
     const fURL =
-      this.loadURL +
-      '?start_date=' +
-      start_date_txt +
-      '&end_date=' +
-      end_date_txt +
-      '&local=1';
+      this.loadURL + '?start_date=' + start_date_txt + '&end_date=' + end_date_txt + '&local=1';
 
     const data = await this.http
       .get(fURL, { headers: headers })
@@ -424,12 +436,7 @@ export class WeeklyDataService {
     return data;
   }
   // Fetch forcast 24 ....................................................................
-  async http24(
-    gen_date: Date,
-    start_date: Date,
-    end_date: Date,
-    headers: HttpHeaders
-  ) {
+  async http24(gen_date: Date, start_date: Date, end_date: Date, headers: HttpHeaders) {
     // read the main forecast data
     const gen_date_txt = moment(gen_date).format('YYYY-MM-DDTHH:mm:ss');
     const start_date_txt = moment(start_date).format('YYYY-MM-DDTHH:mm:ss');
@@ -484,10 +491,12 @@ export class WeeklyDataService {
 
       if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
         // start proessing
-        let rdata = data.reduceRight((acc, e) => {
-          acc.push(e);
-          return acc;
-        }, []);
+        // let rdata = data.reduceRight((acc, e) => {
+        //   acc.push(e);
+        //   return acc;
+        // }, []);
+
+        let rdata = data.reverse();
 
         this.hour_24 = rdata.map(e => {
           const h: Date = moment(e[0]).toDate();
@@ -512,10 +521,12 @@ export class WeeklyDataService {
         );
         if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
           // start proessing
-          rdata = data.reduceRight((acc, e) => {
-            acc.push(e);
-            return acc;
-          }, []);
+          // rdata = data.reduceRight((acc, e) => {
+          //   acc.push(e);
+          //   return acc;
+          // }, []);
+
+          rdata = data.reverse();
 
           this.d_6_24 = rdata.map(e => {
             return toFixedNumber(3)(e[1]);
@@ -539,10 +550,12 @@ export class WeeklyDataService {
         );
         if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
           // start proessing
-          rdata = data.reduceRight((acc, e) => {
-            acc.push(e);
-            return acc;
-          }, []);
+          // rdata = data.reduceRight((acc, e) => {
+          //   acc.push(e);
+          //   return acc;
+          // }, []);
+
+          rdata = data.reverse();
 
           this.d_1_24 = rdata.map(e => {
             return toFixedNumber(3)(e[1]);
