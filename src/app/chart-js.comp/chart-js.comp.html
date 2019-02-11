@@ -62,6 +62,7 @@
         matTooltip="toggle temperature"
         (click)="toggleTemperature()"
         [disabled]="isTableOpen"
+        [color] ="isTemperatureOn()?'accent':''"
       >
         <!-- <i class="fas fa-temperature-high fa-lg mat-icon"></i> -->
         <i class="fas fa-thermometer-full fa-lg mat-icon" *ngIf="hasTemperature()"></i>

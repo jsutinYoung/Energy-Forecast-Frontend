@@ -423,9 +423,9 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       label: 'Forecast',
       data: this.dataService.getForecast(),
       pointRadius: '3',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: 'rgba(5, 206, 250,0.8)',
-      pointHoverBorderColor: 'white',
+      pointBorderColor: 'rgba(5, 206, 250,1)',
+      pointHoverBackgroundColor: 'rgba(5, 206, 250,1)',
+      pointHoverBorderColor: 'rgba(5, 206, 250,1)',
       backgroundColor: '',
       borderColor: 'rgba(5, 206, 250,0.8)'
     };
@@ -649,11 +649,11 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       this.chart.config.data.datasets[0].pointRadius = 0;
       this.chart.config.data.datasets[1].pointRadius = 0;
     } else {
-      this.chart.config.data.datasets[1].pointRadius = 3;
+      this.chart.config.data.datasets[1].pointRadius = 4;
       if (this.type === ChartType.delta) {
         this.chart.config.data.datasets[0].pointRadius = 0;
       } else {
-        this.chart.config.data.datasets[0].pointRadius = 3;
+        this.chart.config.data.datasets[0].pointRadius = 4;
       }
     }
   }
