@@ -138,11 +138,11 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
     const cd = moment(this.dataService.chosenDate);
     for (let i = 0; i < 7; i++) {
-      const ddd = cd.add(i, 'day');
       this.fabOptions.buttons[i] = {
-        date: ddd.format('MM-DD-YYYY'),
+        date: cd.format('MM-DD-YYYY'),
         peak: this.dataService.getDailyPeak(i).toFixed(2)
       };
+      cd.add(1, 'day');
     }
     // reverse
     this.fabOptions.buttons = this.fabOptions.buttons.reverse();
@@ -462,6 +462,11 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   isTemperatureOn(): boolean {
+
+    if (!this.chart || !this.chart.options) {
+      return false;
+    }
+
     return this.chart.options.scales.yAxes.length === 2;
   }
 
