@@ -21,7 +21,7 @@ export class DownloaderService {
   ) {}
   // .....................................................................
   createDownload(json, filename) {
-    const blob = new Blob([json], { type: 'text/csv' });
+    const blob = new Blob([json], { type: 'text/csv;charset=utf-8' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.setAttribute('hidden', '');
