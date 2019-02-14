@@ -195,7 +195,7 @@ export class WeeklyDataService {
         }
 
         return {
-          date: moment(this.hour_24[i]).format('YYYY-MM-DD HH:mm'),
+          date: moment(this.hours[i]).format('YYYY-MM-DD HH:mm'),
           forecast: e,
           stderr: toFixedNumber(2)(this.stderr[i] * 100),
           temperature: temp,
