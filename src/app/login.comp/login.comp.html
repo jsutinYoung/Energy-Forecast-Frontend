@@ -41,7 +41,7 @@
     </div>
   </mat-card-content>
   <mat-card-actions fxFlexAlign="center">
-    <button mat-fab [disabled]="isOK()" color="primary" (click)="signIn(userid.value,pass.value)">Sign In</button>
+    <button mat-fab [disabled]="isWrong()" color="primary" (click)="signIn(userid.value,pass.value)">Sign In</button>
     <!-- <button mat-raised-button (click)="login()" color="primary">Sign In</button> -->
   </mat-card-actions>
 </mat-card>

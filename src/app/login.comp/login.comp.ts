@@ -6,12 +6,7 @@
 //
 
 import { Component, OnInit } from '@angular/core';
-import {
-  FormControl,
-  FormGroupDirective,
-  NgForm,
-  Validators
-} from '@angular/forms';
+import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Router } from '@angular/router';
@@ -62,10 +57,7 @@ export class LoginComp implements OnInit {
     // Validators.maxLength(12),
   ]);
 
-  passFormControl2 = new FormControl('', [
-    Validators.required,
-    Validators.minLength(6)
-  ]);
+  passFormControl2 = new FormControl('', [Validators.required, Validators.minLength(6)]);
 
   // matcher = new MyErrorStateMatcher();
 
@@ -75,33 +67,22 @@ export class LoginComp implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
-  async signUp(
-    type: string,
-    email: string,
-    password: string,
-    password2: string
-  ) {
+  async signUp(type: string, email: string, password: string) {
     try {
-      if (password !== password2) {
-        this.openSnackBar('Register failed', 'verify password!');
+      // if (password !== password2) {
+      //   this.openSnackBar('Register failed', 'verify password!');
+      // } else {
+      const { status, description } = await this.authService.signupUser(type, email, password);
+      if (status === true) {
+        this.openSnackBar('Register succeeded', 'Can login.');
+        // this.spinner.hide();
+        return true;
       } else {
-        // this.spinner.show();
-        const { status, description } = await this.authService.signupUser(
-          type,
-          email,
-          password
-        );
-        if (status === true) {
-          this.openSnackBar('Register succeeded', 'Can login.');
-          // this.spinner.hide();
-          return true;
-        } else {
-          this.openSnackBar('Registration failed.', description);
-        }
+        this.openSnackBar('Registration failed.', description);
       }
+      // }
     } catch (error) {
       // console.log('Register failed' + error);
       this.openSnackBar('Registration failed', error);
@@ -109,12 +90,13 @@ export class LoginComp implements OnInit {
     return false;
   }
 
-  isOK(): boolean {
+  isWrong(): boolean {
     if (this.isRegisterMode) {
       return (
-        this.passFormControl.invalid ||
         this.emailFormControl.invalid ||
-        this.passFormControl2.invalid
+        this.passFormControl.invalid ||
+        this.passFormControl2.invalid ||
+        this.passFormControl.value !== this.passFormControl2.value
       );
     } else {
       return this.passFormControl.invalid || this.emailFormControl.invalid;
@@ -129,10 +111,7 @@ export class LoginComp implements OnInit {
   async signIn(email: string, password: string) {
     try {
       // this.spinner.show();
-      const { status, description } = await this.authService.signIn(
-        email,
-        password
-      );
+      const { status, description } = await this.authService.signIn(email, password);
       if (status === true) {
         // this.spinner.hide();
         this.router.navigate(['/dash']);

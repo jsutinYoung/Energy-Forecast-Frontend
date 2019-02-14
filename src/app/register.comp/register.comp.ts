@@ -41,8 +41,8 @@ export class RegisterComp extends LoginComp {
   }
 
   async onDone(result) {
-    const { type, user, pass, pass2 } = result;
-    const ok = await this.signUp(type, user, pass, pass2);
+    const { type, user, pass} = result;
+    const ok = await this.signUp(type, user, pass);
     if (ok) {
       this.dialogRef.close();
     }
