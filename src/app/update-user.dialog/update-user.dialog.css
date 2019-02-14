@@ -8,7 +8,7 @@
 }
 
 
-::ng-deep .mat-card-header {
+.mat-card-header {
   background-color: #455a64 !important;
   padding-left: 4px;
   padding-top: 10px;
@@ -16,12 +16,12 @@
 }
 
 
-::ng-deep .mat-card {
+.mat-card {
   padding: 0 !important;
   height: 280px;
 }
 
-::ng-deep .mat-card-content {
+.mat-card-content {
   padding: 0px !important;
   margin: 2px;
   background-color: rgb(56, 53, 53) !important;

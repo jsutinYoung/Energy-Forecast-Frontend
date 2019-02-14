@@ -60,7 +60,7 @@ export class Toolbar implements OnInit {
 
   registerUserDialog(): void {
     const dialogRef = this.dialog.open(RegisterComp, {
-      maxWidth: 520,
+      maxHeight: 550,
       data: ''
     });
 
