@@ -1,8 +1,8 @@
 <mat-toolbar color="primary" class="eft-fixed-header mat-elevation-z6">
-  <button mat-icon-button matTooltip="toggle alert" (click)="toggleDrawer()">
+  <!-- <button mat-icon-button matTooltip="toggle alert" (click)="toggleDrawer()">
     <mat-icon *ngIf="!isDrawerOpen">chevron_right</mat-icon>
     <mat-icon *ngIf="isDrawerOpen">chevron_left</mat-icon>
-  </button>
+  </button> -->
 
   <!-- <button mat-icon-button [matMenuTriggerFor]="menu"> -->
   <!-- (click)="drawer.toggle()" -->
@@ -19,7 +19,7 @@
 
     <button mat-menu-item>
       <!-- <mat-icon>home</mat-icon> -->
-      <span>Edit Profile</span>
+      <span>Edit Settings</span>
     </button>
 
   </mat-menu>
@@ -30,11 +30,11 @@
     <mat-icon>cloud_upload</mat-icon>
   </button> -->
 
-  <button mat-icon-button matTooltip="Download CSV">
+  <!-- <button mat-icon-button matTooltip="Download CSV" (click)="downloadCSV()">
     <mat-icon>cloud_download</mat-icon>
-  </button>
+  </button> -->
 
-  <button mat-icon-button matTooltip="Help topics">
+  <button mat-icon-button matTooltip="About" (click)="openAboutialog()">
     <mat-icon>help</mat-icon>
   </button>
 

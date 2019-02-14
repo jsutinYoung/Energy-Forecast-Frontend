@@ -26,6 +26,12 @@
         <i class="fa fa-table" aria-hidden="true"></i>
       </button>
 
+      <button mat-icon-button matTooltip="Download CSV" (click)="downloadCSV()">
+        <mat-icon>cloud_download</mat-icon>
+      </button>
+
+      <button mat-icon-button [disabled]="true"><mat-icon>more_vert</mat-icon></button>
+
       <button
         mat-icon-button
         matTooltip="toggle marker"

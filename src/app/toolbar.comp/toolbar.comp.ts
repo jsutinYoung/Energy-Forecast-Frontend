@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 
 import { RegisterComp } from '../register.comp/register.comp';
+import { AboutDialog } from '../about.dialog/about.dialog';
 import { AuthService, UserType } from '../service/auth.service';
 
 @Component({
@@ -73,5 +74,10 @@ export class Toolbar implements OnInit {
 
   get userID() {
     return this.authService.userID;
+  }
+
+  openAboutialog() {
+    const dialogRef = this.dialog.open(AboutDialog, {
+    });
   }
 }

@@ -16,6 +16,8 @@ export interface ISingleForecastState {
   chartType: string;
   hasTemp: boolean;
   isTableOpen: boolean;
+  dayPointer: Date;
+  isResetMinMax: boolean;
 }
 
 export interface ICompareForecastState {
@@ -26,14 +28,17 @@ export interface ICompareForecastState {
 export class StatetService {
   singleForecast: ISingleForecastState;
   compareForecast: ICompareForecastState;
+  currentTab = 0;
 
   constructor() {
     this.compareForecast = { isTableOpen: false };
     this.singleForecast = {
-      zoomLevel: 2,
+      zoomLevel: 4,
       chartType: 'stderr',
       hasTemp: false,
-      isTableOpen: false
+      isTableOpen: false,
+      dayPointer: null,
+      isResetMinMax: false
     };
   }
 }

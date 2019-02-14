@@ -13,22 +13,15 @@ import { Chart } from 'chart.js';
 import _ from 'lodash';
 import * as moment from 'moment';
 
-import { WeeklyDataService } from '../service/weekly-data.service';
+import { WeeklyDataService, ITabularRow } from '../service/weekly-data.service';
 import { StatetService } from '../service/state.service';
+import { DownloaderService } from '../service/downloader.service';
 
 export enum ChartType {
   line = 'line',
   area = 'area',
   stderr = 'stderr',
   delta = 'delta'
-}
-
-export interface ITabularRow {
-  date: string;
-  forecast: number;
-  load: number;
-  stderr: number;
-  temperature: number;
 }
 
 @Component({
@@ -85,6 +78,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     private dataService: WeeklyDataService,
     private snackBar: MatSnackBar,
     private state: StatetService,
+    private download: DownloaderService,
     private router: Router
   ) {
     // console.log('ctor');
@@ -92,7 +86,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.isTableOpen = this.state.singleForecast.isTableOpen;
-    // this.zoomValue = this.state.singleForecast.zoomLevel;
+    this.state.currentTab = 0;
 
     this.dataService.dataChange.subscribe(result => {
       if (result.status === true) {
@@ -108,6 +102,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       this.dataService.fetchWeeklyData(
         moment()
           .startOf('day')
+          .add(1, 'day')
           .toDate()
       );
     } else {
@@ -122,6 +117,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.state.singleForecast.zoomLevel = this.zoomValue;
     this.state.singleForecast.chartType = this.type;
     this.state.singleForecast.hasTemp = this.isTemperatureOn();
+    this.state.singleForecast.dayPointer = new Date(this.dayPointer);
   }
 
   private applyFilter(filterValue: string) {
@@ -136,6 +132,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     // this.zoomValue = 2;
     this.zoomValue = this.state.singleForecast.zoomLevel;
 
+    let dayPointerValid = false;
+
     const cd = moment(this.dataService.chosenDate);
     for (let i = 0; i < 7; i++) {
       this.fabOptions.buttons[i] = {
@@ -143,18 +141,30 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
         peak: this.dataService.getDailyPeak(i).toFixed(2)
       };
       cd.add(1, 'day');
+
+      // check if state dayPoint is within range, if so use it
+      if (this.state.singleForecast.dayPointer) {
+        if (this.state.singleForecast.dayPointer.getTime() === cd.toDate().getTime()) {
+          dayPointerValid = true;
+        }
+      }
     }
+
+    // set the right current day
+    if (dayPointerValid) {
+      this.dayPointer = this.state.singleForecast.dayPointer;
+    }
+
     // reverse
     this.fabOptions.buttons = this.fabOptions.buttons.reverse();
 
-
     const t = this.state.singleForecast.chartType;
     if (t === ChartType.stderr) {
-      this.displayStdError();
+      this.displayStdError(true);
     } else if (t === ChartType.area) {
-      this.displayArea();
+      this.displayArea(true);
     } else if (t === ChartType.line) {
-      this.displayLine();
+      this.displayLine(true);
     }
 
     if (this.state.singleForecast.hasTemp) {
@@ -270,8 +280,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     return yDatasets;
   }
 
-  displayLine() {
-    if (this.type === ChartType.line) {
+  displayLine(forceRedraw: boolean = false) {
+    if (!forceRedraw && this.type === ChartType.line) {
       return;
     }
 
@@ -284,6 +294,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.setZoom(this.zoomValue);
 
     this.type = ChartType.line;
+    this.state.singleForecast.chartType = this.type;
+
     this.setMarker(this.hasRadius);
     this.chart.config.data.datasets[0].backgroundColor = '';
     this.chart.config.data.datasets[1].backgroundColor = '';
@@ -302,8 +314,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.refresh();
   }
 
-  displayArea() {
-    if (this.type === ChartType.area) {
+  displayArea(forceRedraw: boolean = false) {
+    if (!forceRedraw && this.type === ChartType.area) {
       return;
     }
 
@@ -316,6 +328,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     this.setZoom(this.zoomValue);
 
     this.type = ChartType.area;
+    this.state.singleForecast.chartType = this.type;
     this.setMarker(this.hasRadius);
     this.chart.config.data.datasets[0].backgroundColor = this.fillColor0.backgroundColor;
     this.chart.config.data.datasets[1].backgroundColor = this.fillColor1.backgroundColor;
@@ -362,8 +375,8 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   //   this.refresh();
   // }
 
-  displayStdError() {
-    if (this.type === ChartType.stderr) {
+  displayStdError(forceRedraw: boolean = false) {
+    if (!forceRedraw && this.type === ChartType.stderr) {
       return;
     }
 
@@ -371,6 +384,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     // this.chart.options.animation.duration = '1000';
     this.chart.config.type = 'line';
     this.type = ChartType.stderr;
+    this.state.singleForecast.chartType = this.type;
 
     const m = moment(this.dataService.chosenDate).format('MM-DD-YYYY (ddd)');
     this.chart.config.options.title.text = ChartComp.title + '\u27f9 ' + m;
@@ -462,7 +476,6 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   isTemperatureOn(): boolean {
-
     if (!this.chart || !this.chart.options) {
       return false;
     }
@@ -565,6 +578,10 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   setXminMax(d1: Date, d2: Date) {
     if (d2 > d1 && d1 >= this.dataService.getMinHour() && d1 <= this.dataService.getMaxHour()) {
+      if (d2 > this.dataService.getMaxHour()) {
+        d2 = new Date(this.dataService.getMaxHour());
+      }
+
       const {
         scales: { xAxes }
       } = this.chart.options;
@@ -798,14 +815,11 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   }
 
   toggleTable() {
-    // if (this.isTableOpen) {
-    //   chart.style.display = 'none';
-    //   table.style.display = 'block';
-    // } else {
-    //   chart.style.display = 'block';
-    //   table.style.display = 'none';
-    // }
     this.isTableOpen = !this.isTableOpen;
+  }
+
+  downloadCSV() {
+    this.download.downloadCSV(0);
   }
   // private async stall(stallTime = 3000) {
   //   await new Promise(resolve => setTimeout(resolve, stallTime));

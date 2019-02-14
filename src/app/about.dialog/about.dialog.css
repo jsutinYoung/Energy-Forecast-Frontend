@@ -1,0 +1,23 @@
+.close{
+  /* min-width: 200px;
+  max-width: 200px; */
+  justify-content: center
+}
+
+p {
+  font-size: 14px;
+}
+
+label{
+  font-family: "Times New Roman", Times, serif;
+  font-size: 18px;
+  font-weight: bold;
+  font-variant: small-caps;
+  font-style: italic;
+}
+
+.toplevel{
+  border-radius: 125px;
+  /* padding: 20px; */
+  width: 300px;
+}

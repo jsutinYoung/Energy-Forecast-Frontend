@@ -57,12 +57,18 @@
         <i class="fa fa-table" aria-hidden="true"></i>
       </button>
 
+      <button mat-icon-button matTooltip="Download CSV" (click)="downloadCSV()">
+        <mat-icon>cloud_download</mat-icon>
+      </button>
+
+      <button mat-icon-button [disabled]="true"><mat-icon>more_vert</mat-icon></button>
+
       <button
         mat-icon-button
         matTooltip="toggle temperature"
         (click)="toggleTemperature()"
         [disabled]="isTableOpen"
-        [color] ="isTemperatureOn()?'accent':''"
+        [color]="isTemperatureOn() ? 'accent' : ''"
       >
         <!-- <i class="fas fa-temperature-high fa-lg mat-icon"></i> -->
         <i class="fas fa-thermometer-full fa-lg mat-icon" *ngIf="hasTemperature()"></i>
@@ -126,11 +132,9 @@
         <!-- <i class="fab fa-creative-commons-sampling fa-2x mat-icon"></i> -->
       </button>
 
-      <!-- <app-daily-fab [options]="fabOptions"></app-daily-fab> -->
-
+      <app-daily-fab [options]="fabOptions" [isDisabled]="isTableOpen"></app-daily-fab>
     </div>
   </div>
-
 
   <canvas #chart fxFlex="grow" id="canvas" [style.display]="isTableOpen ? 'none' : 'block'">
   </canvas>

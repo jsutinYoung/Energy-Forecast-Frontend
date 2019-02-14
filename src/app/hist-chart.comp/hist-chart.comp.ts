@@ -13,18 +13,9 @@ import { Chart } from 'chart.js';
 import _ from 'lodash';
 import * as moment from 'moment';
 
-import { WeeklyDataService } from '../service/weekly-data.service';
+import { WeeklyDataService, ITabularRow24 } from '../service/weekly-data.service';
 import { StatetService } from '../service/state.service';
-
-export interface ITabularRow24 {
-  date: string;
-  load: number;
-  d_1: number;
-  d_1_err: number;
-  d_6: number;
-  d_6_err: number;
-  // temperature: number;
-}
+import { DownloaderService } from '../service/downloader.service';
 
 @Component({
   selector: 'app-hist-chart',
@@ -57,11 +48,13 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private dataService: WeeklyDataService,
     private snackBar: MatSnackBar,
-    private state: StatetService
+    private state: StatetService,
+    private download: DownloaderService
   ) {}
 
   ngOnInit() {
     this.isTableOpen = this.state.compareForecast.isTableOpen;
+    this.state.currentTab = 1;
 
     this.dataService.dataChange2.subscribe(result => {
       if (result.status === true) {
@@ -89,7 +82,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy() {
     // console.log('destroy');
-    this.state.compareForecast.isTableOpen = this.isTableOpen ;
+    this.state.compareForecast.isTableOpen = this.isTableOpen;
   }
 
   private reDrawChart() {
@@ -354,6 +347,10 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
 
   toggleTable() {
     this.isTableOpen = !this.isTableOpen;
+  }
+
+  downloadCSV() {
+    this.download.downloadCSV(1);
   }
 
   // temperature stuff

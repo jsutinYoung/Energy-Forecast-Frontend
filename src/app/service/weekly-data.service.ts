@@ -10,11 +10,26 @@ import { EventEmitter, Injectable, Injector, Output } from '@angular/core';
 import * as moment from 'moment';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
-
-import { ITabularRow } from '../chart-js.comp/chart-js.comp';
 import { TokenService } from './token.service';
-import { ITabularRow24 } from '../hist-chart.comp/hist-chart.comp';
 // import { environment } from '../../environments/environment';
+
+export interface ITabularRow {
+  date: string;
+  forecast: number;
+  load: number;
+  stderr: number;
+  temperature: number;
+}
+
+export interface ITabularRow24 {
+  date: string;
+  load: number;
+  d_1: number;
+  d_1_err: number;
+  d_6: number;
+  d_6_err: number;
+}
+
 
 const toFixedNumber = (toFixTo = 2, base = 10) => num => {
   const pow = Math.pow(base, toFixTo);
@@ -122,6 +137,10 @@ export class WeeklyDataService {
     return this.forecast;
   }
 
+  getStdErr(): number[] {
+    return this.stderr;
+  }
+
   getLoad(): number[] {
     return this.load;
   }
@@ -176,7 +195,7 @@ export class WeeklyDataService {
         }
 
         return {
-          date: this.formatDate(this.hours[i], true),
+          date: moment(this.hour_24[i]).format('YYYY-MM-DD HH:mm'),
           forecast: e,
           stderr: toFixedNumber(2)(this.stderr[i] * 100),
           temperature: temp,
@@ -414,6 +433,11 @@ export class WeeklyDataService {
     }
   }
 
+  triggerReload() {
+    this.dataChange.emit({ status: true, description: '' });
+    return of({ status: true, description: '' }).toPromise();
+  }
+
   get chosenDate(): Date {
     return this.theDate;
   }
@@ -628,7 +652,7 @@ export class WeeklyDataService {
         }
 
         return {
-          date: this.formatDate(this.hour_24[i], true),
+          date: moment(this.hour_24[i]).format('YYYY-MM-DD HH:mm'),
           load: toFixedNumber(3)(e),
           d_1: d_1,
           d_1_err: d_1_err,
