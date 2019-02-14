@@ -19,9 +19,8 @@
 
     <button mat-menu-item>
       <!-- <mat-icon>home</mat-icon> -->
-      <span>Edit Settings</span>
+      <span (click)="openUpdateUserDialog()">Edit Settings</span>
     </button>
-
   </mat-menu>
 
   <span class="eft-spacer"></span> <span class="eft-spacer">NWPCC Near Term Energy Forecast</span>
@@ -38,7 +37,7 @@
     <mat-icon>help</mat-icon>
   </button>
 
-  <button mat-icon-button matTooltip="{{userID}}" [matMenuTriggerFor]="menu">
+  <button mat-icon-button matTooltip="{{ userID }}" [matMenuTriggerFor]="menu">
     <mat-icon>account_circle</mat-icon>
   </button>
 

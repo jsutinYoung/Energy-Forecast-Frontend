@@ -38,7 +38,7 @@ import {
   MatTooltipModule,
   MatSelectModule
 } from '@angular/material';
-import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
+// import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxSpinnerModule } from 'ngx-spinner';
@@ -62,6 +62,7 @@ import { AlertService } from './service/alert.service';
 import { Toolbar } from './toolbar.comp/toolbar.comp';
 import { UploaderComp } from './uploader.comp/uploader.comp';
 import { DailyFabComp } from './daily-fab/daily-fab.comp';
+import { UpdateUserDialog } from './update-user.dialog/update-user.dialog';
 
 @NgModule({
   declarations: [
@@ -81,6 +82,7 @@ import { DailyFabComp } from './daily-fab/daily-fab.comp';
     DownloaderComp,
     AlertDialog,
     AboutDialog,
+    UpdateUserDialog,
     DailyFabComp
   ],
   imports: [
@@ -125,7 +127,7 @@ import { DailyFabComp } from './daily-fab/daily-fab.comp';
     // { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
     MyHttpInterceptorProviders
   ],
-  entryComponents: [AlertDialog, AboutDialog, RegisterComp],
+  entryComponents: [AlertDialog, AboutDialog, UpdateUserDialog, RegisterComp],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

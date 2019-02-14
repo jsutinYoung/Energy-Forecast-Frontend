@@ -1,32 +1,13 @@
 <mat-card fxLayout="column" fxLayoutAlign="start stretch">
-  <mat-card-header> <mat-card-title>Register User</mat-card-title> </mat-card-header>
+  <mat-card-header> <mat-card-title>Update</mat-card-title> </mat-card-header>
 
   <mat-card-content
     fxFlexAlign="center"
-    fxFlex="380px"
+    fxFlex=""
     class="form"
     fxLayout="column"
     fxLayoutAlign="center stretch"
   >
-    <mat-form-field class="form-field">
-      <mat-select #userType placeholder="User Type" [value]="userTypes[0]">
-        <mat-option *ngFor="let type of userTypes" [value]="type"> {{ type }} </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field fxFlex="" class="form-field">
-      <input #userid matInput mdc-text-field placeholder="Email" [formControl]="emailFormControl" />
-      <mat-hint>e.g. justin@wsu.edu</mat-hint>
-      <mat-error
-        *ngIf="emailFormControl.hasError('pattern')"
-      >
-        Please enter a valid email address
-      </mat-error>
-      <mat-error *ngIf="emailFormControl.hasError('required')">
-        Email is <strong>required</strong>
-      </mat-error>
-    </mat-form-field>
-
     <mat-form-field fxFlex="" class="form-field">
       <input
         #pass
@@ -67,21 +48,13 @@
   </mat-card-content>
 
   <mat-card-actions fxFlexAlign="center" fxFlex="10px">
-    <button  mat-button (click)="onDismiss()">Cancel</button>
+    <button mat-button (click)="onDismiss()">Cancel</button>
     <button
       mat-button
-      [disabled]="isOK()"
-      (click)="
-        onDone({
-          type: userType.value,
-          user: userid.value,
-          pass: pass.value,
-          pass2: pass2.value
-        })
-      "
+      [disabled]="isWrong()"
+      (click)="onDone(pass.value)"
     >
-      Register
+      Save
     </button>
   </mat-card-actions>
 </mat-card>
-<!-- <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="large" color="#fff" type="ball-clip-rotate-pulse"></ngx-spinner> -->
