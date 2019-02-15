@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { RegisterComp } from '../register.comp/register.comp';
 import { AboutDialog } from '../about.dialog/about.dialog';
 import { UpdateUserDialog } from '../update-user.dialog/update-user.dialog';
+import { DeleteUserDialog } from '../delete-user.dialog/delete-user.dialog';
 import { AuthService, UserType } from '../service/auth.service';
 
 @Component({
@@ -78,13 +79,18 @@ export class Toolbar implements OnInit {
   }
 
   openAboutialog() {
-    const dialogRef = this.dialog.open(AboutDialog, {
-    });
+    const dialogRef = this.dialog.open(AboutDialog, {});
   }
 
   openUpdateUserDialog() {
     const dialogRef = this.dialog.open(UpdateUserDialog, {
-      height: '380px',
+      height: '380px'
+    });
+  }
+
+  openDeleteUserDialog() {
+    const dialogRef = this.dialog.open(DeleteUserDialog, {
+      height: '280px'
     });
   }
 }

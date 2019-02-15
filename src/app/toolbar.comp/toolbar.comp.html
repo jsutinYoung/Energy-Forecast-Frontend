@@ -14,7 +14,7 @@
 
     <button mat-menu-item *ngIf="hasManagerRight()">
       <!-- <mat-icon>people_outline</mat-icon> -->
-      <span>Manage Users</span>
+      <span (click)="openDeleteUserDialog()">Manage Users</span>
     </button>
 
     <button mat-menu-item>

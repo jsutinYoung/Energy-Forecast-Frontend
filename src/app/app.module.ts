@@ -60,6 +60,7 @@ import { AlertService } from './service/alert.service';
 import { Toolbar } from './toolbar.comp/toolbar.comp';
 import { DailyFabComp } from './daily-fab.comp/daily-fab.comp';
 import { UpdateUserDialog } from './update-user.dialog/update-user.dialog';
+import { DeleteUserDialog } from './delete-user.dialog/delete-user.dialog';
 
 @NgModule({
   declarations: [
@@ -78,6 +79,7 @@ import { UpdateUserDialog } from './update-user.dialog/update-user.dialog';
     AlertDialog,
     AboutDialog,
     UpdateUserDialog,
+    DeleteUserDialog,
     DailyFabComp
   ],
   imports: [
@@ -122,7 +124,7 @@ import { UpdateUserDialog } from './update-user.dialog/update-user.dialog';
     // { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
     MyHttpInterceptorProviders
   ],
-  entryComponents: [AlertDialog, AboutDialog, UpdateUserDialog, RegisterComp],
+  entryComponents: [AlertDialog, AboutDialog, UpdateUserDialog, DeleteUserDialog, RegisterComp],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
