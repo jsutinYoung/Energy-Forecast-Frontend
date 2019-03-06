@@ -5,6 +5,8 @@ import { of } from 'rxjs';
 import { retry } from 'rxjs/operators';
 import { TokenService } from '../service/token.service';
 import { MatSnackBar } from '@angular/material';
+import { Router } from '@angular/router';
+import { AuthService, UserType } from '../service/auth.service';
 
 import { FormControl, Validators } from '@angular/forms';
 
@@ -30,7 +32,9 @@ export class UpdateUserDialog {
     public dialogRef: MatDialogRef<UpdateUserDialog>,
     private http: HttpClient,
     private tokenService: TokenService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private authService: AuthService
   ) {
     this.UpdateUserURL = tokenService.baseURL + '/users/update';
   }
@@ -43,7 +47,7 @@ export class UpdateUserDialog {
     return (
       this.passFormControl.invalid ||
       this.passFormControl2.invalid ||
-      this.passFormControl.value != this.passFormControl2.value
+      this.passFormControl.value !== this.passFormControl2.value
     );
   }
 
@@ -52,6 +56,8 @@ export class UpdateUserDialog {
     if (st) {
       this.dialogRef.close();
       this.openSnackBar('Update succeeded', '');
+      this.authService.signOut();
+      this.router.navigate(['/']);
     } else {
       this.openSnackBar('Update failed', desc);
     }
