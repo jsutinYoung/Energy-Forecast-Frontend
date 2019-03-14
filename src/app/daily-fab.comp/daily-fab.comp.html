@@ -8,7 +8,7 @@
   <div [@speedDialStagger]="buttons.length">
     <button *ngFor="let btn of buttons" mat-fab class="fab-secondary" color="secondary" (click)="goto(btn.date)">
        <span style="color:gray;">{{ btn.date }}</span>
-      {{ btn.peak }}
+      {{ btn.peak }} {{ btn.average }}
     </button>
   </div>
 </div>

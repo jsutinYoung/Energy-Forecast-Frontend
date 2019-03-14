@@ -30,7 +30,6 @@ export interface ITabularRow24 {
   d_6_err: number;
 }
 
-
 const toFixedNumber = (toFixTo = 2, base = 10) => num => {
   const pow = Math.pow(base, toFixTo);
   return +(Math.round(num * pow) / pow);
@@ -49,6 +48,7 @@ export class WeeklyDataService {
   private temperature: number[] = [];
   private theDate: Date;
   private dailyPeak: number[] = [7];
+  private dailyAverage: number[] = [7];
 
   // comparison data
   private hour_24: Date[] = [];
@@ -133,6 +133,11 @@ export class WeeklyDataService {
   getDailyPeak(index): number {
     return this.dailyPeak[index];
   }
+
+  getDailyAverage(index): number {
+    return this.dailyAverage[index];
+  }
+
   getForecast(): number[] {
     return this.forecast;
   }
@@ -244,19 +249,11 @@ export class WeeklyDataService {
       }
 
       if (Array.isArray(data) && data.length > 0) {
-        // start proessing
-        // const rdata = data.reduceRight((acc, e) => {
-        //   acc.push(e);
-        //   return acc;
-        // }, []);
 
         const rdata = data.reverse();
 
-        // GMT+01:00
         this.hours = rdata.map(e => {
-          // console.log(e[0]);
           const h: Date = moment(e[0]).toDate();
-          // console.log(h);
           return h;
         });
         this.load = rdata.map(e => {
@@ -308,15 +305,9 @@ export class WeeklyDataService {
     }
 
     if (Array.isArray(data) && data.length > 0 && data.length <= 168) {
-      // start proessing
-      // const rdata = data.reduceRight((acc, e) => {
-      //   acc.push(e);
-      //   return acc;
-      // }, []);
 
       const rdata = data.reverse();
 
-      // GMT+01:00
       this.load = rdata.map(e => {
         try {
           return toFixedNumber(3)(e[1]);
@@ -361,11 +352,6 @@ export class WeeklyDataService {
       }
 
       if (Array.isArray(data) && data.length > 0) {
-        // start proessing
-        // const rdata = data.reduceRight((acc, e) => {
-        //   acc.push(e);
-        //   return acc;
-        // }, []);
 
         const rdata = data.reverse();
 
@@ -395,13 +381,18 @@ export class WeeklyDataService {
         for (let i = 0; i < 7; i++) {
           start.add(1, 'day');
           let peak = 0;
+          let sum = 0;
+          let hrCountPerDay = 0;
           while (this.hours[hrCount] < start.toDate()) {
             if (this.forecast[hrCount] > peak) {
               peak = this.forecast[hrCount];
             }
+            sum += this.forecast[hrCount];
             hrCount++;
+            hrCountPerDay++;
           }
           this.dailyPeak[i] = peak;
+          this.dailyAverage[i] = sum / hrCountPerDay;
         }
 
         // optional temperature
@@ -514,11 +505,6 @@ export class WeeklyDataService {
       }
 
       if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
-        // start proessing
-        // let rdata = data.reduceRight((acc, e) => {
-        //   acc.push(e);
-        //   return acc;
-        // }, []);
 
         let rdata = data.reverse();
 
@@ -544,11 +530,6 @@ export class WeeklyDataService {
           headers
         );
         if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
-          // start proessing
-          // rdata = data.reduceRight((acc, e) => {
-          //   acc.push(e);
-          //   return acc;
-          // }, []);
 
           rdata = data.reverse();
 
@@ -573,11 +554,6 @@ export class WeeklyDataService {
           headers
         );
         if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
-          // start proessing
-          // rdata = data.reduceRight((acc, e) => {
-          //   acc.push(e);
-          //   return acc;
-          // }, []);
 
           rdata = data.reverse();
 
