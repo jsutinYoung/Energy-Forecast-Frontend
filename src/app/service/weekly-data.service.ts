@@ -294,7 +294,7 @@ export class WeeklyDataService {
     const end = begin.clone().add(6, 'day');
     end.add(23, 'hour');
     const endtext = end.format('YYYY-MM-DDTHH:mm:ss');
-    const lURL = this.loadURL + '?start_date=' + begintext + '&end_date=' + endtext + '&local=1';
+    const lURL = this.loadURL + '?start_date=' + begintext + '&end_date=' + endtext;
     const data = await this.http
       .get(lURL, { headers: headers })
       .pipe(retry(3))
@@ -340,7 +340,7 @@ export class WeeklyDataService {
 
       // read the main forecast data
       const gen_date = moment(date).format('YYYY-MM-DDTHH:mm:ss');
-      const fURL = this.forecastURL + '?forecast_date=' + gen_date + '&local=1';
+      const fURL = this.forecastURL + '?forecast_date=' + gen_date;
       const data = await this.http
         .get(fURL, { headers: headers })
         .pipe(retry(3))
@@ -441,7 +441,7 @@ export class WeeklyDataService {
     const end_date_txt = moment(end_date).format('YYYY-MM-DDTHH:mm:ss');
 
     const fURL =
-      this.loadURL + '?start_date=' + start_date_txt + '&end_date=' + end_date_txt + '&local=1';
+      this.loadURL + '?start_date=' + start_date_txt + '&end_date=' + end_date_txt;
 
     const data = await this.http
       .get(fURL, { headers: headers })
@@ -464,8 +464,7 @@ export class WeeklyDataService {
       '&start_date=' +
       start_date_txt +
       '&end_date=' +
-      end_date_txt +
-      '&local=1';
+      end_date_txt;
 
     const data = await this.http
       .get(fURL, { headers: headers })
