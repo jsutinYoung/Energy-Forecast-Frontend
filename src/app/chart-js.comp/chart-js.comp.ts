@@ -71,6 +71,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   isTableOpen = false;
   dateFilter = (d: Date): boolean => {
     const now = new Date();
+    now.setDate(now.getDate()+1);
     return d > now ? false : true;
   }
 
