@@ -783,6 +783,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   private setZoom(value: number) {
     this.zoomValue = value;
+    this.state.singleForecast.zoomLevel = this.zoomValue;
     switch (value) {
       case 1:
         {
