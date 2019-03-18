@@ -6,12 +6,12 @@
   <mat-drawer-content class="eft-sidenav-content" fxLayout="column" fxLayoutAlign="start stretch">
     <app-toolbar #toolbar fxFlex="" [drawer]="drawer"></app-toolbar>
     <mat-tab-group class="tab-container" >
-      <mat-tab label="Single Forecast"  fxFlexAlign="center" fxFlex="fxFill">
+      <mat-tab label="7-Days Forecast"  fxFlexAlign="center" fxFlex="fxFill">
         <ng-template matTabContent>
           <app-chart-js ></app-chart-js>
         </ng-template>
       </mat-tab>
-      <mat-tab label="Load vs Forecasts"  fxFlexAlign="center" fxFlex="fxFill">
+      <mat-tab label="24-Hr Load|Forecast"  fxFlexAlign="center" fxFlex="fxFill">
         <ng-template matTabContent>
           <app-hist-chart></app-hist-chart>
         </ng-template>
