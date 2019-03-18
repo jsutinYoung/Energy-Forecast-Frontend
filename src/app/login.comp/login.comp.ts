@@ -4,6 +4,8 @@
 // Team: Justin Young, John Karasev, Sean Bates
 // 2019
 //
+import { Inject, Injectable } from '@angular/core';
+import { SESSION_STORAGE, StorageService } from 'angular-webstorage-service';
 
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
@@ -12,6 +14,10 @@ import { ErrorStateMatcher } from '@angular/material/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../service/auth.service';
+
+const MINUTES_UNITL_AUTO_LOGOUT = 15; // in mins
+const CHECK_INTERVAL = 1000; // in ms
+const STORE_KEY = 'lastAction';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 // export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -64,10 +70,52 @@ export class LoginComp implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    @Inject(SESSION_STORAGE) private storage: StorageService
+  ) {
+    if (!this.isRegisterMode) {
+      this.check();
+      this.initListener();
+      this.initInterval();
+    }
+  }
 
-  ngOnInit() {}
+  ngOnInit() { }
+
+  get lastAction() {
+    return parseInt(this.storage.get(STORE_KEY), 10);
+  }
+
+  set lastAction(value) {
+    this.storage.set(STORE_KEY, value);
+  }
+
+  private initListener() {
+    document.body.addEventListener('click', () => this.reset());
+  }
+
+  private reset() {
+    this.lastAction = Date.now();
+  }
+
+  private initInterval() {
+    setInterval(() => {
+      this.check();
+    }, CHECK_INTERVAL);
+  }
+
+  private check() {
+    const now = Date.now();
+    const timeleft = this.lastAction + MINUTES_UNITL_AUTO_LOGOUT * 60 * 1000;
+    const diff = timeleft - now;
+    const isTimeout = diff < 0;
+
+    if (isTimeout && this.authService.isAuthenticated()) {
+      this.authService.signOut();
+      this.router.navigate(['/']);
+    }
+  }
+
 
   async signUp(type: string, email: string, password: string) {
     try {
