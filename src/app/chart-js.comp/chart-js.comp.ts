@@ -37,7 +37,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  fabOptions = { buttons: new Array<{ date: string; peak: string; average: string }>(7) };
+  fabOptions = { buttons: new Array<{date: string; peak: string; average: string; temperature: string}>(7) };
 
   // load
   private fillColor0 = {
@@ -141,6 +141,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
         date: cd.format('MM-DD-YYYY'),
         peak: this.dataService.getDailyPeak(i).toFixed(2),
         average: this.dataService.getDailyAverage(i).toFixed(2),
+        temperature: `${this.dataService.getDailyTempPeak(i).toFixed(1)} \u2847 ${this.dataService.getDailyTempAverage(i).toFixed(1)}`
       };
       cd.add(1, 'day');
 

@@ -5,10 +5,20 @@
     <i class="material-icons" [@fabToggler]="{ value: fabTogglerState }" color="primary">add</i>
   </button>
 
-  <div [@speedDialStagger]="buttons.length">
+  <!-- <div [@speedDialStagger]="buttons.length">
     <button *ngFor="let btn of buttons" mat-fab class="fab-secondary" color="secondary" (click)="goto(btn.date)">
        <span style="color:gray;">{{ btn.date }}</span>
-      {{ btn.peak }} {{ btn.average }}
+      {{ btn.peak }} {{ btn.average }}  <span style="color:orange;">{{btn.temperature}}</span>
+    </button>
+  </div> -->
+  <div [@speedDialStagger]="buttons.length">
+    <button *ngFor="let btn of buttons" mat-fab class="extended-fab-button" color="secondary" (click)="goto(btn.date)">
+       <div style="color:gray;" class="extended-fab-button__text">{{ btn.date }}</div>
+       <div style="color:white;" class="extended-fab-button__text">{{ btn.peak }}</div>
+       <div style="color:white;" class="extended-fab-button__text">{{ btn.average }}</div>
+       <div style="color:orange;" class="extended-fab-button__text">{{ btn.temperature }}</div>
+
+      <!-- {{ btn.peak }} {{ btn.average }}  <span style="color:orange;">{{btn.temperature}}</span> -->
     </button>
   </div>
 </div>

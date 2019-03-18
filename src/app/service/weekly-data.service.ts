@@ -49,6 +49,8 @@ export class WeeklyDataService {
   private theDate: Date;
   private dailyPeak: number[] = [7];
   private dailyAverage: number[] = [7];
+  private dailyTempPeak: number[] = [7];
+  private dailyTempAverage: number[] = [7];
 
   // comparison data
   private hour_24: Date[] = [];
@@ -136,6 +138,14 @@ export class WeeklyDataService {
 
   getDailyAverage(index): number {
     return this.dailyAverage[index];
+  }
+
+  getDailyTempPeak(index): number {
+    return this.dailyTempPeak[index];
+  }
+
+  getDailyTempAverage(index): number {
+    return this.dailyTempAverage[index];
   }
 
   getForecast(): number[] {
@@ -376,24 +386,26 @@ export class WeeklyDataService {
         });
 
         // calculate daily peak
-        let hrCount = 0;
-        const start = moment(this.hours[0]);
-        for (let i = 0; i < 7; i++) {
-          start.add(1, 'day');
-          let peak = 0;
-          let sum = 0;
-          let hrCountPerDay = 0;
-          while (this.hours[hrCount] < start.toDate()) {
-            if (this.forecast[hrCount] > peak) {
-              peak = this.forecast[hrCount];
+        try {
+          let hrCount = 0;
+          const start = moment(this.hours[0]);
+          for (let i = 0; i < 7; i++) {
+            start.add(1, 'day');
+            let peak = 0;
+            let sum = 0;
+            let hrCountPerDay = 0;
+            while (this.hours[hrCount] < start.toDate()) {
+              if (this.forecast[hrCount] > peak) {
+                peak = this.forecast[hrCount];
+              }
+              sum += this.forecast[hrCount];
+              hrCount++;
+              hrCountPerDay++;
             }
-            sum += this.forecast[hrCount];
-            hrCount++;
-            hrCountPerDay++;
+            this.dailyPeak[i] = peak;
+            this.dailyAverage[i] = sum / hrCountPerDay;
           }
-          this.dailyPeak[i] = peak;
-          this.dailyAverage[i] = sum / hrCountPerDay;
-        }
+        } catch (err) {}
 
         // optional temperature
         try {
@@ -404,6 +416,27 @@ export class WeeklyDataService {
               return null;
             }
           });
+
+          // if there are temperature
+          let hrCount = 0;
+          const start = moment(this.hours[0]);
+          for (let i = 0; i < 7; i++) {
+            start.add(1, 'day');
+            let peak = 0;
+            let sum = 0;
+            let hrCountPerDay = 0;
+            while (this.hours[hrCount] < start.toDate()) {
+              if (this.temperature[hrCount] > peak) {
+                peak = this.temperature[hrCount];
+              }
+              sum += this.temperature[hrCount];
+              hrCount++;
+              hrCountPerDay++;
+            }
+            this.dailyTempPeak[i] = peak;
+            this.dailyTempAverage[i] = sum / hrCountPerDay;
+          }
+
         } catch (err) {}
 
         this.theDate = date; // keep track chosen date

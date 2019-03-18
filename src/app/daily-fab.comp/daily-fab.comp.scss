@@ -35,9 +35,28 @@
   z-index: 99;
 }
 
-.fab-secondary {
-  // background-color: #eee;
-  width: 96px;
-  height: 96px;
-  white-space: normal;
+// .fab-secondary {
+//   // background-color: #eee;
+//   width: 100px;
+//   height: 100px;
+//   white-space: normal;
+// }
+
+
+.extended-fab-button {
+  width: unset;
+  height: unset;
+  padding: 0 4px;
+  border-radius: 10px;
+
+  .mat-icon {
+    margin-right: 10px;
+  }
+
+  .extended-fab-button__text {
+    font-weight: 280;
+    // letter-spacing: .1em;
+    font-size: 10pt;
+    // text-transform: uppercase;
+  }
 }
