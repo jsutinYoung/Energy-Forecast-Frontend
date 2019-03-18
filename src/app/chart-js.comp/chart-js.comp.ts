@@ -776,7 +776,9 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   set zoom(value: number) {
     this.setZoom(value);
-    this.chart.update();
+    // this.chart.update();
+    // this.chart.refresh();
+    this.refresh();
   }
 
   private setZoom(value: number) {
