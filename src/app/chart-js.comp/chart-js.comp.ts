@@ -71,7 +71,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   isTableOpen = false;
   dateFilter = (d: Date): boolean => {
     const now = new Date();
-    now.setDate(now.getDate()+1);
+    now.setDate(now.getDate());//+1
     return d > now ? false : true;
   }
 
@@ -103,7 +103,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
       this.dataService.fetchWeeklyData(
         moment()
           .startOf('day')
-          .add(1, 'day')
+          // .add(1, 'day')
           .toDate()
       );
     } else {
@@ -783,6 +783,7 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
 
   private setZoom(value: number) {
     this.zoomValue = value;
+    this.state.singleForecast.zoomLevel = this.zoomValue;
     switch (value) {
       case 1:
         {

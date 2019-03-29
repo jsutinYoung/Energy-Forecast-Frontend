@@ -128,4 +128,7 @@ export class AuthService {
   // private async stall(stallTime = 3000) {
   //   await new Promise(resolve => setTimeout(resolve, stallTime));
   // }
+  isAuthenticated(): Promise<boolean> | boolean {
+    return this.tokenService.isAuthenticated();
+  }
 }

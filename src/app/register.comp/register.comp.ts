@@ -4,7 +4,8 @@
 // Team: Justin Young, John Karasev, Sean Bates
 // 2019
 //
-
+import { Inject, Injectable } from '@angular/core';
+import { SESSION_STORAGE, StorageService } from 'angular-webstorage-service';
 import { Component, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 // import {FormControl, FormGroupDirective, NgForm, Validators} from
@@ -31,8 +32,9 @@ export class RegisterComp extends LoginComp {
     authService: AuthService,
     router: Router,
     snackBar: MatSnackBar,
+    @Inject(SESSION_STORAGE)  storage: StorageService
   ) {
-    super(authService, router, snackBar);
+    super(authService, router, snackBar, storage);
     this.isRegisterMode = true;
   }
 
