@@ -10,7 +10,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "copy": "cp -R ./dist/eft-app/*  ../b-eft/public/",
+    "copy": "mkdir ../b-eft/public/; cp -R ./dist/eft-app/*  ../b-eft/public/",
     "prod": "ng build --prod && npm run copy"
 
   },
