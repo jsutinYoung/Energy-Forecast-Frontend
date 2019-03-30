@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { Chart } from 'chart.js';
 import _ from 'lodash';
 import * as moment from 'moment';
+import {FormControl} from '@angular/forms';
 
 import { WeeklyDataService, ITabularRow24 } from '../service/weekly-data.service';
 import { StatetService } from '../service/state.service';
@@ -36,13 +37,11 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
   tabularDataSource: MatTableDataSource<ITabularRow24>;
   displayedColumns: string[] = ['date', 'load', 'd_1', 'd_1_err', 'd_6', 'd_6_err'];
   isTableOpen = false;
+  defaultDate =  moment().add(-1, 'day').startOf('day').toDate();
 
   // make sure today's day is not selectable as there is no load
   dateFilter = (d: Date): boolean => {
-    const now = moment()
-      .startOf('day')
-      .toDate();
-    return d >= now ? false : true;
+    return d > this.defaultDate ? false : true;
   }
 
   constructor(
@@ -68,10 +67,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     if (!this.dataService.hasData24()) {
       // const d = moment('2018-11-20').toDate();
       this.dataService.fetch24Data(
-        moment() // set it to yesterday to have load
-          .add(-1, 'day')
-          .startOf('day')
-          .toDate()
+        this.defaultDate
       );
     } else {
       this.dataService.dataChange2.emit({ status: true, description: '' });
@@ -85,6 +81,12 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
     this.state.compareForecast.isTableOpen = this.isTableOpen;
   }
 
+  // get defaultDate() {
+  //   return moment()
+  //     .add(-1, 'day')
+  //     .startOf('day')
+  //     .toDate();
+  // }
   private reDrawChart() {
     this.displayLine();
 

@@ -69,10 +69,11 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
   tabularDataSource: MatTableDataSource<ITabularRow>;
   displayedColumns: string[] = ['date', 'forecast', 'stderr', 'temperature', 'load'];
   isTableOpen = false;
+  defaultDate =  moment().startOf('day').toDate();
   dateFilter = (d: Date): boolean => {
-    const now = new Date();
-    now.setDate(now.getDate());//+1
-    return d > now ? false : true;
+    // const now = new Date();
+    // now.setDate(now.getDate());//+1
+    return d > this.defaultDate ? false : true;
   }
 
   constructor(
@@ -101,10 +102,11 @@ export class ChartComp implements OnInit, OnDestroy, AfterViewInit {
     if (!this.dataService.hasData()) {
       // const d = moment('2018-11-20').toDate();
       this.dataService.fetchWeeklyData(
-        moment()
-          .startOf('day')
-          // .add(1, 'day')
-          .toDate()
+        // moment()
+        //   .startOf('day')
+        //   // .add(1, 'day')
+        //   .toDate()
+        this.defaultDate
       );
     } else {
       this.dataService.dataChange.emit({ status: true, description: '' });
