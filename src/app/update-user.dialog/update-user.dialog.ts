@@ -74,7 +74,7 @@ export class UpdateUserDialog {
       });
 
       const email = this.tokenService.userID;
-      const body = { email: email, update: { password: password } };
+      const body = { email: email, password: password };
       const result = await this.http
         .put(this.UpdateUserURL, body, { headers: headers })
         .pipe(retry(3))

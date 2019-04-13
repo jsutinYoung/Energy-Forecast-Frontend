@@ -29,8 +29,9 @@ export class TokenService {
     if (environment.production) {
       this.baseURL = (platformLocation as any).location.origin;
     } else {
-      const loc = (platformLocation as any).location;
-      this.baseURL = loc.protocol + '//' + loc.hostname + environment.port;
+      // const loc = (platformLocation as any).location;
+      // this.baseURL = loc.protocol + '//' + loc.hostname + environment.port;
+      this.baseURL = environment.baseDataURL;
     }
   }
 

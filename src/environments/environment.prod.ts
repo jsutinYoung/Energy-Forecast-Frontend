@@ -7,5 +7,7 @@
 
 export const environment = {
   production: true,
-  port: '8443'
+  // hostname: '',
+  // port: '8443'
+  baseDataURL: ''
 };

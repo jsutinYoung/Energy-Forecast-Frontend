@@ -5,7 +5,7 @@
 // 2019
 //
 
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { EventEmitter, Injectable, Injector, Output } from '@angular/core';
 import * as moment from 'moment';
 import { Observable, of, throwError } from 'rxjs';
@@ -305,20 +305,20 @@ export class WeeklyDataService {
     end.add(23, 'hour');
     const endtext = end.format('YYYY-MM-DDTHH:mm:ss');
     const lURL = this.loadURL + '?start_date=' + begintext + '&end_date=' + endtext;
-    const data = await this.http
+    const result = await this.http
       .get(lURL, { headers: headers })
       .pipe(retry(3))
       .toPromise();
 
-    if (data['status'] === 'fail') {
+    if (result['status'] === 'fail') {
       return; // ok to silently ignore
     }
 
+    const data = result['data'];
     if (Array.isArray(data) && data.length > 0 && data.length <= 168) {
 
-      const rdata = data.reverse();
-
-      this.load = rdata.map(e => {
+      // const rdata = data.reverse();
+      this.load = data.map(e => {
         try {
           return toFixedNumber(3)(e[1]);
         } catch (err) {
@@ -349,35 +349,39 @@ export class WeeklyDataService {
         .toDate();
 
       // read the main forecast data
+      const params = new HttpParams();
+      params.append('timezone', 'America/Los_Angeles');
+
       const gen_date = moment(date).format('YYYY-MM-DDTHH:mm:ss');
       const fURL = this.forecastURL + '?forecast_date=' + gen_date;
-      const data = await this.http
-        .get(fURL, { headers: headers })
+      const result = await this.http
+        .get(fURL, { headers: headers})
         .pipe(retry(3))
         .toPromise();
 
-      if (data['status'] === 'fail') {
-        this.dataChange.emit({ status: false, description: data['reason'] });
-        return of({ status: false, description: data['reason'] }).toPromise();
+        // .get(fURL, { headers: headers , observe: 'body', params })
+      if (result['status'] === 'fail') {
+        this.dataChange.emit({ status: false, description: result['reason'] });
+        return of({ status: false, description: result['reason'] }).toPromise();
       }
 
+      const data = result['data'];
       if (Array.isArray(data) && data.length > 0) {
 
-        const rdata = data.reverse();
-
-        this.hours = rdata.map(e => {
+        // const rdata = data.reverse();
+        this.hours = data.map(e => {
           const h: Date = moment(e[0]).toDate();
           return h;
         });
         this.load = null;
-        this.forecast = rdata.map(e => {
+        this.forecast = data.map(e => {
           try {
             return toFixedNumber(3)(e[1]);
           } catch (err) {
             return null;
           }
         });
-        this.stderr = rdata.map(e => {
+        this.stderr = data.map(e => {
           try {
             return toFixedNumber(3)(e[2]);
           } catch (err) {
@@ -409,7 +413,7 @@ export class WeeklyDataService {
 
         // optional temperature
         try {
-          this.temperature = rdata.map(e => {
+          this.temperature = data.map(e => {
             try {
               return toFixedNumber(2)(e[3]);
             } catch (err) {
@@ -450,10 +454,15 @@ export class WeeklyDataService {
       }
     } catch (error) {
       // todo for backword compatibility need to remove
-      return await this.legacyRead(date, headers);
-
-      this.dataChange.emit({ status: false, description: error.message });
-      return of({ status: false, description: error.message }).toPromise();
+      // return await this.legacyRead(date, headers);
+      let msg;
+      if (error.status !== 200) {
+        msg = error.statusText;
+      } else{
+        msg = error.message;
+      }
+      this.dataChange.emit({ status: false, description: msg});
+      return of({ status: false, description: msg }).toPromise();
     }
   }
 
@@ -522,7 +531,7 @@ export class WeeklyDataService {
       }
 
       // read the chosen day load 24
-      let data = await this.load24(
+      let result = await this.load24(
         date,
         moment(date)
           .add(23, 'hour')
@@ -531,27 +540,27 @@ export class WeeklyDataService {
       );
 
       // main data not present
-      if (data['status'] === 'fail') {
-        this.dataChange2.emit({ status: false, description: data['reason'] });
-        return of({ status: false, description: data['reason'] }).toPromise();
+      if (result['status'] === 'fail') {
+        this.dataChange2.emit({ status: false, description: result['reason'] });
+        return of({ status: false, description: result['reason'] }).toPromise();
       }
 
+      let data = result['data'];
       if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
 
-        let rdata = data.reverse();
-
-        this.hour_24 = rdata.map(e => {
+        // let rdata = data.reverse();
+        this.hour_24 = data.map(e => {
           const h: Date = moment(e[0]).toDate();
           return h;
         });
-        this.load_24 = rdata.map(e => {
+        this.load_24 = data.map(e => {
           return toFixedNumber(3)(e[1]);
         });
 
         this.theDate24 = date; // keep track chosen date
 
         // optional data d-6 days, last 24 hrs
-        data = await this.http24(
+        result = await this.http24(
           moment(date)
             .add(-6, 'day')
             .toDate(),
@@ -561,21 +570,22 @@ export class WeeklyDataService {
             .toDate(),
           headers
         );
+
+        data = result['data'];
         if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
 
-          rdata = data.reverse();
-
-          this.d_6_24 = rdata.map(e => {
+          // rdata = data.reverse();
+          this.d_6_24 = data.map(e => {
             return toFixedNumber(3)(e[1]);
           });
 
-          this.d_6_24_err = rdata.map(e => {
+          this.d_6_24_err = data.map(e => {
             return e[2];
           });
         }
 
         // optional data d-1 day, last 24 hrs
-        data = await this.http24(
+        result = await this.http24(
           moment(date)
             .add(-1, 'day')
             .toDate(),
@@ -585,15 +595,17 @@ export class WeeklyDataService {
             .toDate(),
           headers
         );
+
+        data = result['data'];
         if (Array.isArray(data) && data.length > 0 && data.length <= 25) {
 
-          rdata = data.reverse();
+          // rdata = data.reverse();
 
-          this.d_1_24 = rdata.map(e => {
+          this.d_1_24 = data.map(e => {
             return toFixedNumber(3)(e[1]);
           });
 
-          this.d_1_24_err = rdata.map(e => {
+          this.d_1_24_err = data.map(e => {
             return e[2];
           });
         }
@@ -605,8 +617,14 @@ export class WeeklyDataService {
         return of({ status: false, description: 'Data not found' }).toPromise();
       }
     } catch (error) {
-      this.dataChange2.emit({ status: false, description: error.message });
-      return of({ status: false, description: error.message }).toPromise();
+      let msg;
+      if (error.status !== 200) {
+        msg = error.statusText;
+      } else{
+        msg = error.message;
+      }
+      this.dataChange2.emit({ status: false, description: msg });
+      return of({ status: false, description: msg}).toPromise();
     }
   }
 

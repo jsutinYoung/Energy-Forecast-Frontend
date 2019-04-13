@@ -26,8 +26,8 @@ export class AuthService {
 
   constructor(private http: HttpClient, private tokenService: TokenService) {
     // console.log(this.tokenService.baseURL);
-    this.SigninURL = tokenService.baseURL + '/oauth/login';
-    this.SignupURL = tokenService.baseURL + '/users/create';
+    this.SigninURL = tokenService.baseURL + '/users/login';
+    this.SignupURL = tokenService.baseURL + '/users/register';
   }
 
   async signupUser(
@@ -61,7 +61,7 @@ export class AuthService {
       }
 
       const body = {
-        user: { email: email, password: password, user_type: typeIndex }
+        email: email, password: password, user_type: typeIndex
       };
       const result = await this.http
         .post(this.SignupURL, body, { headers: headers })
@@ -87,7 +87,7 @@ export class AuthService {
   ): Promise<{ status; description }> {
     try {
       const headers = new HttpHeaders().set('content-type', 'application/json');
-      const body = { user: { email: email, password: password } };
+      const body = { email: email, password: password };
 
       const result = await this.http
         .post(this.SigninURL, body, { headers: headers })

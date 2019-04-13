@@ -22,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     // Get the auth token from the service.
 
-    if (req.url.includes('/oauth/login')) {
+    if (req.url.includes('/user/login')) {
       // console.log(req.url);
       return next.handle(req);
     }
