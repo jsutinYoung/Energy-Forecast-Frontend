@@ -135,7 +135,7 @@ export class HistComp implements OnInit, OnDestroy, AfterViewInit {
             },
             scaleLabel: {
               display: true,
-              labelString: 'Electricity (MWa)',
+              labelString: 'Electricity (MW)',
               fontSize: 13,
               fontColor: '#C0C0C0'
             },
