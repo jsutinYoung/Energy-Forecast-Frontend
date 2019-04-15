@@ -647,7 +647,7 @@ export class WeeklyDataService {
 
   getTabularData24(): ITabularRow24[] {
     const result = this.load_24.map((e, i) => {
-      if (e) {
+      if ( e !== null) {
         // may be optional
         let d_1;
         try {

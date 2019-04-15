@@ -79,7 +79,7 @@ export class DownloaderService {
         return rr;
       });
 
-      const header = ['Date', 'Forecast (WMa)', 'StdErr %', '\u2109', 'Load (WMa)'];
+      const header = ['Date', 'Forecast (WMa)', 'StdErr %', 'F', 'Load (WMa)'];
       const csvData = this.jsonToCSV(header, data);
       this.createDownload(csvData, filename);
     } else {
