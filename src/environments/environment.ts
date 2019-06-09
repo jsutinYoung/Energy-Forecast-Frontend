@@ -14,7 +14,7 @@ export const environment = {
   // hostname: 'localhost',
   // port: ':8000'
   // baseDataURL: 'https://localhost:8443'
-  baseDataURL: 'https://178.128.66.153:4040'
+  baseDataURL: 'http://localhost:8000'
 };
 
 /*
