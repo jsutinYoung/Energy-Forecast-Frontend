@@ -29,7 +29,7 @@ A) Frontend setup:
 
 B) Backend setup:
 
- 1) git clone https://gitlab.com/WSU_V/cs_453/cs453_finalproj_backend.git
+ 1) git clone https://github.com/jsutinYoung/Energy-Forcast-BackMock.git
 
  2) Install mongodb.
     mkdir -p cs453_finalproj_backend/data/db 
