@@ -2,7 +2,7 @@
 
 A) Frontend setup:
 
-  1) git clone https://gitlab.com/jeyoung88/energy_forecast_frontend.git
+  1) git clone https://github.com/jsutinYoung/Engergy-Forcast-Frontend.git
 
   2) run the following command to install all libraries:
   `npm install`
