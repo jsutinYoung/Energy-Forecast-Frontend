@@ -24,24 +24,19 @@ A) Frontend setup:
 
   6) use the default credential to login
     user: admin@gmail.com
-    password: admin1
+    password: 111111
 ---------------------------------------------------------------------------------------------------------------
 
 B) Backend setup:
 
  1) git clone https://github.com/jsutinYoung/Energy-Forecast-BackMock.git
 
- 2) Install mongodb.
-    mkdir -p cs453_finalproj_backend/data/db 
-    mongod --dbpath cs453_finalproj_backend/data/db --port 27017
+ 2) Install nodemon
 
-    make sure no database 'forecast' exists.
-
- 3) cd cs453_finalproj_backend
-    curl https://sh.rustup.rs -sSf | sh
-    rustup default nightly
-    cargo run —bin seed —color=always
-    cargo run —bin app —color=always
+ 3) Start local server
+    npm start
+    
+    The server runs both on 8000 and 8443
 
 
 
