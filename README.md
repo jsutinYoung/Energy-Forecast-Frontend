@@ -2,7 +2,7 @@
 
 A) Frontend setup:
 
-  1) git clone https://github.com/jsutinYoung/Engergy-Forcast-Frontend.git
+  1) git clone https://github.com/jsutinYoung/Energy-Forecast-Frontend.git
 
   2) run the following command to install all libraries:
   `npm install`
@@ -29,7 +29,7 @@ A) Frontend setup:
 
 B) Backend setup:
 
- 1) git clone https://github.com/jsutinYoung/Energy-Forcast-BackMock.git
+ 1) git clone https://github.com/jsutinYoung/Energy-Forecast-BackMock.git
 
  2) Install mongodb.
     mkdir -p cs453_finalproj_backend/data/db 
